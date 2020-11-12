@@ -1,0 +1,27 @@
+This is the README file for Overpass-API installation and setup on local
+machine running Linux Slackware64 current.
+
+What is OSM Overpass? 
+  Quoting from https://wiki.openstreetmap.org/wiki/Overpass_API:
+    
+    "The Overpass API (formerly known as OSM Server Side Scripting, or OSM3S
+    before 2011) is a read-only API that serves up custom selected parts of 
+    the OSM map data. It acts as a database over the web: the client sends a 
+    query to the API and gets back the data set that corresponds to the query."
+
+end quote.
+
+To me Overpass is a tool to retrieve OSM data, similar to another OSM tool 
+known as "Nominatim". Overpass is a lot less demanding in terms of hardware
+requirements and easier to setup.
+
+Has Its Own Database engine. No need for Postgresql or anything else.
+
+Installation and setup consist of the following steps:
+
+1) Build / compile the source software using SlackBuild script.
+
+2) Populate the Database using the provided software and data source
+   file you get from OSM server.
+   
+3) Setup Apache web server on your local machine to use OverpassAPI.
