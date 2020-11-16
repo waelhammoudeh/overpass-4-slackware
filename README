@@ -181,7 +181,8 @@ TODO: write script to simplify dispatcher start and stop.
 
     END
     
-    Again my edit the DB_ROOT line above with your path, mine becomes:
+    Again edit the DB_ROOT line above with your actual path to your Database
+    parent directory, mine becomes:
     DB_ROOT=/home
     
     Also if your infile.osm.bz2 had no meta data, edit the "--meta" option above

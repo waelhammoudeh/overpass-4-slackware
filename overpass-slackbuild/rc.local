@@ -1,0 +1,16 @@
+# include the following lines in your /etc/rc.d/rc.local file to start overpass
+# dispatcher daemon. Edit the DB_ROOT line with your actual path to your Database
+# parent directory.
+
+DB_ROOT=(replace with your DB_ROOT here, mine was /home)
+VERSION=v0.7.55
+
+# remove stalled socket file if found
+if [ -S $DB_ROOT/overpass/osm3s_$VERSION_osm_base ]; then    
+    echo "Found STALLED overpass socket file, removing."
+    rm -f $DB_ROOT/overpass/osm3s_$VERSION_osm_base
+fi
+
+# start overpass dispatcher dameon; as user overpass NOT root
+echo "Starting overpass dispatcher ..."
+sudo -u overpass /usr/local/bin/dispatcher --osm-base --db-dir=$DB_ROOT/overpass/ --meta&

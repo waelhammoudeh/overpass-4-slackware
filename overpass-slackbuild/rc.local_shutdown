@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# this is /etc/rc.d/rc.local_shutdown file, needs to be set as executable
+# the lines below are to stop overpass dispatcher daemon
+
+echo "Stopping overpass dispatcher..."
+sudo -u overpass /usr/local/bin/dispatcher --terminate
