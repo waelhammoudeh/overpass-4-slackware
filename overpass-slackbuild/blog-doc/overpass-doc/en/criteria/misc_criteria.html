@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Further Search Criteria</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Overpass API User's Manual</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Preface</a></div>
+<div type="parent"><a href="../targets/index.html">Downstream Tools</a></div>
+<div type="parent"><a href="../full_data/index.html">Spatial Data Selection</a></div>
+<div type="parent"><strong><a href="index.html">Find Objects</a></strong></div>
+
+<div type="sibling"><a href="nominatim.html">Alternatives</a></div>
+<div type="sibling"><a href="per_tag.html">Per Tag</a></div>
+<div type="sibling"><a href="chaining.html">Pipeline Building</a></div>
+<div type="sibling"><a href="union.html">Combining by And and Or</a></div>
+<div type="sibling"><a href="lrs.html">List represented sets</a></div>
+<div type="sibling"><strong> Further Search Criteria</strong></div>
+
+</nav>
+<div type="parent"><a href="../counting/index.html">Counting Objects</a></div>
+<div type="parent"><a href="../analysis/index.html">Analysing data</a></div>
+<div type="parent"><a href="../more_info/index.html">More information</a></div>
+
+<hr />
+
+<h1>Further Search Criteria</h1>
+
+<p>Further search criteria like only for keys, query by length, version, number of changeset, or number of members.</p>
+
+<nav>
+<h3>Content</h3>
+
+<div type="subsection"><a href="misc_criteria.html#per_key">Purely by Key</a></div>
+<div type="subsection"><a href="misc_criteria.html#count">Metering an Object</a></div>
+<div type="subsection"><a href="misc_criteria.html#geom">Ways by their Length</a></div>
+<div type="subsection"><a href="misc_criteria.html#meta">Meta Properties</a></div>
+<div type="subsection"><a href="misc_criteria.html#attribution">Attribution</a></div>
+
+</nav>
+
+<p><a name="per_key"/></p>
+
+<h2>Purely by Key</h2>
+
+<p>It can be useful
+to query for all objects that bear a tag with a certain <em>key</em> regardless of the <em>value</em>.
+An <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.482&amp;lon=-0.0&amp;zoom=17&amp;Q=nwr%5Brailway%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">example</a> with <em>railway</em>:</p>
+
+<pre>
+<codeline>nwr[railway]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>The filter <code>[railway]</code> only admits objects that carry a tag <code>railway</code> with an arbitrary value.
+It is combined here with a filter <code>({{bbox}})</code> for the bounding box,
+such that objects are found
+if and only if they bear a tag with key <code>railway</code> as well as are situated within the bounding box
+supplied by <a href="../targets/turbo.html#convenience">Overpass Turbo</a>.</p>
+
+<p>Here every given key can be used as a filter condition by putting it in brackets.
+Keys that contain a special character must be <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.482&amp;lon=-0.0&amp;zoom=17&amp;Q=nwr%5B%22addr%3Ahousenumber%22%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">put in quotation marks</a> in addition to the brackets:</p>
+
+<pre>
+<codeline>nwr["addr:housenumber"]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>In principle the filters for keys can be used as standalone restriction in a <em>query</em> statement.
+But there are next to no useful use cases due to the resulting amount of data and the required runtime for the request.</p>
+
+<p>Multiple filters for keys <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.482&amp;lon=-0.0&amp;zoom=17&amp;Q=nwr%5B%22addr%3Ahousenumber%22%5D%5B%22addr%3Astreet%22%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">can be combined</a>:</p>
+
+<pre>
+<codeline>nwr["addr:housenumber"]["addr:street"]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Here, we are only interested in objects
+that carry both a house number and a street name of an address.
+For that purpose, the <em>query</em> statement in line 1 accepts exactly those objects
+that have a tag with a key <code>addr:housenumber</code> and in addition a tag with a key <code>addr:street</code>.</p>
+
+<p>It is also possible to negate the condition.
+Objects that may profit from attention can be found in that manner.
+We request objects that <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.482&amp;lon=-0.0&amp;zoom=15&amp;Q=nwr%5B%22addr%3Ahousenumber%22%5D%5B%21%22addr%3Astreet%22%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">bear</a> a tag with a key <code>addr:housenumber</code> but no tag with a key <code>addr:street</code>:</p>
+
+<pre>
+<codeline>nwr["addr:housenumber"][!"addr:street"]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>The negation is written by putting an exclamation mark between the opening bracket and the beginning of the key.</p>
+
+<p><a name="count"/></p>
+
+<h2>Metering an Object</h2>
+
+<p>By contrast, the filters to meter objects can only be used in combination with <em>strong</em> filters.
+The reason is that otherwise the amount of data too quickly gets too large.</p>
+
+<p>We have a look at the two most popular use cases for counting tags.
+For all others, please look into the chapter <a href="../counting/index.html">Counting Objects</a>.</p>
+
+<p>It is possible to select objects that have at least one tag.
+An example <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.482&amp;lon=-0.0&amp;zoom=17&amp;Q=node%28if%3Acount%5Ftags%28%29%3E0%29%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">for nodes</a>
+because for ways and relations, anyway almost all carry tags:</p>
+
+<pre>
+<codeline>node(if:count_tags()&gt;0)({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Conversely, one can select all objects
+that do not carry any tag.
+Here <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.482&amp;lon=-0.0&amp;zoom=15&amp;Q=way%28if%3Acount%5Ftags%28%29%3D%3D0%29%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">for ways</a>:</p>
+
+<pre>
+<codeline>way(if:count_tags()==0)({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Both requests are less useful than they promise to be:
+There are uninformative tags
+(<code>created_by</code> on nodes, ways, or relations is deprecated, but may still exist)
+or objects may exist only to belong to relations.</p>
+
+<p>For ways and relations, the number of members can be counted and compared and one can compute with it.
+There are numerous examples for this in again the chapter <a href="../counting/index.html">Counting Objects</a>.</p>
+
+<p>We can search for ways <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.482&amp;lon=-0.0&amp;zoom=15&amp;Q=way%28if%3Acount%5Fmembers%28%29%3E200%29%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">with unusually many members</a>:</p>
+
+<pre>
+<codeline>way(if:count_members()&gt;200)({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>We can check relations whether all members have plausible roles.
+For this purpose, we use the evaluator <code>count_by_role</code> in addition to the evaluator <code>count_members</code>
+to show suspicious turn restrictions <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.482&amp;lon=-0.0&amp;zoom=12&amp;Q=rel%5Btype%3Drestriction%5D%28%7B%7Bbbox%7D%7D%29%0A%20%20%28if%3Acount%5Fmembers%28%29%0A%20%20%20%20%2Dcount%5Fby%5Frole%28%22from%22%29%0A%20%20%20%20%2Dcount%5Fby%5Frole%28%22to%22%29%0A%20%20%20%20%2Dcount%5Fby%5Frole%28%22via%22%29%20%3E%200%29%3B%0Aout%20center%3B">as an example</a>:</p>
+
+<pre>
+<codeline>rel[type=restriction]({{bbox}})</codeline>
+<codeline>  (if:count_members()</codeline>
+<codeline>    -count_by_role("from")</codeline>
+<codeline>    -count_by_role("to")</codeline>
+<codeline>    -count_by_role("via") &gt; 0);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>These are in no way real errors:
+as a typical property of diagnostics, we will demonstrate in the chapter <a href="../analysis/index.html">Analyzing Data</a>
+that objects with unexpected properties are the beginning of an inquiry and not their end.</p>
+
+<p><a name="geom"/></p>
+
+<h2>Ways by their Length</h2>
+
+<p>It is possible to measure the length of a way or relation by an evaluator.
+An obvious application are <a href="../counting/index.html">statistics</a>.
+But this also enables us to select ways or relations by their length.
+The length is always computed in meters.</p>
+
+<p>An example that has actually been used in the past are chimneys.
+The tag <code>building=chimney</code> has sometimes been used for the entire industrial building.
+We thus search for worldwidely all objects tagged as chimneys <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=30.0&amp;lon=-0.0&amp;zoom=1&amp;Q=way%5Bbuilding%3Dchimney%5D%28if%3Alength%28%29%3E62%29%3B%0Aout%20geom%3B">with a circumference of more than 62 meters</a>:</p>
+
+<pre>
+<codeline>way[building=chimney](if:length()&gt;62);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Another straightforward idea is to find long roads.
+Because roads are usually composed of many short sections,
+we must collate the roads by their names before computing the length.
+Requests of this degree of complexity rather belong in the chapter <a href="../analysis/index.html">Analyzing Data</a>,
+but for the sake of comfort,
+one possible solution for 2 km of minimum length is <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.482&amp;lon=-0.0&amp;zoom=14&amp;Q=%5Bout%3Acsv%28length%2Cname%29%5D%3B%0Away%5Bhighway%5D%5Bname%5D%28%7B%7Bbbox%7D%7D%29%3B%0Afor%20%28t%5B%22name%22%5D%29%0A%7B%0A%20%20make%20stat%20length%3Dsum%28length%28%29%29%2Cname%3D%5F%2Eval%3B%0A%20%20if%20%28u%28t%5B%22length%22%5D%29%20%3E%202000%29%0A%20%20%7B%0A%20%20%20%20out%3B%0A%20%20%7D%0A%7D">sketched here</a>:</p>
+
+<pre>
+<codeline>[out:csv(length,name)];</codeline>
+<codeline>way[highway][name]({{bbox}});</codeline>
+<codeline>for (t["name"])</codeline>
+<codeline>{</codeline>
+<codeline>  make stat length=sum(length()),name=_.val;</codeline>
+<codeline>  if (u(t["length"]) &gt; 2000)</codeline>
+<codeline>  {</codeline>
+<codeline>    out;</codeline>
+<codeline>  }</codeline>
+<codeline>}</codeline>
+</pre>
+
+<p>Lines 3 to 10 are a loop
+in which the selected objects from line 2, i.e. all ways with keys <code>highway</code> and <code>name</code>,
+are grouped by <code>name</code>.
+Thus, in line 5, the lengths of all objects of an equal name can be summed by the expression <code>sum(length())</code>.
+In lines 6 to 9, we only write an output if the found length is bigger than 2000 meters.</p>
+
+<p>An approach that brings something on the map is difficult,
+because each name is represented by many objects.
+A solution based on <em>deriveds</em> will be presented in the chapter <a href="../analysis/index.html">Analyzing Data</a>.</p>
+
+<p><a name="meta"/></p>
+
+<h2>Meta Properties</h2>
+
+<p>It is possible to search for an object directly by its type and id,
+e.g. <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.478&amp;lon=-0.0&amp;zoom=17&amp;Q=node%281%29%3B%0Aout%3B">node 1</a>:</p>
+
+<pre>
+<codeline>node(1);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>For this purpose both a filter <code>(...)</code> with the desired id between the parentheses
+as well as evaluators <code>id()</code> and <code>type()</code> are available.
+I am not aware of any use cases relying directly on this feature,
+but some bigger tasks in the chapter <a href="../analysis/index.html">Analyzing Data</a> rely on the features.</p>
+
+<p>By contrast, the version of an object can only be invoked by an evaluator,
+because a filter for only a version number could not stand alone due to the amount of data to expect.</p>
+
+<p>A popular use case is to identify nonsense or unacceptable uploads.
+It can be helpful for that purpose
+to <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.478&amp;lon=-0.0&amp;zoom=17&amp;Q=nwr%28%7B%7Bbbox%7D%7D%29%0A%20%20%28if%3Aversion%28%29%3D%3D1%29%3B%0Aout%20center%3B">request</a> all objects that are still in version 1 within a given bounding box:</p>
+
+<pre>
+<codeline>nwr({{bbox}})</codeline>
+<codeline>  (if:version()==1);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>The evaluator <code>version()</code> is used here for that purpose.
+As with all <em>evaluators</em> used to build a <em>filter</em>,
+this happens by comparing the value of the evaluator to a fixed value (here <code>1</code>) within a generic filter <code>(if:...)</code>.</p>
+
+<p>Similarly, essentially only an evaluator is available for timestamps;
+it is called <code>timestamp()</code>.
+A filter <code>(changed:...)</code> exists as well,
+but it is designed to be used <a href="../analysis/index.html">with museum data</a> only.</p>
+
+<p>The evaluator <code>timestamp()</code> always returns a date in the <a target="_blank" rel="noopener" href="https://de.wikipedia.org/wiki/ISO_8601">international date format</a>,
+i.e. <code>2012-09-13</code> for the 13th September 2012.
+For that reason, it should always be compared against a date in ISO format.
+We enumerate all objects close to Greenwich
+that <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.478&amp;lon=-0.0&amp;zoom=16&amp;Q=nwr%28%7B%7Bbbox%7D%7D%29%28if%3Atimestamp%28%29%3C%222012%2D09%2D13%22%29%3B%0Aout%20geom%28%7B%7Bbbox%7D%7D%29%3B">have not changed since 13th September 2012</a>:</p>
+
+<pre>
+<codeline>nwr({{bbox}})(if:timestamp()&lt;"2012-09-13");</codeline>
+<codeline>out geom({{bbox}});</codeline>
+</pre>
+
+<p>Please note some pitfalls:</p>
+
+<ul>
+<li>Ways and relations can change their geometry without obtaining a new version number.
+This happens when the referenced nodes have only been moved without changing the list of references.</li>
+<li>The most properties of objects come from earlier versions,
+i.e. a seemingly recent change date does not necessarily indicate an up-to-date object.</li>
+</ul>
+
+<p><a name="attribution"/></p>
+
+<h2>Attribution</h2>
+
+<p>...</p>
+<hr/>
+<p>next: <a href="../counting/index.html">Counting Objects</a></p>
+
+</body>
+</html>

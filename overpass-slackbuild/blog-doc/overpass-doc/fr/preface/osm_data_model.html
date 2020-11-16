@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Modèle de données d'OpenStreetMap</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Mode d'emploi d'API Overpass</a>  </p>
+
+<nav>
+<div type="parent"><strong><a href="index.html">Introduction</a></strong></div>
+
+<div type="sibling"><a href="preface.html">OpenStreetMap et l'API Overpass</a></div>
+<div type="sibling"><strong> Modèle de données d'OpenStreetMap</strong></div>
+<div type="sibling"><a href="glossary.html">Glossaire</a></div>
+<div type="sibling"><a href="design.html">Modèle d'exécution</a></div>
+<div type="sibling"><a href="assertions.html">Principes</a></div>
+<div type="sibling"><a href="commons.html">Mutualisation</a></div>
+
+</nav>
+<div type="parent"><a href="../targets/index.html">Utilisation</a></div>
+<div type="parent"><a href="../full_data/index.html">Toutes les données dans une région</a></div>
+<div type="parent"><a href="../criteria/index.html">Trouver des objets</a></div>
+<div type="parent"><a href="../counting/index.html">Compter d'objets</a></div>
+<div type="parent"><a href="../analysis/index.html">Analyser des données</a></div>
+<div type="parent"><a href="../more_info/index.html">Plus d'informations</a></div>
+
+<hr />
+
+<h1>Modèle de données d'OpenStreetMap</h1>
+
+<p>Pour permettre la compréhension de l'API Overpass, 
+il faut d'abord introduire le modêle de données d'OpenStreetMap.</p>
+
+<p>Dans cette section, nous présentons les structures de données de base dans OpenStreetMap.
+OpenStreetMap contient principalement trois types de données:</p>
+
+<ul>
+<li>Géométries, coordonnées et références réellement, localisent les objets dans l'espace.</li>
+<li>Les données factuelles sous forme de courts extraits de texte donnent un sens aux objets.</li>
+<li>Les métadonnées permettent de retracer l'origine et l'origine des données.</li>
+</ul>
+
+<p>Tous les critères de requête visent les propriétés de ces structures de données.</p>
+
+<p>De plus, il existe différents formats de données pour représenter ces données.
+Celles-ci sont expliquées dans la section <a href="../targets/formats.html">Formats de données</a>.</p>
+
+<p>L'interaction des types d'objets par rapport à la géométrie utilisable
+nécessite également une explication particulière.
+La section <a href="../full_data/osm_types.html">Géométries</a> fournit un guide pratique à cet effet.</p>
+
+<nav>
+<h3>Sommaire</h3>
+
+<div type="subsection"><a href="osm_data_model.html#tags">Attributs</a></div>
+<div type="subsection"><a href="osm_data_model.html#nwr">Nœuds, Chemins et Relations</a></div>
+<div type="subsection"><a href="osm_data_model.html#areas">Surfaces</a></div>
+<div type="subsection"><a href="osm_data_model.html#metas">Métadonnées</a></div>
+<div type="subsection"><a href="osm_data_model.html#declined">Calques, Catégories, Identités</a></div>
+
+</nav>
+
+<p><a name="tags"/></p>
+
+<h2>Attributs</h2>
+
+<p>Les données factuelles dans OpenStreetMap sont stockées dans de courts extraits de texte, appelés <em>Attributs</em>.
+Les <em>attributs</em> sont toujours composés d'une <em>clé</em> et d'une <em>valeur</em>.
+Chaque objet ne peut avoir qu'une seule <em>valeur</em> pour chaque <em>clé</em>.
+En dehors d'une longueur maximale de 255 caractères pour chaque clé et chaque valeur, il n'y a pas d'autre restriction.</p>
+
+<p>Formellement, toutes les Attributs sont égales,
+Les étiquettes peuvent être attribuées spontanément et librement;
+cela aurait dû contribuer de manière significative au succès d'OpenStreetMap.</p>
+
+<p>De facto, on n'utilise presque que des touches avec des lettres minuscules latines et parfois les caractères spéciaux <code>:</code> et <code>_</code>.
+Deux types d'<em>attributs</em> de base sont établis:</p>
+
+<p>Les <em>attributs de classification</em> ont l'une des quelques <em>clés</em>,
+pour chacune des quelques <em>clés</em>, il n'y a aussi que des <em>valeurs</em> gérables.
+Les <em>valeurs</em> qui s'en écartent sont considérées comme des erreurs.
+Ainsi, l'ensemble du réseau routier public pour les véhicules automobiles est identifié par la clé <a target="_blank" rel="noopener" href="https://taginfo.openstreetmap.org/keys/highway">highway</a> et l'une de moins de 20 valeurs communes.
+Pour les bâtiments, seul <a target="_blank" rel="noopener" href="https://taginfo.openstreetmap.org/keys/building">building</a> avec la valeur <em>yes</em> est généralement saisi.</p>
+
+<p>Occasionnellement, des <em>valeurs</em> séparées par des points-virgules apparaissent également dans ces <em>attributs</em>.
+Il s'agit d'une approche généralement au moins tolérée pour saisir plusieurs <em>valeurs</em> pour la même <em>clé</em> sur le même objet.</p>
+
+<p>Les <em>attributs descriptives</em>, par contre, n'ont que des clés fixes,
+alors que la <em>valeur</em> est un texte libre en majuscules et minuscules et bien peut contenir des caractères spéciaux.
+Les cas d'utilisation les plus importants sont les noms.
+Des descriptions, des identificateurs ou des spécifications de taille peuvent également être utilisés.</p>
+
+<p>Les sources les plus importantes pour les clés et les valeurs établies sont les suivantes</p>
+
+<ul>
+<li>le <a target="_blank" rel="noopener" href="https://wiki.openstreetmap.org/wiki/Map_Features">OSM-Wiki</a>.
+Il a des textes de description plus longs.
+Parfois, les textes reflètent le souhait du documentateur plutôt que l'utilisation réelle.</li>
+<li><a target="_blank" rel="noopener" href="https://taginfo.openstreetmap.org/">Taginfo</a>.
+Compter les étiquettes en fonction de l'occurrence réelle.
+Fournit des liens vers des ressources pertinentes à l'étiquette.</li>
+</ul>
+
+<p>Le chapitre complet <a href="../criteria/index.html">Trouver des objets</a> est consacré à la recherche par <em>attributs</em>.</p>
+
+<p><a name="nwr"/></p>
+
+<h2>Nœuds, Chemins et Relations</h2>
+
+<p>OpenStreetMap possède trois types d'objets, dont chacun peut porter un nombre illimité de <em>attributs</em>.
+Les trois types d'objet sont fondamentalement constitués d'un identifiant;
+c'est toujours un nombre naturel.
+La combinaison du type d'objet et de l'identifiant est unique,
+mais pas seulement l'identifiant sans type.</p>
+
+<p>Les <em>nœuds</em> ont toujours une coordonnée en plus de l'identifiant et des attributs.
+Ils peuvent représenter un point d'intérêt ou un petit objet.
+Parce que les nœuds sont le seul élément avec une coordonnée,
+la plupart d'entre eux ne sont utilisés que comme coordonnées dans les <em>chemins</em>
+et n'ont donc pas de attributs.</p>
+
+<p>Les <em>chemins</em> sont constituées d'identifiant et des attributs ainsi que d'une séquence de références à des <em>nœuds</em>.
+De cette façon, les chemins obtient à la fois une géométrie en utilisant les coordonnées des <em>nœuds</em>.
+Mais ils obtiennent aussi une topologie;
+deux chemins sont connectées si les deux pointent vers le même nœud.</p>
+
+<p>Les chemins peuvent se référer au même nœud plusieurs fois.
+Le cas ordinaire est un chemin fermé,
+où le premier et le dernier nœud correspondent.
+Tous les autres cas sont techniquement possibles,
+mais des contenus indésirables.</p>
+
+<p>Les <em>relations</em> se composent d'identifiant et des attributs ainsi que d'une séquence de références à leurs <em>membres</em>.
+Fondamentalement, chaque membre est une paire de références à un nœud, un chemin ou une relation et un rôle.
+Un rôle est un sequence de caractères.
+La tâche originelle de relations était le stockage des interdictions de tournées,
+avec, par conséquent, peu de membres.
+Entre-temps, ils sont également utilisés pour les frontières des états et des municipalités, les multipolygones ou les routes.
+Leurs manifestations sont donc très diverses,
+et surtout, les relations frontalières et routières peuvent aussi atteindre des centaines et des milliers de kilomètres.</p>
+
+<p>Une géométrie des relations n'est créée que par l'interprétation de l'utilisateur des données.
+Les interprétations généralement acceptées sont celles
+qui interprètent correctement les multipolygones et les routes:
+Comme pour les chemins, de telles relations sont comprises comme des domaines dont les membres forment des cercles fermés.
+Les interprétations commencent par la question de savoir dans quelle mesure l'attribut <em>area</em>=<em>yes</em> est nécessaire pour cette interprétation.
+Pour d'autres relations, par exemple les routes et les interdictions de virage, la géométrie est la somme des géométries de ses membres de type <em>nœud</em> et <em>chemin</em>.</p>
+
+<p>Les relations sur les relations sont techniquement possibles,
+mais n'ont aucune pertinence pratique.
+Ceci augmente le risque que de grandes quantités de données soient déjà échangées,
+si vous ne résolvez que les références d'une seule relation.
+Selon le contexte, il existe tant d'approches utiles pour suivre partiellement et de manière ciblée les références des relations,
+qu'un <a href="../full_data/osm_types.html#rels_on_rels">paragraphe distinct</a> lui est consacré.</p>
+
+<p><a name="areas"/></p>
+
+<h2>Surfaces</h2>
+
+<p>Les surfaces n'ont pas de structure de données indépendante dans OpenStreetMap.
+Au lieu de cela, ils sont représentés par des <em>chemins</em> ou <em>relations</em> fermées.
+Les attributs sont pertinentes pour distinguer la surface et le chemin fermé pour autre raison,
+dans le cas le plus simple par l'attribut <em>area</em>=<em>yes</em>.</p>
+
+<p>Les chemins fermées sont utilisées,
+si la surface est continue et sans trous.
+Un chemin est fermé si ses première et dernière entrées pointent vers le même nœud.</p>
+
+<p>Les relations sont utilisées,
+quand une seule chemin ne suffit plus.
+En plus des trous ou des parties de surface séparées, cela se produit également,
+si la bordure doit être formée de plusieurs chemins.
+Ceci n'est en fait courant que pour les frontières de grandes structures (villes, régions, pays).</p>
+
+<p>Comme pour les chemins, la surface est décrite par le contour.
+Les chemins référencées dans la relation doivent s'emboîter et former des boucles fermés.
+Plus d'informations sur les <a target="_blank" rel="noopener" href="https://github.com/osmlab/fixing-polygons-in-osm/blob/master/doc/background.md">Conventions</a>.</p>
+
+<p><a name="metas"/></p>
+
+<h2>Métadonnées</h2>
+
+<p>OpenStreetMap est un système complet de gestion de versions.
+Par conséquent, les anciens états d'objet restont enregistrés
+et les données nécessaires pour affecter les modifications aux utilisateurs.</p>
+
+<p>Il y a un <em>numéro de version</em> et un <em>horodatage</em> pour chaque objet et état.
+Les anciens états avec d'anciens numéros de version sont sauvegardés.
+Par conséquent, il existe des <a href="https://dev.overpass-api.de/overpass-doc/fr/preface/.../analysis/index.html">méthodes spéciales</a> dans l'API Overpass pour accéder aux anciens états de données.
+Sans configuration spéciale, les données actuelles sont toujours utilisées.</p>
+
+<p>Les modifications sont également combinées à <em>groupes de modifications</em>.
+Celles-ci sont affectées à l'utilisateur de téléchargement.
+Le logiciel d'édition fait automatiquement le résumé,
+et il y a généralement un groupe de modifications par téléchargement.</p>
+
+<p>Les <em>groupes de modifications</em> ont des attributs
+et il peut y avoir des discussions sur les groupes de modifications.
+Toutefois, ces textes ne sont pas traités dans l'API Overpass.</p>
+
+<p>Ainsi, les objets sont également affectés à un utilisateur dans leur intégralité.
+C'est le dernier utilisateur.
+Les objets dont le numéro de version est supérieur à 1 conservent donc généralement les propriétés des versions antérieures,
+qui ne sont pas attribuables à l'utilisateur actuel.</p>
+
+<p><a name="declined"/></p>
+
+<h2>Calques, Catégories, Identités</h2>
+
+<p>Cependant, il n'y a pas de calques thématiques dans OpenStreetMap,
+et pour une bonne raison.
+Pour certains, les supermarchés, les bureaux de poste, les banques et les distributeurs automatiques de billets ne sont que quelques-uns des endroits,
+où vous pouvez obtenir de billets.
+Pour le prochain, les supermarchés forment un groupe avec les boulangeries et les boucheries,
+parce qu'y on peut acheter des aliments.</p>
+
+<p>Par conséquent, la classification ne joue qu'un rôle subordonné dans OpenStreetMap.
+Au lieu de cela, les propriétés objectives sont cartographiées.
+Les litiges sur la classification ont ainsi été largement évités,
+et la plupart des cartographes peuvent montrer leur vision du monde sans grandes contorsions.</p>
+
+<p>Une structure qui est aussi souvent attendue sont les catégories,
+que ce soit très généralement ou mondialement toutes les branches d'une chaîne de restauration rapide
+ou surtout comme toutes les boîtes aux lettres de Languedoc.
+OpenStreetMap est une base de données spatiales.
+Les listes de tous les objets ayant une propriété spécifique dans une zone restreinte peuvent être calculées.
+D'ailleurs, l'API Overpass est l'un des outils appropriés à cette fin,
+et <a href="../criteria/index.html">Trouver des objets</a> le chapitre approprié.</p>
+
+<p>Les listes de tous les objets ayant une propriété dans le monde entier, par contre, ont au mieux une faible pertinence spatiale.
+Chaque succursale a un emplacement,
+mais la chaîne de restauration rapide elle-même reçoit ses informations spatiales exclusivement par l'intermédiaire des cettes succursales.</p>
+
+<p>Enfin, le concept de l'identité d'un objet doit aussi reculer derrière sa référence spatiale.
+Comme c'est déjà le cas pour la couche, les différents utilisateurs ont des vues différentes sur celle-ci,
+qui fait partie d'une installation aussi complexe qu'une grande gare ferroviaire.
+Que des rails et des quais?
+Le bâtiment d'accueil, ou seulement s'il est ouvert aux voyageurs ou s'il appartient à la compagnie ferroviaire?
+Le parvis de la gare, l'arrêt de transfert du nom de la gare?
+Les points autour de la gare?</p>
+
+<p>Lorsqu'il est fait référence à la représentation d'un objet du monde matériel,
+il est préférable d'utiliser une coordonnée.
+Par définition, les installations fixes ne bougent pas,
+et la précision de position dans OpenStreetMap est si bonne
+que la position est déjà la meilleure identification.</p>
+
+<!-- Traduit avec www.DeepL.com/Translator, partiellement redigé -->
+<hr/>
+<p>prochaine: <a href="glossary.html">Glossaire</a></p>
+
+</body>
+</html>

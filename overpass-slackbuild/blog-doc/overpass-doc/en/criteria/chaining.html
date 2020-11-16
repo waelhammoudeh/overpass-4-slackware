@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Pipeline Building</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Overpass API User's Manual</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Preface</a></div>
+<div type="parent"><a href="../targets/index.html">Downstream Tools</a></div>
+<div type="parent"><a href="../full_data/index.html">Spatial Data Selection</a></div>
+<div type="parent"><strong><a href="index.html">Find Objects</a></strong></div>
+
+<div type="sibling"><a href="nominatim.html">Alternatives</a></div>
+<div type="sibling"><a href="per_tag.html">Per Tag</a></div>
+<div type="sibling"><strong> Pipeline Building</strong></div>
+<div type="sibling"><a href="union.html">Combining by And and Or</a></div>
+<div type="sibling"><a href="lrs.html">List represented sets</a></div>
+<div type="sibling"><a href="misc_criteria.html">Further Search Criteria</a></div>
+
+</nav>
+<div type="parent"><a href="../counting/index.html">Counting Objects</a></div>
+<div type="parent"><a href="../analysis/index.html">Analysing data</a></div>
+<div type="parent"><a href="../more_info/index.html">More information</a></div>
+
+<hr />
+
+<h1>Pipeline Building</h1>
+
+<p>How to build pipelines of search criteria
+to search for objects relative to other objects.</p>
+
+<nav>
+<h3>Content</h3>
+
+<div type="subsection"><a href="chaining.html#lateral">Indirect Filters</a></div>
+<div type="subsection"><a href="chaining.html#topdown">Referenced Objects</a></div>
+<div type="subsection"><a href="chaining.html#difference">Differece</a></div>
+<div type="subsection"><a href="chaining.html#equality">Tags of Equal Value</a></div>
+
+</nav>
+
+<p><a name="lateral"/></p>
+
+<h2>Indirect Filters</h2>
+
+<p>We have seen examples of indirect filters in the section about <a href="../full_data/area.html">Areas</a> and the section about <a href="../full_data/polygon.html">Around</a>.
+The filter arrangement profits from the <a href="../preface/design.html#sequential">step-by-step paradigm</a>
+to refer to objects that are not necessarily contained in the visible result.</p>
+
+<p>We demonstrate this with the example
+to show <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=10&amp;Q=area%5Bname%3D%22K%C3%B6ln%22%5D%3B%0Anwr%5Bamenity%3Dcafe%5D%28area%29%3B%0Aout%20center%3B">all cafés in Cologne</a>:</p>
+
+<pre>
+<codeline>area[name="Köln"];</codeline>
+<codeline>nwr[amenity=cafe](area);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>At the heart of the request is the filter <code>(area)</code> in line 2.
+The filter decided what it accepts by the area or areas
+that are selected in the set <code>_</code> at that moment.
+It is applied in combination with the filter <code>[amenity=cafe]</code>,
+i.e. we select in line 2 all objects
+that are a <em>node</em>, <em>way</em>, or <em>relation</em> and that bear the tag <em>amenity</em> with value <em>cafe</em>
+and that are situated within at least one of the in <code>_</code> selected areas.</p>
+
+<p>To make the implicit set <code>_</code> more visible,
+we can use any of the following equivalent rephrasings:
+<!-- NO_QL_LINK --></p>
+
+<pre>
+<codeline>area[name="Köln"];</codeline>
+<codeline>nwr[amenity=cafe](area._);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>and
+<!-- NO_QL_LINK --></p>
+
+<pre>
+<codeline>area[name="Köln"]-&gt;._;</codeline>
+<codeline>nwr[amenity=cafe](area);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>and
+<!-- NO_QL_LINK --></p>
+
+<pre>
+<codeline>area[name="Köln"]-&gt;._;</codeline>
+<codeline>nwr[amenity=cafe](area._);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>In all cases the area is conveyed from line 1 to line 2 by the set <code>_</code>.
+Sets are introduced in <a href="../preface/design.html#sets">a section of the introduction</a>.</p>
+
+<p>We also can use a set <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=10&amp;Q=area%5Bname%3D%22K%C3%B6ln%22%5D%2D%3E%2Eextralongname%3B%0Anwr%5Bamenity%3Dcafe%5D%28area%2Eextralongname%29%3B%0Aout%20center%3B">with an arbitrarily long name</a>:</p>
+
+<pre>
+<codeline>area[name="Köln"]-&gt;.extralongname;</codeline>
+<codeline>nwr[amenity=cafe](area.extralongname);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>But of course it does not work
+if the names of the sets in the two lines are not equal:
+<!-- NO_QL_LINK --></p>
+
+<pre>
+<codeline>area[name="Köln"]-&gt;.extralongname;</codeline>
+<codeline>nwr[amenity=cafe](area.extralnogname);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Set names are in many situations necessary
+to supply multiple filters with their respective input.
+We can search for cafés in Münster
+but the Overpass API then does not know which Münster is meant.
+There are small towns called Münster beside the large one,
+and <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.0&amp;lon=10.0&amp;zoom=4&amp;Q=area%5Bname%3D%22M%C3%BCnster%22%5D%3B%0Anwr%5Bamenity%3Dcafe%5D%28area%29%3B%0Aout%20center%3B">these have cafés</a>, too:</p>
+
+<pre>
+<codeline>area[name="Münster"];</codeline>
+<codeline>nwr[amenity=cafe](area);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>We can overcome the problem by requesting
+that the café <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=52.0&amp;lon=7.5&amp;zoom=6&amp;Q=area%5Bname%3D%22Nordrhein%2DWestfalen%22%5D%2D%3E%2Ea%3B%0Aarea%5Bname%3D%22M%C3%BCnster%22%5D%2D%3E%2Eb%3B%0Anwr%5Bamenity%3Dcafe%5D%28area%2Ea%29%28area%2Eb%29%3B%0Aout%20center%3B">must be situated both</a> in Münster and in North Rhine-Westphalia:</p>
+
+<pre>
+<codeline>area[name="Nordrhein-Westfalen"]-&gt;.a;</codeline>
+<codeline>area[name="Münster"]-&gt;.b;</codeline>
+<codeline>nwr[amenity=cafe](area.a)(area.b);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>The cafés are selected in line 3:
+We filter for objects of the type <em>node</em>, <em>way</em>, or <em>relation</em>
+that carry the tag <code>amenity=cafe</code>
+and that are situated in an area stored in <code>a</code> (in fact one area, i.e. the federal state of North Rhine-Westphalia)
+and that are situated in an area stored in <code>b</code> (all the cities, suburbs, and towns with name <em>Münster</em>).
+Thus, only the cafés in Münster in North Rhine-Westphalia are left.</p>
+
+<p>The interaction between multiple filters and pipelining will be elaborated on further <a href="union.html#full">in the next section</a>.</p>
+
+<p>For the sake of completeness, we demontrate
+that the principle of indirect filters works for all types.
+We want to get all bridges over the river <em>Alster</em>.</p>
+
+<p>We can select the river by two different approaches:
+first, <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=53.65&amp;lon=10.1&amp;zoom=10&amp;Q=way%5Bname%3D%22Alster%22%5D%5Bwaterway%3Driver%5D%3B%0Aout%20geom%3B">as ways</a>:</p>
+
+<pre>
+<codeline>way[name="Alster"][waterway=river];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>We select all objects of type <em>way</em>
+that bear the tag <code>name</code> with value <code>Alster</code> and the tag <code>waterway</code> with value <code>river</code>.
+These are delivered in set <code>_</code> from line 1 to line 2.
+Subsequently, the content of <code>_</code> is printed in line 2.</p>
+
+<p>We can select the bridges over the river instead of the river <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=53.65&amp;lon=10.1&amp;zoom=10&amp;Q=way%5Bname%3D%22Alster%22%5D%5Bwaterway%3Driver%5D%3B%0Away%28around%3A0%29%5Bbridge%3Dyes%5D%3B%0Aout%20geom%3B">as follows</a>:</p>
+
+<pre>
+<codeline>way[name="Alster"][waterway=river];</codeline>
+<codeline>way(around:0)[bridge=yes];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>The filter <code>(around:0)</code> in line 2 is here the indirect filter.
+We select in line 2 all <em>ways</em>
+that have the tag <em>bridge</em> with value <em>yes</em>
+and that have a distance of 0 to the objects of the set <code>_</code>.
+For that purpose, we have collected in line 1 into the set <code>_</code> all ways
+in whose surroundings we want to find results,
+i.e. the ways that have a tag <code>name</code> with value <code>Alster</code> and a tag <code>waterway</code> with value <code>river</code>.</p>
+
+<p>The whole thing works as well <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=53.65&amp;lon=10.1&amp;zoom=10&amp;Q=relation%5Bname%3D%22Alster%22%5D%5Bwaterway%3Driver%5D%3B%0Aout%20geom%3B">with relations</a> ...</p>
+
+<pre>
+<codeline>relation[name="Alster"][waterway=river];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>... now <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=53.65&amp;lon=10.1&amp;zoom=10&amp;Q=relation%5Bname%3D%22Alster%22%5D%5Bwaterway%3Driver%5D%3B%0Away%28around%3A0%29%5Bbridge%3Dyes%5D%3B%0Aout%20geom%3B">the bridges</a>:</p>
+
+<pre>
+<codeline>relation[name="Alster"][waterway=river];</codeline>
+<codeline>way(around:0)[bridge=yes];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p><a name="topdown"/></p>
+
+<h2>Referenced Objects</h2>
+
+<p>We have met a completely different application of pipelining in the subsections <a href="../full_data/osm_types.html#rels">Relations</a> and <a href="../full_data/osm_types.html#rels_on_rels">Relations on Top of Relations</a> of section <a href="../full_data/osm_types.html">Geometries</a>:
+The traditional OpenStreetMap data model accepts coordinates only on nodes,
+but geometry is a crucial feature of other objects as well.
+Thus in the traditional model, ways and relations must be accompanied by their auxiliary nodes.</p>
+
+<p>We explain the aspects of pipelining with an example:
+The tube line <em>Waterloo &amp; City</em> in London can be obtained <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=14&amp;Q=rel%5Bref%3D%22Waterloo%20%26%20City%22%5D%3B%0Aout%20geom%3B">as follows</a>:</p>
+
+<pre>
+<codeline>rel[ref="Waterloo &amp; City"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Then we employ an <a href="../targets/formats.html#extras">extended data model</a>
+that is not supported by all downstream tools.
+If we instead use the traditional degree of detail <em>out</em> <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=14&amp;Q=rel%5Bref%3D%22Waterloo%20%26%20City%22%5D%3B%0Aout%3B">for printing</a>,
+then we do not see any result on the map:</p>
+
+<pre>
+<codeline>rel[ref="Waterloo &amp; City"];</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>The relation is after the output statement in line 2 still in the set <code>_</code>.
+Thus, we can collect the <em>ways</em> and <em>nodes</em>
+by <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=14&amp;Q=rel%5Bref%3D%22Waterloo%20%26%20City%22%5D%3B%0Aout%3B%0A%28%0A%20%20way%28r%29%3B%0A%20%20node%28w%29%3B%0A%29%3B%0Aout%20skel%3B">combining</a> an <em>union</em> statement with pipelining.
+The <em>union</em> statement is introduced in the <a href="union.html#union">following section</a>.</p>
+
+<pre>
+<codeline>rel[ref="Waterloo &amp; City"];</codeline>
+<codeline>out;</codeline>
+<codeline>(</codeline>
+<codeline>  way(r);</codeline>
+<codeline>  node(w);</codeline>
+<codeline>);</codeline>
+<codeline>out skel;</codeline>
+</pre>
+
+<p>Set <code>_</code> contains the relations before line 3 like mentioned above.
+Lines 3 to 6 constitute the <a href="union.html#union">union</a> statement.
+Line 4 thus is executed next after line 2 and gets the relations as input.
+The statement selects <em>ways</em> that match the filter <code>(r)</code>,
+i.e. ways that are referenced by one or more relations from the input set.
+It replaces the content of the set <code>_</code> with its result.
+According to its semantics, <em>union</em> keeps a copy of this result for its own result.</p>
+
+<p>The statement <code>node(w)</code> in line 5 thus sees in set <code>_</code> the ways from line 4.
+It selects <em>nodes</em> that match the filter <code>(w)</code>,
+i.e. are referenced by one or more ways from its input, the ways found in line 4.
+It again replaces the set <code>_</code> with its own result,
+but <em>union</em> subsequently anyway replaces that set again.</p>
+
+<p>The <em>union</em> statement writes as result of line 6 the union of the results it has seen.
+Thus we get all <em>ways</em> that are referenced by the relations from line 2
+and all <em>nodes</em> that are referenced by these <em>ways</em>.</p>
+
+<p>Relations can have <em>nodes</em> as immediate members
+and these relations do have such members.
+One can see this in the <a href="../targets/turbo.html#basics">Data</a> tab or <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=14&amp;Q=rel%5Bref%3D%22Waterloo%20%26%20City%22%5D%3B%0Anode%28r%29%3B%0Aout%3B">per request</a>:</p>
+
+<pre>
+<codeline>rel[ref="Waterloo &amp; City"];</codeline>
+<codeline>node(r);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>This way we replace in the set <code>_</code> in line 2 the <em>relations</em> by the referenced <em>nodes</em>.
+Then we have in line 3 these <em>nodes</em> available to print them,
+but we need the <em>relations</em> again to get the referenced <em>ways</em>.
+Can we avoid the double query?</p>
+
+<p>Yes, <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=14&amp;Q=rel%5Bref%3D%22Waterloo%20%26%20City%22%5D%3B%0Aout%3B%0A%28%0A%20%20node%28r%29%2D%3E%2Edirectly%5Freferenced%5Fby%5Fthe%5Frelations%3B%0A%20%20way%28r%29%3B%0A%20%20node%28w%29%3B%0A%29%3B%0Aout%20skel%3B">with named sets</a>:</p>
+
+<pre>
+<codeline>rel[ref="Waterloo &amp; City"];</codeline>
+<codeline>out;</codeline>
+<codeline>(</codeline>
+<codeline>  node(r)-&gt;.directly_referenced_by_the_relations;</codeline>
+<codeline>  way(r);</codeline>
+<codeline>  node(w);</codeline>
+<codeline>);</codeline>
+<codeline>out skel;</codeline>
+</pre>
+
+<p>In detail:</p>
+
+<ul>
+<li>After executing line 1, the set <code>_</code> contains all <em>relations</em>
+that have a tag <code>ref</code> with value <code>Waterloo &amp; City</code>.</li>
+<li>In line 2 these are printed.
+The set <code>_</code> still contains the relations.</li>
+<li>The block statement <em>union</em>, from line 3 to 7, executes the block of statements in its interior.</li>
+<li>Hence in line 4, the filter <code>(r)</code> operates on the content of set <code>_</code>, i.e. the <em>relations</em> from line 1.
+The statement thus puts into the set <code>directly_referenced_by_the_relations</code> the <em>nodes</em>
+that have been referenced by one or more relations.
+The statement <em>union</em> keeps a copy of the result.
+Otherwise, we are not interested in this result.
+We rather want to keep the statement from overwriting the set <code>_</code>.</li>
+<li>In line 5, the filter <code>(r)</code> operates on the content of set <code>_</code>,
+and these are still the relations from line 1, because line 4 has not overwritten them.
+Now the set <code>_</code> is overwritten with the ways that are referenced by the <em>relations</em>.
+The statement <em>union</em> keeps a copy of this result, too.</li>
+<li>In line 6, the filter<code>(w)</code> uses again the set <code>_</code> as input.
+These are now the in line 5 written ways.
+Thus set <code>_</code> now consists of the <em>nodes</em> referenced by the ways from the previous content of set <code>_</code>.
+The statement <em>union</em> keeps a copy of this result.</li>
+<li>The statement <em>union</em> now makes its own result from the results of the lines 4, 5, and 6
+and writes that result in the set <code>_</code>.</li>
+<li>In line 8 the set <code>_</code> is printed.</li>
+</ul>
+
+<p>Because this is a very frequent task,
+there is <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=14&amp;Q=rel%5Bref%3D%22Waterloo%20%26%20City%22%5D%3B%0Aout%3B%0A%3E%3B%0Aout%20skel%3B">a shortcut</a> for it:
+<!-- Not yet checked --></p>
+
+<pre>
+<codeline>rel[ref="Waterloo &amp; City"];</codeline>
+<codeline>out;</codeline>
+<codeline>&gt;;</codeline>
+<codeline>out skel;</codeline>
+</pre>
+
+<p>Lines 1 and 2 work as before,
+and line 4 works like line 8 in the example before.
+The chevron in line 3 has as semantics
+that it selects the <em>ways</em> and <em>nodes</em>
+that are directly or indirectly referenced by relations from its input set, here the set <code>_</code>,
+and writes them into the set <code>_</code>.</p>
+
+<p>Finally, some downstream tools rely on the fixed order in the file:
+they need all <em>nodes</em> first, then all <em>ways</em>, and then in the end all <em>relations</em>.</p>
+
+<p>One can alter our request here
+by <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=14&amp;Q=%28%0A%20%20rel%5Bref%3D%22Waterloo%20%26%20City%22%5D%3B%0A%20%20node%28r%29%2D%3E%2Edirekt%5Fvon%5Fden%5Frelations%5Freferenziert%3B%0A%20%20way%28r%29%3B%0A%20%20node%28w%29%3B%0A%29%3B%0Aout%3B">moving</a> the initial statement into the union block:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  rel[ref="Waterloo &amp; City"];</codeline>
+<codeline>  node(r)-&gt;.direkt_von_den_relations_referenziert;</codeline>
+<codeline>  way(r);</codeline>
+<codeline>  node(w);</codeline>
+<codeline>);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Similarly <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=14&amp;Q=%28%0A%20%20rel%5Bref%3D%22Waterloo%20%26%20City%22%5D%3B%0A%20%20%3E%3B%0A%29%3B%0Aout%3B">with the chevron</a>:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  rel[ref="Waterloo &amp; City"];</codeline>
+<codeline>  &gt;;</codeline>
+<codeline>);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p><a name="difference"/></p>
+
+<h2>Differece</h2>
+
+<p>...</p>
+
+<p><a name="equality"/></p>
+
+<h2>Tags of Equal Value</h2>
+
+<p>...</p>
+<hr/>
+<p>next: <a href="union.html">Combining by And and Or</a></p>
+
+</body>
+</html>

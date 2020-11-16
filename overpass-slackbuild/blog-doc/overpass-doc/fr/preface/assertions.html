@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Principes</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Mode d'emploi d'API Overpass</a>  </p>
+
+<nav>
+<div type="parent"><strong><a href="index.html">Introduction</a></strong></div>
+
+<div type="sibling"><a href="preface.html">OpenStreetMap et l'API Overpass</a></div>
+<div type="sibling"><a href="osm_data_model.html">Modèle de données d'OpenStreetMap</a></div>
+<div type="sibling"><a href="glossary.html">Glossaire</a></div>
+<div type="sibling"><a href="design.html">Modèle d'exécution</a></div>
+<div type="sibling"><strong> Principes</strong></div>
+<div type="sibling"><a href="commons.html">Mutualisation</a></div>
+
+</nav>
+<div type="parent"><a href="../targets/index.html">Utilisation</a></div>
+<div type="parent"><a href="../full_data/index.html">Toutes les données dans une région</a></div>
+<div type="parent"><a href="../criteria/index.html">Trouver des objets</a></div>
+<div type="parent"><a href="../counting/index.html">Compter d'objets</a></div>
+<div type="parent"><a href="../analysis/index.html">Analyser des données</a></div>
+<div type="parent"><a href="../more_info/index.html">Plus d'informations</a></div>
+
+<hr />
+
+<h1>Principes</h1>
+
+<p>L'API Overpass ne fera ni la promotion ni n'interférera avec les schémas d'attribution.
+La rétrocompatibilité est prévue pour des décennies.</p>
+
+<nav>
+<h3>Sommaire</h3>
+
+<div type="subsection"><a href="assertions.html#local">Localement rapide</a></div>
+<div type="subsection"><a href="assertions.html#faithful">Fidèle au modèle de données</a></div>
+<div type="subsection"><a href="assertions.html#tags">Neutre avec les attributs</a></div>
+<div type="subsection"><a href="assertions.html#antiwar">Invulnérabilité</a></div>
+<div type="subsection"><a href="assertions.html#ql">Langage multifonctionnel</a></div>
+<div type="subsection"><a href="assertions.html#infrastructure">Infrastructure</a></div>
+<div type="subsection"><a href="assertions.html#libre">Libre</a></div>
+
+</nav>
+
+<p><a name="local"/></p>
+
+<h2>Localement rapide</h2>
+
+<p>L'API Overpass est conçue à cette fin,
+pour fournir rapidement des données liées à l'espace.
+L'API Overpass peut également fournir des données à distance,
+mais n'a aucun avantage sur une base de données générique.</p>
+
+<p>De nombreuses sections de ce manuel se réfèrent donc aux outils,
+qui sont plus fortement optimisés en fonction de l'application respective.</p>
+
+<p><a name="faithful"/></p>
+
+<h2>Fidèle au modèle de données</h2>
+
+<p>Le modèle de données OpenStreetMap a contribué de manière significative au succès d'OpenStreetMap par sa simplicité.
+Mais il doit être traduit en un modèle de données différent pour presque toutes les applications,
+sinon les délais de traitement seront trop longs.
+C'est particulièrement vrai pour le rendu d'une carte et encore plus pour le routage et la recherche de points d'intérêt.</p>
+
+<p>Aucune de ces conversions n'est sans perte,
+chaque modèle de données subséquent met l'accent sur certains aspects, ignore d'autres aspects et interprète le reste de la meilleure façon possible.
+Ainsi, une modélisation du mappeur qui est aussi précise que possible sur la carte,
+lors du routage, de la recherche de points d'intérêt ou d'autres cas d'utilisation conduit souvent à des résultats inattendus.</p>
+
+<p>En réponse, les cartographes utilisent souvent une modélisation inexacte des faits,
+mais qui donnent de plus beaux résultats dans l'outil préféré.
+Que les résultats dans d'autres outils sont pires,
+le cartographe ne s'en rend généralement pas compte.
+Cette pratique est notoire sous l'idiome <a target="_blank" rel="noopener" href="https://wiki.openstreetmap.org/wiki/FR:Tagging_for_the_renderer">Taguer pour le rendu</a>.</p>
+
+<p>Le problème est
+que la modélisation non-factuelle est ensuite récompensée par une belle image cartographique
+et la modélisation factuelle est punie par une mauvaise image de la carte.
+Il est difficile pour l'utlisateur de justifier sa décision à des tiers,
+pourquoi il fait de la modélisation factuelle.</p>
+
+<p>Par conséquent, l'API Overpass fonctionne sur le modèle de données d'origine:
+C'est exactement la tâche de l'API Overpass d'afficher les données telles qu'elles sont modélisées dans OpenStreetMap.</p>
+
+<p>Cela déplace les poids:
+Les modèles factuellement incorrects peuvent alors également être présentés comme tels.
+Et pour les modèles qui sont fidèles aux faits, au moins le contexte général peut être montré.</p>
+
+<p><a name="tags"/></p>
+
+<h2>Neutre avec les attributs</h2>
+
+<p>C'est dans la nature de l'homme que le phénomène inverse apparaît rapidement:
+Des prophètes de leurs enseignements supposés purs apparaissent.</p>
+
+<p>Les polygones multiples en sont un exemple:
+Les problèmes à résoudre sont,
+d'une part pour modéliser des surfaces avec des trous,
+d'autre part pour modéliser logiquement et effectivement les surfaces adjacentes.
+Par exemple, les États remplissent la totalité de la masse terrestre, c'est-à-dire que les frontières terrestres appartiennent toujours à plusieurs États.
+Toutefois, cela n'est possible plus avec des chemins fermées.</p>
+
+<p>La convention est restée du cas d'utilisation <em>trous</em>,
+pour laisser les attributs pertinentes dans le chemin de clôture.
+À l'époque, c'était en grande partie à cause de cela,
+que le moteur rendu avait des difficultés avec les relations.
+En même temps, certains utilisateurs ont des difficultés avec certaines particularités,
+ce qui a été un sujet sous le titre <em>anneaux intérieurs touchants</em>.</p>
+
+<p>En résumé, les relations multipolygones ont été un sujet constant;
+leur traitement nécessite encore aujourd'hui une bonne connaissance.</p>
+
+<p>Certains cartographes ont mal compris cela,
+que les relations sont l'objet le plus digne
+et converti de simples chemins fermés en multipolygones.
+Mais cela n'a aucun avantage,
+mais complique simplement le traitement et gonfle la base de données.</p>
+
+<p>Cependant, il y a encore beaucoup d'opinions controversées:</p>
+
+<ul>
+<li>Les sentiers pédestres menant le long des routes peuvent être modélisés comme des chemins séparés,
+soit être représenté par un ensemble complexe de règles utilisant des attributs,
+soit on limite les sentiers implicites à des cas d'interprétation évidente.</li>
+<li>Dans les rues, toutes les parties de la rue peuvent avoir un nom.
+Vous pouvez également limiter le nom à une voie du moyen de transport le plus rapide par direction.</li>
+<li>Dans les bâtiments avec magasins, le magasin peut être le même objet que le bâtiment
+ou un seul <em>nœud</em> dans le bâtiment.
+L'adresse peut alors être mappée à l'un des deux objets ou aux deux.</li>
+</ul>
+
+<p>Créer un outil pleinement accepté,
+je reste en dehors de tels désaccords.</p>
+
+<p>L'API Overpass est donc strictement neutre en ce qui concerne l'attribution,
+c'est-à-dire qu'aucun attribut ne bénéficie d'un traitement spécial.</p>
+
+<p><a name="antiwar"/></p>
+
+<h2>Invulnérabilité</h2>
+
+<p>Un autre problème dans ce contexte est l'effort
+de modifier les données automatiquement.
+Aussi évidente que soit l'idée, elle entraîne de <a target="_blank" rel="noopener" href="https://2016.stateofthemap.org/2016/staying-on-the-right-side-best-practices-in-editing/">nombreux problèmes</a>.</p>
+
+<p>Par conséquent, l'API Overpass ne permit pas,
+réécrire les objets OpenStreetMap au moment de l'exécution.
+Pour le besoin indubitablement et aussi tout à fait justifié existant,
+pour obtenir des objets réécrits,
+la classe des <em>éléments dérivées</em> a été introduite.
+Ceux-ci sont suffisamment différents des objets OpenStreetMap,
+qu'on ne peut pas leur re-télécharger directement.</p>
+
+<p>L'API Overpass peut toujours être utile pour les éditions avec différents niveaux d'automatisation.
+Des exemples peuvent être trouvés dans la section <a href="../targets/index.html">JOSM</a>.</p>
+
+<p><a name="ql"/></p>
+
+<h2>Langage multifonctionnel</h2>
+
+<p>Les géodonnées apportent avec elles leur propre critère d'ordre avec le concept de <em>proximité spatiale</em>.
+Ils n'entrent donc dans aucune des catégories,
+qui sont déjà couverts par les langages de requête standard.
+Par conséquent, il existe un langage de requête qui lui est propre.</p>
+
+<p>Le langage de requête n'est donc pas seulement orienté vers la proximité spatiale,
+mais peut également tenir pleinement compte des particularités du modèle de données OpenStreetMap.
+En outre, il y a l'exigence,
+que les requêtes sur un serveur partagé public doivent se comporter raisonnablement,
+c'est-à-dire que ni aucun surfaces d'attaque significantes pour les failles de sécurité ni les problèmes de performance ne doivent offrir.</p>
+
+<p>Il s'est avéré
+que la communauté OpenStreetMap a également besoin de recherches complexes.
+Celles-ci devraient être servies,
+en rendant le langage aussi logiquement rigide et orthogonal que possible,
+de sorte que presque tout peut être combiné avec tout.</p>
+
+<p><a name="infrastructure"/></p>
+
+<h2>Infrastructure</h2>
+
+<p>L'API Overpass est conçue comme une infrastructure.
+En particulier, il ne s'agit pas d'un logiciel d'utilisateur final ou d'un prototype.</p>
+
+<p>Décisions concernant les interfaces,
+en particulier le langage de requête,
+et sur les dépendances utilisées dureront probablement des décennies.
+Il y a donc des innovations assez prudemment et seulement,
+si une forme de soutien à long terme a été trouvée.</p>
+
+<p>Etre une infrastructure accessible via Toile, c'est aussi
+de maintenir un comportement de charge raisonnable, même avec des échantillons d'requête déraisonnables.
+Plus d'informations à ce sujet dans la <a href="commons.html#magnitudes">prochaine section</a>.</p>
+
+<p><a name="libre"/></p>
+
+<h2>Libre</h2>
+
+<p>L'API Overpass peut être mesurée par rapport aux <a target="_blank" rel="noopener" href="https://www.gnu.org/philosophy/free-sw.fr.html">quatre libertés essentielles</a> de l'Open Source.</p>
+
+<h3>Fonctionner, redistribuer</h3>
+
+<p>Ce n'est pas suffisant,
+à offrir aux instances publiques,
+car ils ont inévitablement une capacité finie.</p>
+
+<p>Seulement avec la publication du <a target="_blank" rel="noopener" href="https://github.com/drolbr/Overpass-API">code source</a> sous une forme,
+ce qui facilite <a target="_blank" rel="noopener" href="../../../no_frills.html">l'installation de vos propres instances</a>,
+les libertés sont préservées.
+Cela inclut,
+de mesurer ainsi les besoins en ressources du logiciel,
+que le matériel approprié est facile à trouver.</p>
+
+<h3>Étudier, modifier</h3>
+
+<p>Le <a target="_blank" rel="noopener" href="https://github.com/drolbr/Overpass-API">code source</a> est ici essentiel.
+La <a target="_blank" rel="noopener" href="https://github.com/drolbr/Overpass-API/blob/master/COPYING">licence</a> le garantit également légalement.</p>
+
+<!-- Traduit avec www.DeepL.com/Translator, partiellement redigé -->
+<hr/>
+<p>prochaine: <a href="commons.html">Mutualisation</a></p>
+
+</body>
+</html>

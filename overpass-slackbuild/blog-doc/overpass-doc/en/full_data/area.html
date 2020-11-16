@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Filter by area</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Overpass API User's Manual</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Preface</a></div>
+<div type="parent"><a href="../targets/index.html">Downstream Tools</a></div>
+<div type="parent"><strong><a href="index.html">Spatial Data Selection</a></strong></div>
+
+<div type="sibling"><a href="bbox.html">Bounding Boxes</a></div>
+<div type="sibling"><a href="osm_types.html">Geometries</a></div>
+<div type="sibling"><a href="map_apis.html">Further Map APIs</a></div>
+<div type="sibling"><a href="polygon.html">Polygon and Around</a></div>
+<div type="sibling"><strong> Filter by area</strong></div>
+<div type="sibling"><a href="other_sources.html">Other sources</a></div>
+
+</nav>
+<div type="parent"><a href="../criteria/index.html">Find Objects</a></div>
+<div type="parent"><a href="../counting/index.html">Counting Objects</a></div>
+<div type="parent"><a href="../analysis/index.html">Analysing data</a></div>
+<div type="parent"><a href="../more_info/index.html">More information</a></div>
+
+<hr />
+
+<h1>Filter by area</h1>
+
+<p>How to get all data within a named area, e.g. a city or a county.</p>
+
+<nav>
+<h3>Content</h3>
+
+<div type="subsection"><a href="area.html#deprecation">Deprecation warning</a></div>
+<div type="subsection"><a href="area.html#per_tag">per Name or per Tag</a></div>
+<div type="subsection"><a href="area.html#full">Full Data</a></div>
+<div type="subsection"><a href="area.html#combining">Area inside an Area</a></div>
+<div type="subsection"><a href="area.html#background">Technical Background</a></div>
+
+</nav>
+
+<p><a name="deprecation"/></p>
+
+<h2>Deprecation warning</h2>
+
+<p>This manual claims
+that its content remains valid for many years.
+This does not necessarily apply to the current model of <em>areas</em>:
+The datatype has been created to remain compatible
+if a datatype for areas ever had appeared.
+I'm nowadays pretty sure that this will never happen.</p>
+
+<p>Thus, I now plan to directly work with the de facto types of <em>closed way</em> and <em>closed relation</em>,
+essentially equal to a <em>multipolygon</em>.
+The implementation may take some years,
+but in the end some of the syntax variants listed here will become outdated.
+For the sake of <a href="../preface/assertions.html#infrastructure">backwards compatibility</a>,
+as few syntax variants as possible will be removed.</p>
+
+<p>Currently it is planned
+that <em>area</em> is then used as a label for <em>ways</em> or<em>relations</em>
+for which the evaluator <code>is_closed()</code> returns true.
+Conversely, the statement <code>is_in</code> will find these kind of OpenStreetMap objects.
+It would make sense to replace that statement by a filter in the transition process.</p>
+
+<p>But please do not understand this notice as an announcement.
+There are many more pressing issues in the project,
+thus this change may not happen anytime soon.</p>
+
+<p><a name="per_tag"/></p>
+
+<h2>per Name or per Tag</h2>
+
+<p>The typical use case for areas in the Overpass API is
+to download all objects of a certain type or all objects in general in a named area of interest.
+We start with objects of a rather sparse type,
+all kinds of objects are too many data
+to get quick responses to requests for exercising the syntax.
+Once the <em>area</em> mechanism is introduced in this section,
+the download of all objects follows in the <a href="area.html#full">next subsection</a>.</p>
+
+<p>We first want to display <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=30.0&amp;lon=0.0&amp;zoom=2&amp;Q=area%5Bname%3D%22London%22%5D%3B%0Anwr%5Bshop%3Dsupermarket%5D%28area%29%3B%0Aout%20center%3B">all supermarkets in London</a>:</p>
+
+<pre>
+<codeline>area[name="London"];</codeline>
+<codeline>nwr[shop=supermarket](area);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>The actual work is done in line 2:
+the <em>filter</em> <code>(area)</code> there restricts the found objects
+to those that are partly or completely within one or more of the areas in the set <code>_</code>.
+Thus we must first bring our areas of interest into the set <code>_</code>.</p>
+
+<p>Line 1 selects all objects of the type <em>area</em>
+that have a tag with key <code>name</code> and value <code>London</code>.
+This object type is explained <a href="area.html#background">later</a>.
+By the way, the whole statement is still a <a href="../preface/design.html#statements"><em>query</em> statement</a>.</p>
+
+<p>Unexpectedly, many results pop up across half of the planet.
+This is because there are many areas named <code>London</code>;
+we need to express that we want only the big London in England.
+There are five different ways to make our request more precise.</p>
+
+<p>We can draw a huge bounding box around the approximate target region
+and can pose <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=30.0&amp;lon=0.0&amp;zoom=2&amp;Q=area%5Bname%3D%22London%22%5D%3B%0Anwr%5Bshop%3Dsupermarket%5D%28area%29%2850%2E5%2C%2D1%2C52%2E5%2C1%29%3B%0Aout%20center%3B">the request</a>:</p>
+
+<pre>
+<codeline>area[name="London"];</codeline>
+<codeline>nwr[shop=supermarket](area)(50.5,-1,52.5,1);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Please note for your convenience
+that the bounding box can be <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=10&amp;Q=area%5Bname%3D%22London%22%5D%3B%0Anwr%5Bshop%3Dsupermarket%5D%28area%29%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20center%3B">computed automatically</a> with the <a href="../targets/turbo.html#convenience">convenience feature</a> of <em>Overpass Turbo</em>:</p>
+
+<pre>
+<codeline>area[name="London"];</codeline>
+<codeline>nwr[shop=supermarket](area)({{bbox}});</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>In both cases, the bounding box acts as a filter in parallel to the <code>(area)</code> filter.
+For the as temporary intended filter <code>(area)</code>, a bounding box has never been implemented.
+But that this can be mitigated in the just explained way
+also contributed to that it never got priority.</p>
+
+<p>In a similar way we can take advantage of that London is in Great Britain.
+A <a href="area.html#combining">later subsection</a> will present all possibilities for that.</p>
+
+<p>Last but not least we can take further tags into account
+to discriminate between multiple <em>areas</em> with the same <em>name</em> tag.
+In the case of London the tag with the key <em>wikipedia</em> <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=30.0&amp;lon=0.0&amp;zoom=2&amp;Q=area%5Bname%3D%22London%22%5D%5B%22wikipedia%22%3D%22en%3ALondon%22%5D%3B%0Anwr%5Bshop%3Dsupermarket%5D%28area%29%3B%0Aout%20center%3B">helps out</a>:</p>
+
+<pre>
+<codeline>area[name="London"]["wikipedia"="en:London"];</codeline>
+<codeline>nwr[shop=supermarket](area);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Like the first filter by tag <code>[name="London"]</code>,
+the second filter is applied to the query in the first line.
+This way here remains only the one <em>area</em> object
+in which we actually wanted to search.</p>
+
+<p>Other often useful tags for filtering are <code>admin_level</code> with or without a value or <code>type=boundary</code>.
+To this end, it helps to first <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=10&amp;Q=area%5Bname%3D%22London%22%5D%3B%0Aout%3B">display</a> and scrutinize all the found <em>area</em> objects;
+please switch after <code>Run</code> to the <code>Data</code> view by the tab in the upper right corner:</p>
+
+<pre>
+<codeline>area[name="London"];</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>In line 2 it is printed what has been selected in line 1.
+Please check the results for which <em>tags</em> or combinations of <em>tags</em> are unique the area of interest.
+By using the <em>pivot</em> filter,
+you also can <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=30.0&amp;lon=0.0&amp;zoom=2&amp;Q=area%5Bname%3D%22London%22%5D%3B%0Anwr%28pivot%29%3B%0Aout%20geom%3B">visualize</a> them:</p>
+
+<pre>
+<codeline>area[name="London"];</codeline>
+<codeline>nwr(pivot);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Line 2 constitutes a regular <em>query</em> statement.
+The filter <code>(pivot)</code> there selected exactly those objects
+that are generators of the <em>areas</em> in its input.
+This is the set <code>_</code>, and it is filled in line 1.</p>
+
+<p>The fifth possibility is a convenience feature of <a href="../targets/turbo.html">Overpass Turbo</a>
+to <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=10&amp;Q=%7B%7BgeocodeArea%3ALondon%7D%7D%3B%0Anwr%5Bshop%3Dsupermarket%5D%28area%29%3B%0Aout%20center%3B">let choose</a> <em>Nominatim</em> the right area:</p>
+
+<pre>
+<codeline>{{geocodeArea:London}};</codeline>
+<codeline>nwr[shop=supermarket](area);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Here the expression <code>{{geocodeArea:London}}</code> triggers
+that <em>Overpass Turbo</em> asks <em>Nominatim</em> for the most plausible object for the name <code>London</code>.
+By using the id returned by Nominatim,
+Overpass Turbo replaces the expression by an <em>id</em> query for the corresponding area,
+e.g. <code>area(3600065606)</code>.</p>
+
+<p><a name="full"/></p>
+
+<h2>Full Data</h2>
+
+<p>Now we want to download really all data in an area.
+This works almost with the request that we have used <a href="area.html#per_tag">as a tutorial</a>.
+But we need to change the tool:
+For an area of the size of London, a threshold of 10 million objects or more is easily surpassed,
+while <em>Overpass Turbo</em> already from 2000 objects on substantially slows down the browser.</p>
+
+<p>In addition, for virtually all areas in official boundaries I suggest to rather use regional extracts.
+Details for this are in <a href="other_sources.html#regional">the subsection about regional extracts</a>.</p>
+
+<p>You can in both cases download the raw data directly to your local computer:
+For this purpose <em>Overpass Turbo</em> offers in the <em>Export</em> menu the link <code>download as raw OSM data</code>.
+It is normal that nothing happens immediately after the click.
+Downloading entire London can take several minutes.</p>
+
+<p>It might be even easier to use download tools like <a target="_blank" rel="noopener" href="https://www.gnu.org/software/wget/">Wget</a> or <a target="_blank" rel="noopener" href="https://curl.haxx.se/">Curl</a>.
+To exercise this, please store one of the queries from above in a local file, e.g. <code>london.ql</code>.</p>
+
+<p>You then can pose requests on the command line with
+<!-- NO_QL_LINK --></p>
+
+<pre>
+<codeline>wget -O london.osm.gz --header='Accept-Encoding: gzip, deflate' \</codeline>
+<codeline>    --post-file=london.ql 'https://overpass-api.de/api/interpreter'</codeline>
+</pre>
+
+<p>respectively
+<!-- NO_QL_LINK --></p>
+
+<pre>
+<codeline>curl -H'Accept-Encoding: gzip, deflate' -d@- \</codeline>
+<codeline>    'https://overpass-api.de/api/interpreter' \</codeline>
+<codeline>    &lt;london.ql &gt;london.osm.gz</codeline>
+</pre>
+
+<p>Both commands can of course be written without the backslash in a single line.
+In both cases do you do to me, to you, and to all the other users a big favor
+if you set the additional header <code>Accept-Encoding: gzip, deflate</code>.
+This entitles the server to compress the data,
+and this reduces the data about sevenfold and relieves both ends of the connection.</p>
+
+<p>Now we get to the request itself.
+Because a source of big amounts of unhelpful data are large-scale relations,
+there are several variants <a href="osm_types.html">adapted to each downstream use case</a>.
+We restrict here to an often well-adapted variant:
+<!-- NO_QL_LINK --></p>
+
+<pre>
+<codeline>area[name="London"]["wikipedia"="en:London"];</codeline>
+<codeline>(</codeline>
+<codeline>  nwr(area);</codeline>
+<codeline>  node(w);</codeline>
+<codeline>);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>As an alternative, a variant
+that demonstrates the use of an area as filter multiple times.
+To this end you need <a href="../preface/design.html#sets">to store</a> the selected areas in a named <em>variable</em>:
+<!-- NO_QL_LINK --></p>
+
+<pre>
+<codeline>area[name="London"]["wikipedia"="en:London"]-&gt;.area_of_interest;</codeline>
+<codeline>(</codeline>
+<codeline>  node(area.area_of_interest);</codeline>
+<codeline>  way(area.area_of_interest);</codeline>
+<codeline>  node(w);</codeline>
+<codeline>);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Here the query statement in line 3 writes its result into the default set <code>_</code>.
+Because the area selection is still needed in line 4,
+it must be stored in a different location than the default set,
+in this case <code>area_of_interest</code>.</p>
+
+<p><a name="combining"/></p>
+
+<h2>Area inside an Area</h2>
+
+<p>We resume the task
+to select London as an area in Great Britain.
+This is not implemented directly,
+but there are again two other solutions.</p>
+
+<p>One can search for objects
+that are <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=8&amp;Q=area%5Bname%3D%22London%22%5D%2D%3E%2Esmall%3B%0Aarea%5Bname%3D%22England%22%5D%2D%3E%2Ebig%3B%0Anwr%5Bshop%3Dsupermarket%5D%28area%2Esmall%29%28area%2Ebig%29%3B%0Aout%20center%3B">in the intersection of two areas</a>:</p>
+
+<pre>
+<codeline>area[name="London"]-&gt;.small;</codeline>
+<codeline>area[name="England"]-&gt;.big;</codeline>
+<codeline>nwr[shop=supermarket](area.small)(area.big);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>The actual filtering takes place in the query statement in line 3;
+there are only objects admitted that meet all three filter criteria:
+The filter <code>[shop=supermarket]</code> admits only objects with this very tag.
+The filter <code>(area.small)</code> restricts this to objects
+that are situated within one of the areas from the set <code>small</code>.
+The filter <code>(area.big)</code> restricts this further to objects
+that are situated within one of the areas from the set <code>big</code>.</p>
+
+<p>Now we need to arrange that in <code>small</code> and <code>big</code> are selected the intended areas.
+This is fulfilled by the queries for <em>areas</em> in lines 1 and 2,
+that store their results each in the named variable.</p>
+
+<p>The other approach uses the connection between <em>area</em> and the created object,
+but this time in the direction converse to the effect of the <em>pivot</em> filter.
+We <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5&amp;lon=-0.1&amp;zoom=8&amp;Q=area%5Bname%3D%22England%22%5D%3B%0Arel%5Bname%3D%22London%22%5D%28area%29%3B%0Amap%5Fto%5Farea%3B%0Anwr%5Bshop%3Dsupermarket%5D%28area%29%3B%0Aout%20center%3B">select</a> the generating object of the small area:</p>
+
+<pre>
+<codeline>area[name="England"];</codeline>
+<codeline>rel[name="London"](area);</codeline>
+<codeline>map_to_area;</codeline>
+<codeline>nwr[shop=supermarket](area);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>In line 4, we want for the filter <code>(area)</code> exactly the <em>area</em> for the big London as input.
+For this purpose, we select in line 2 all <em>relations</em>
+that have the name <em>London</em>
+and are situated without one of the areas supplied as input to <code>(area)</code> via the default set <code>_</code>.
+All areas with the name <em>England</em> have been stored in the default set in line 1.</p>
+
+<p>Now we need in line 4 areas,
+although the filter <code>(area)</code> cannot filter areas,
+and we thus have resorted to select <em>relations</em> instead.
+This is done by <code>map_to_area</code>:
+it selects the areas that have been made from the objects in its input.</p>
+
+<p><a name="background"/></p>
+
+<h2>Technical Background</h2>
+
+<!-- Not yet checked -->
+
+<p>From the beginning of the Overpass API project on in the year 2009,
+the capability to check for A-is-in-B has been a design goal.
+But this is quite completely at odds with the requirement
+to <a href="../preface/assertions.html#faithful">faithfully represent</a> the OpenStreetMap data:
+Areas are in OpenStreetMap a concept that mingles tags and geometry,
+and there have been credible endeavours
+to have an explicit data type <em>area</em>.
+The rules what exactly constitutes an area had not yet been settled that times.
+Not least mappers were wary that areas might get damaged quite often.</p>
+
+<p>For this reason, <em>areas</em> are an explicit data type in the Overpass API.
+The server generates these in a loop in the background by a <a target="_blank" rel="noopener" href="https://github.com/drolbr/Overpass-API/tree/master/src/rules">scheme</a> that is separated from the software's source code.
+This way, operators of independent instances more easily can decide
+which areas they actually want to generate.
+Each <em>area</em> obtains the tags from its generating object.</p>
+
+<p>This has some effects:</p>
+
+<ul>
+<li>Areas come into existence many hours later than there generating objects.
+Respectively, changes to the generating object affect the area with a delay.</li>
+<li>If an object does no longer constitute a geometrically valid area
+then the old <em>area</em> object remains unchanged until a new area can be generated from the generating object.</li>
+<li>Areas have their own rules how their ids are disseminated.</li>
+<li>Only a part of the filters that can be used for OpenStreetMap objects can also be used for <em>areas</em>.</li>
+</ul>
+
+<p>But the big advantage is that the point-in-area-search works reliably and efficiently.</p>
+
+<p>It turned out to be sometimes a disadvantage that not all generating objects still exist:
+nowadays almost any object that has a valid geometry for an area actually semantically is an area.
+But if the background loop does not consider the generating object to constitute an area by its tags
+then no corresponding area object is generated.</p>
+
+<p>The other way round, for all the 10 years the project exists,
+I am not aware of any instance that has adapted the area rule scheme to its particular needs.
+There had been rather a tradeoff to accept fewer areas to save CPU time for the background loop.
+Thus, the rule scheme is de facto centralized,
+and this defeats most of the advantages of the approach.</p>
+
+<p>For this reason, I meanwhile intend to
+also perform the area operations directly on the raw OpenStreetMap objects.</p>
+<hr/>
+<p>next: <a href="other_sources.html">Other sources</a></p>
+
+</body>
+</html>

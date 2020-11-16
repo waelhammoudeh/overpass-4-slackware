@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>OpenStreetMap und die Overpass API</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Handbuch zur Overpass API</a>  </p>
+
+<nav>
+<div type="parent"><strong><a href="index.html">Einführung</a></strong></div>
+
+<div type="sibling"><strong> OpenStreetMap und die Overpass API</strong></div>
+<div type="sibling"><a href="osm_data_model.html">OpenStreetMap-Datenmodell</a></div>
+<div type="sibling"><a href="glossary.html">Glossar</a></div>
+<div type="sibling"><a href="design.html">Laufzeitmodell</a></div>
+<div type="sibling"><a href="assertions.html">Grundsätze</a></div>
+<div type="sibling"><a href="commons.html">Allmende</a></div>
+
+</nav>
+<div type="parent"><a href="../targets/index.html">Verwendung</a></div>
+<div type="parent"><a href="../full_data/index.html">Räumliche Datenauswahl</a></div>
+<div type="parent"><a href="../criteria/index.html">Objekte Finden</a></div>
+<div type="parent"><a href="../counting/index.html">Objekte Zählen</a></div>
+<div type="parent"><a href="../analysis/index.html">Daten Analysieren</a></div>
+<div type="parent"><a href="../more_info/index.html">Anhang</a></div>
+
+<hr />
+
+<h1>OpenStreetMap und die Overpass API</h1>
+
+<p>Wie funktioniert die Bewegung OpenStreetMap?
+Wo befindet sich darin die Overpass API?</p>
+
+<nav>
+<h3>Inhalt</h3>
+
+<div type="subsection"><a href="preface.html#osm">Was ist OpenStreetMap?</a></div>
+<div type="subsection"><a href="preface.html#overpass">Was ist die Overpass API?</a></div>
+
+</nav>
+
+<p><a name="osm"/></p>
+
+<h2>Was ist OpenStreetMap?</h2>
+
+<p>OpenStreetMap ist zunächst einmal eine Datenbank weltweiter Geodaten.
+Dabei handelt es sich um Geobasisdaten,
+z.B. Straßen, Eisenbahnlinien, Gewässer sollen vollständig vorhanden sein,
+und auch Geschäfte und Restaurants mit Namen und Öffnungszeiten sind hochwillkommen.</p>
+
+<p>Generell wird in OpenStreetMap alles eingetragen,
+das vor Ort beobachtbar ist.
+Eine Straße hat ein Straßenschild, ein Restaurant hat ein Schild über der Tür hängen.
+Bei einem Fluss oder einer Eisenbahnstrecke lassen sich die Bezeichnungen meist indirekt aus Hinweisschildern ablesen.</p>
+
+<p>Sehr vereinzelte Ausnahmen vom Sichtbarkeitserfordernis gibt es.
+Die einzige uneingeschränkt akzeptierte Ausnahme sind Staats-, Landes- und Gemeindegrenzen.</p>
+
+<p>Nicht eingetragen werden personenbezogene Daten:
+Es ist in OpenStreetMap unzulässig,
+z.B. Klingelschilder abzuschreiben und in OpenStreetMap einzutragen.</p>
+
+<p>Dies erlaubt, zusammen mit der <a target="_blank" rel="noopener" href="https://wiki.osmfoundation.org/wiki/Licence">freien Datenlizenz</a>,
+die OpenStreetMap-Daten in komplett herunterzuladen und weiterzuverarbeiten.
+Damit lassen sich im Prinzip Fragen beantworten wie</p>
+
+<ol>
+<li>Wo liegt Stadt X, Fluss Y, Restaurant Z?</li>
+<li>Was liegt in der Nähe von X oder in X?</li>
+<li>Wie komme ich zu Fuß, mit dem Fahrrad oder per PKW von Punkt X nach Punkt Y?</li>
+</ol>
+
+<p>Ebenso lässt sich damit auf viele verschiedene Weisen eine Weltkarte zeichnen.
+Um die grundsätzliche Eignung der Daten beurteilen zu können,
+ist über eine <a target="_blank" rel="noopener" href="https://openstreetmap.org">Beispielkarte</a> hinaus auch ein Beispielwerkzeug zum <em>Geocoding</em> implementiert.
+Es heißt <a target="_blank" rel="noopener" href="https://wiki.openstreetmap.org/wiki/Nominatim">Nominatim</a>, beantwortet Frage (1) von oben,
+und es kann zusätzlich auch zu einer Koordinate eine Adresse angeben, sogenanntes <em>Reverse Geocoding</em>.
+Ebenso sind über die Haupt-Website <a target="_blank" rel="noopener" href="https://openstreetmap.org/">openstreetmap.org</a> auch Werkzeuge für sogenanntes <em>Routing</em> verfügbar.
+Diese beantworten, wie man von Punkt X nach Punkt Y kommt.</p>
+
+<p>Allerdings sind es sehr viele Daten,
+und es werden in jeder Minute Änderungen durch Mapper in den Daten eingetragen.
+Die Daten en-bloc herunterzuladen und zu verarbeiten ist daher für sehr viele Fragestellungen unpraktikabel.
+Um zumindest im Prinzip jedem unabhängig von OpenStreetMap die Datenverarbeitung zu ermöglichen,
+gibt es zusätzlich zum <a target="_blank" rel="noopener" href="https://planet.openstreetmap.org/">Gesamtdatenbestand</a> auch jede Minute eine Datei mit den Updates.</p>
+
+<p><a name="overpass"/></p>
+
+<h2>Was ist die Overpass API?</h2>
+
+<p>Die Overpass API hält diese Daten vor, spielt die Updates ein
+und stellt die Daten zum Durchsuchen zur Verfügung.
+Einerseits gibt es <a target="_blank" rel="noopener" href="https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances">öffentliche Instanzen</a>, an die die Abfrage geschickt werden kann.
+Andererseits ist Overpass API auch <a target="_blank" rel="noopener" href="https://github.com/drolbr/Overpass-API">freie Software</a>,
+so dass jedermann eine eigene Instanz betreiben kann.</p>
+
+<p>Zum ersten Kennenlernen bietet sich das Frontend <em>Overpass Turbo</em> an.
+Dort werden die Daten auch gleich auf einer Karte angezeigt.
+Als <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=2&amp;Q=nwr%5Bname%3D%22Sylt%22%5D%3B%0Aout%20center%3B">Beispiel</a> suchen wir nach allem, was den Namen Sylt hat:
+Dazu wird der Abfragetext</p>
+
+<pre>
+<codeline>nwr[name="Sylt"];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>in den Textbereich links eingetragen und per Klick auf <em>Ausführen</em> die Abfrage an die Overpass API gesendet.
+Die Abfragesprache ist mächtig, aber auch umfangreich,
+und es ist Gegenstand dieses gesamten Handbuchs die Abfragesprache zu erläutern.</p>
+
+<p>Tatsächlich ist die Overpass API aber vor allem darauf ausgelegt,
+auf Abfragen anderer Software über das Internet zu antworten.
+Das ist auch der Grund für den Namensbestandteil <a target="_blank" rel="noopener" href="https://de.wikipedia.org/wiki/Programmierschnittstelle">API</a>.
+Für viele beliebte Beispielprogramme wird daher die direkte Anbindung im Kapitel <a href="../targets/index.html">Verwendung</a> erläutert.</p>
+<hr/>
+<p>weiter: <a href="osm_data_model.html">OpenStreetMap-Datenmodell</a></p>
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Overpass Turbo</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Handbuch zur Overpass API</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Einführung</a></div>
+<div type="parent"><strong><a href="index.html">Verwendung</a></strong></div>
+
+<div type="sibling"><a href="formats.html">Datenformate</a></div>
+<div type="sibling"><strong> Overpass Turbo</strong></div>
+
+</nav>
+<div type="parent"><a href="../full_data/index.html">Räumliche Datenauswahl</a></div>
+<div type="parent"><a href="../criteria/index.html">Objekte Finden</a></div>
+<div type="parent"><a href="../counting/index.html">Objekte Zählen</a></div>
+<div type="parent"><a href="../analysis/index.html">Daten Analysieren</a></div>
+<div type="parent"><a href="../more_info/index.html">Anhang</a></div>
+
+<hr />
+
+<h1>Overpass Turbo</h1>
+
+<p>Das Standardtool zum Entwicklen von Abfragen.</p>
+
+<nav>
+<h3>Inhalt</h3>
+
+<div type="subsection"><a href="turbo.html#overview">Überblick</a></div>
+<div type="subsection"><a href="turbo.html#basics">Rüstzeug</a></div>
+<div type="subsection"><a href="turbo.html#symbols">Legende</a></div>
+<div type="subsection"><a href="turbo.html#convenience">Komfort</a></div>
+<div type="subsection"><a href="turbo.html#limitations">Schranken</a></div>
+
+</nav>
+
+<p><a name="overview"/></p>
+
+<h2>Überblick</h2>
+
+<p>Overpass Turbo ist eine Website,
+um Overpass-API-Anfragen auszuführen
+und das Ergebnis auf einer Karte zu sehen.</p>
+
+<p>Viele Beispiele dieses Handbuchs verlinken auf Overpass Turbo mit einer passend vorbelegten Abfrage.</p>
+
+<p>Eine öffentliche Instanz ist verfügbar unter <a target="_blank" rel="noopener" href="https://overpass-turbo.eu">https://overpass-turbo.eu</a>.
+Der Quellcode liegt ebenso wie bei der Overpass API auf <a target="_blank" rel="noopener" href="https://github.com/tyrasd/overpass-turbo">Github</a>.
+Martin Raifer hat Overpass Turbo entwickelt;
+an dieser Stelle möchte ich ihm ausdrücklich meinen Dank aussprechen.</p>
+
+<p>Nahezu alle Ausgabeformate,
+die bei der Overpass API zur Verfügung stehen,
+können von Overpass Turbo auch verstanden werden.
+Schwierigkeiten gibt es bei Abfragen mit sehr großen Ergebnismengen;
+auch heute kommen dann die JavaScript-Engines der genutzten Browser an die Grenzen ihres Speichermanagements.
+Daher fragt Overpass Turbo nach,
+wenn es eine große Ergebnismenge erhalten hat,
+ob der Endbenutzer das Risiko eingehen will, den Browser einfrieren zu lassen.</p>
+
+<p>Es gibt viele beliebte und sinnvolle Features,
+die aber den Rahmen dieses Handbuchs übersteigen.
+Dazu sei auf die <a target="_blank" rel="noopener" href="https://wiki.openstreetmap.org/wiki/DE:Overpass_turbo">Dokumentation</a> zu Overpass Turbo verwiesen.
+Dies gilt insbesondere für <em>Styles</em> und zum Query-Generator <em>Wizard</em>.
+Dieses Handbuch beschränkt sich auf die unmittelbare Wechselwirkung mit der Abfragesprache.</p>
+
+<p><a name="basics"/></p>
+
+<h2>Rüstzeug</h2>
+
+<p>Die Ansicht der Website ist in mehrere Teile aufgeteilt;
+sie unterscheiden sich in der Anordnung zwischen Desktop- und Mobilversion.
+Öffnen Sie <a target="_blank" rel="noopener" href="https://overpass-turbo.eu">sie</a> am besten jetzt in einem separaten Tab.</p>
+
+<p>In der Desktop-Version ist links ein großes Textfeld;
+hier sollen Sie Ihre Abfrage eingeben.
+Rechts ist zunächst ein Kartenausschnitt.
+Über die beiden Reiter <em>Karte</em> und <em>Daten</em> kann zwischen dem Kartenausschnitt
+und einem Textfeld für die empfangenen Daten umgeschaltet werden.</p>
+
+<p>In der Mobil-Version steht das Textfeld für die Abfrage über dem Kartenausschnitt.
+Das zweite Textfeld für die empfangenen Daten ist unter dem Kartenausschnitt;
+statt der Reiter kommt man durch beherztes Scrollen zwischen beiden Teilen hin und her.</p>
+
+<p>Wir üben den Standard-Anwendungsfall:
+Geben Sie</p>
+
+<pre>
+<codeline>nwr[name="Canary Wharf"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>in das Textfeld ein (oder nutzen Sie <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=18&amp;Q=nwr%5Bname%3D%22Canary%20Wharf%22%5D%3B%0Aout%20geom%3B">diesen Link</a>)!</p>
+
+<p>Klicken Sie nun auf <em>Ausführen</em>.
+Es kommt kurz eine Fortschrittsmeldung,
+dann sehen Sie wieder das fast gleiche Bild wie vorher.</p>
+
+<p>Klicken Sie daher nun auf die Lupe.
+Dies ist am linken Rand des Kartenausschnitts das dritte Symbol von oben, unter den Plus/Minus-Schaltern.
+Die Kartenansicht springt jetzt auf die feinste Auflösung,
+die noch alle Ergebnisse anzeigt.</p>
+
+<p>Die markierten Objekte im Kartenausschnitt sind jetzt exakt die Objekte,
+die die Abfrage gefunden hat.</p>
+
+<p>Oft ist es nützlich,
+sich die tatsächlich gelieferten Daten direkt anzuschauen.
+Das geht mit dem Reiter <em>Daten</em> oben rechts oberhalb der Kartenansicht
+bzw. mit Herunterscrollen in der Mobilvariante.</p>
+
+<p>Unabhängig davon sind alle auf der Karte hervorgehobenen Objekte anklickbar und zeigen dann,
+je nach Umfang ihrer Daten,
+ihre Id, ihre Tags oder ihre Metadaten.</p>
+
+<p>Irgendwann wird Ihnen die Meldung begegnen,
+dass nicht zu allen Objekten die Geometrie mitgeliefert worden ist.
+Sie können dann die Query-Änderung zur automatischen Vervollständig erproben.
+Oder Sie ersetzen alle Vorkommen von <code>out</code> durch ihre Gegenstücke mit Geometrie <code>out geom</code>.</p>
+
+<p>Wenn Sie ein großes Ergebnis erwarten
+oder die Daten sowieso mit einem anderen Programm weiterverarbeiten wollen,
+dann können Sie die Daten auch ohne Anzeige direkt zum Abspeichern exportieren:
+Gehen Sie auf <em>Export</em>,
+bleiben Sie im erscheinenden Fenster im Reiter <em>Daten</em>
+und wählen Sie <code>Rohdaten direkt von der Overpass API</code>.
+Bei langlaufenden Abfragen ist es normal,
+dass nach dem Klick erst einmal scheinbar nichts passiert.</p>
+
+<p>Auf zwei nützliche Extras sei hingewiesen:</p>
+
+<ul>
+<li>Unten rechts im Kartenausschnitt stehen Zähler,
+wie viele Objekte welchen Typs bei der letzten Abfrage zurückgeliefert worden sind.</li>
+<li>Oben links im Kartenausschnitt gibt es ein Suchfeld.
+Dieses hat zwar eine geringere Leistungsfähigkeit als <a href="../criteria/nominatim.html">Nominatim auf openstreetmap.org</a>,
+aber die verfügbare Suche nach Ortsnamen reicht in der Regel,
+um den Kartenausschnitt schnell am richtigen Ort zu plazieren.</li>
+</ul>
+
+<p><a name="symbols"/></p>
+
+<h2>Legende</h2>
+
+<p>Die <a target="_blank" rel="noopener" href="https://wiki.openstreetmap.org/wiki/DE:Overpass_turbo">Dokumentation</a> erläutert die Farben bereits.
+Wir konzentrieren uns hier daher eher auf das Zusammenspiel:
+Zu einem konkreten Objekt oder Objektart haben Sie eine Vorstellung,
+ob es ein Punkt, Linie, Fläche, eine Zusammensetzung davon, etwas Abstraktes oder etwas mit unscharfen Grenzen ist.
+In den OpenStreetMap-Datenstrukturen ist es auf irgendeine Weise modelliert;
+diese kann, aber muss nicht zwingend mit Ihrer Erwartung übereinstimmen.</p>
+
+<p>Die Overpass API bietet <a href="formats.html#extras">Hilfsmittel</a>,
+um von der OpenStreetMap-Modellierung zu einer zu wechseln,
+die besser zur Darstellung passt;
+sei es durch Beschaffen der Koordinaten oder auch geometrische Vereinfachung oder <a href="../full_data/bbox.html#crop">Zuschnitt</a>.
+Overpass Turbo muss nun in jedem Fall eine möglichst gute Darstellung liefern,
+egal, ob die Modellierung in OpenStreetMap noch naheliegend ist,
+und egal, ob das in der Abfrage gewählte Ausgabeformat sinnvoll zu den Daten passt.</p>
+
+<p>Dieser Abschnitt soll erläutern,
+was dann final in der Kartendarstellung herauskommt
+und wie dies mit der Abfrage und den Daten zusammenhängt.</p>
+
+<p>Punktobjekte können ein gelbes oder rotes Inneres haben.
+Mit gelbem Inneren sind es echte <em>Nodes</em>,
+mit rotem Inneren sind es <em>Ways</em>.</p>
+
+<p>Ways können entweder wegen ihrer geringen Länge zu Punkten werden,
+da sie sonst zu unauffällig wären:
+Zoomen Sie bitte in <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=19&amp;Q=%28%20way%28%7B%7Bbbox%7D%7D%29%5Bbuilding%5D%3B%0A%20%20way%28%7B%7Bbbox%7D%7D%29%5Bhighway%3Dsteps%5D%3B%20%29%3B%0Aout%20geom%3B">diesem Beispiel</a> heraus
+und beobachten, wie Gebäude und Straße zu Punkten werden!</p>
+
+<pre>
+<codeline>( way({{bbox}})[building];</codeline>
+<codeline>  way({{bbox}})[highway=steps]; );</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Wenn das bei einer konkreten Abfrage stört,
+können Sie es unter <em>Einstellungen</em>, <em>Karte</em>, <em>Kleine Features nicht wie POIs darstellen</em> abschalten.
+Die Änderung wirkt erst nach dem Ausführen der nächsten Abfrage.</p>
+
+<p>Oder sie können als Punkte dargestellt werden,
+weil <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=19&amp;Q=way%28%7B%7Bbbox%7D%7D%29%5Bbuilding%5D%3B%0Aout%20center%3B">die Abfrage</a> per <code>out center</code> ausgegeben hat:</p>
+
+<pre>
+<codeline>way({{bbox}})[building];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Punktobjekte können ein blauen oder lilanen Rand haben;
+das gilt auch für als Linienzug oder Fläche gezeichnete Objekte.
+In allen solchen Fällen sind <em>Relations</em> <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5045&amp;lon=-0.0195&amp;zoom=16&amp;Q=rel%5Bname%3D%22Canary%20Wharf%22%5D%3B%0Aout%20geom%3B">beteiligt</a>:</p>
+
+<pre>
+<codeline>rel[name="Canary Wharf"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Im Gegensatz zu <em>Nodes</em> oder <em>Ways</em> sind die Details der <em>Relation</em> dann aber nicht per Klick aufs Objekt verfügbar,
+sondern in der Blase gibt es nur einen Link auf die <em>Relation</em> auf <em>openstreetmap.org</em>.
+Unter gewöhnlichen Umständen ist dies kein Problem.</p>
+
+<p>Hat man aber gezielt einen alten Versionsstand angefragt,
+so sind die Daten von der Hauptseite andere als die per Overpass API bezogenen Daten.
+Es führt dann kein Weg daran vorbei,
+in die zurückgelieferten Daten selbst per Reiter <em>Daten</em> hineinzuschauen.</p>
+
+<p>Ist dagegen die Linie oder Umrandung der Fläche gestrichelt,
+so ist die Geometrie des Objekts unvollständig.
+Das ist zumeist ein gewollter Effekt der <a href="../full_data/bbox.html#crop">Ausgabebegrenzung</a> (<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4765&amp;lon=0.0&amp;zoom=16&amp;Q=%28%0A%20%20way%2851%2E475%2C%2D0%2E002%2C51%2E478%2C0%2E003%29%5Bhighway%3Dunclassified%5D%3B%0A%20%20rel%28bw%29%3B%0A%29%3B%0Aout%20geom%2851%2E475%2C%2D0%2E002%2C51%2E478%2C0%2E003%29%3B">Beispiel</a>):</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  way(51.475,-0.002,51.478,0.003)[highway=unclassified];</codeline>
+<codeline>  rel(bw);</codeline>
+<codeline>);</codeline>
+<codeline>out geom(51.475,-0.002,51.478,0.003);</codeline>
+</pre>
+
+<p>Es kann aber auch Folge einer Abfrage sein,
+die zu <em>Ways</em> einige, aber nicht alle <em>Nodes</em> geladen hat.
+Hier haben wir <em>Ways</em> auf Basis von <em>Nodes</em> geladen,
+aber <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4765&amp;lon=0.0&amp;zoom=17&amp;Q=%28%0A%20%20node%2851%2E475%2C%2D0%2E003%2C51%2E478%2C0%2E003%29%3B%0A%20%20way%28bn%29%3B%0A%29%3B%0Aout%3B">vergessen</a>, die fehlenden Nodes direkt oder indirekt nachzuladen:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  node(51.475,-0.003,51.478,0.003);</codeline>
+<codeline>  way(bn);</codeline>
+<codeline>);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Die Abfrage kann durch <code>out geom</code> <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4765&amp;lon=0.0&amp;zoom=17&amp;Q=%28%0A%20%20node%2851%2E475%2C%2D0%2E003%2C51%2E478%2C0%2E003%29%3B%0A%20%20way%28bn%29%3B%0A%29%3B%0Aout%20geom%3B">repariert</a> werden;
+mehr Möglichkeiten sind im Abschnitt zu <a href="../full_data/osm_types.html#nodes_ways">Geometrien</a> erklärt:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  node(51.475,-0.003,51.478,0.003);</codeline>
+<codeline>  way(bn);</codeline>
+<codeline>);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p><a name="convenience"/></p>
+
+<h2>Komfort</h2>
+
+<p>Overpass Turbo bietet einige Komfortfunktionen.</p>
+
+<p>Es kann die Bounding-Box des aktuellen Fensters automatisch in eine Query einfügen.
+Dazu ersetzt Overpass Turbo jedes Vorkommen der Zeichenfolge <code>{{bbox}}</code> durch die vier Ränder,
+so dass eine gültige Bounding-Box entsteht.</p>
+
+<p>Man kann die übertragene Bounding-Box sogar sehen,
+wenn man sie an einer anderen als der üblichen Stelle <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4765&amp;lon=0.0&amp;zoom=17&amp;Q=make%20Beispiel%20Infotext%3D%22Die%20aktuelle%20Bounding%2DBox%20ist%20%7B%7Bbbox%7D%7D%22%3B%0Aout%3B">einfügt</a> (und nach dem Ausführen auf <em>Daten</em> klickt):</p>
+
+<pre>
+<codeline>make Beispiel Infotext="Die aktuelle Bounding-Box ist {{bbox}}";</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Eine zweite nützliche Funktion verbirgt sich hinter der Schaltfläche <em>Teilen</em> oben links.
+Dies erzeugt einen Link,
+unter dem sich dauerhaft die zu dem Zeitpunkt eingegebene Abfrage abrufen lässt.
+Auch wenn jemand Drittes den Link aufruft und die Abfrage editiert,
+dann bleibt trotzdem die originale Abfrage unter dem Link erhalten.</p>
+
+<p>Es lässt sich ebenfalls auch per Checkbox die aktuelle Kartenansicht mitgeben.
+Dies meint Zentrum der Ansicht und Zoomstufe,
+d.h. auf verschieden großen Bildschirmen sind verschiedene Kartenausschnitte sichtbar.</p>
+
+<p><a name="limitations"/></p>
+
+<h2>Schranken</h2>
+
+<p>Overpass Turbo beherrscht zwar nahezu alle Ausgabearten der Overpass API.
+Es gibt aber dennoch ein paar Grenzen:</p>
+
+<p>Pro Objekt-Id und -Typ zeigt Overpass Turbo nur ein Objekt an.
+Daher lassen sich <a href="index.html">Diffs</a> nicht sinnvoll mit Overpass Turbo anzeigen.</p>
+
+<p>Overpass Turbo zeigt <a href="formats.html#json">GeoJSON</a> direkt von der Overpass API nicht an.
+Overpass Turbo bringt sein eigenes Konvertierungsmodul für GeoJSON mit,
+und Martin hält die Benutzer-Verwirrung für zu groß,
+wenn beide Mechanismen parallel im Einsatz sind.
+Vorläufig muss für diesen Fall daher auf die experimentelle Instanz <a target="_blank" rel="noopener" href="https://olbricht.nrw/ovt/">https://olbricht.nrw/ovt/</a> verwiesen werden.</p>
+<hr/>
+<p>weiter: <a href="../full_data/index.html">Räumliche Datenauswahl</a></p>
+
+</body>
+</html>

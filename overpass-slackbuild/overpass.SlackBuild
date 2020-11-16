@@ -1,0 +1,120 @@
+#!/bin/sh -e
+
+#  Slackware package build script for OSM OverpassAPI software.
+#  Any use of the provided files is at your own risk.
+#  
+#  Author: Wael Hammoudeh Email: w_hammoudeh@hotmail.com
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# 
+# 
+
+CWD=$(pwd)
+
+PKGNAM=overpass
+VERSION=0.7.56.8
+SOURCE_NAME=osm-3s_v
+BUILD=${BUILD:-1}
+TAG=${TAG:-_wh}
+TMP=${TMP:-/tmp}
+SRC=$TMP/${SOURCE_NAME}${VERSION}
+PKGDEST=$TMP/$PKGNAM
+MYPREFIX=/usr/local
+
+# Automatically determine the architecture we're building on:
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) export ARCH=i586 ;;
+    arm*) export ARCH=arm ;;
+    # Unless $ARCH is already set, use uname -m for all other archs:
+       *) export ARCH=$( uname -m ) ;;
+  esac
+fi
+
+if [ "$ARCH" = "i586" ]; then
+  SLKCFLAGS="-O2 -march=i586 -mtune=i686"
+  LIBDIRSUFFIX=""
+elif [ "$ARCH" = "i686" ]; then
+  SLKCFLAGS="-O2 -march=i686 -mtune=i686"
+  LIBDIRSUFFIX=""
+elif [ "$ARCH" = "x86_64" ]; then
+  SLKCFLAGS="-Wall -fPIC"
+  LIBDIRSUFFIX="64"
+else
+  SLKCFLAGS="-O2"
+  LIBDIRSUFFIX=""
+fi
+
+rm -rf $SRC $PKGDEST
+mkdir -p $PKGDEST
+cd $TMP
+tar xvzf $CWD/${SOURCE_NAME}${VERSION}.tar.gz
+
+cd $SRC
+
+pwd
+
+chown -R root:root .
+find -L . \
+ \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
+  -o -perm 511 \) -exec chmod 755 {} \; -o \
+ \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
+  -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
+
+
+./configure \
+   CXXFLAGS="$SLKCFLAGS" \
+   --enable-static=no \
+   --enable-lz4 \
+   --prefix=$MYPREFIX
+
+make
+make install DESTDIR=$PKGDEST || exit
+
+# with make install a directory is created in $TMP with the name 
+# "overpassosm-3s_v0.7.56.8" with all header files! 
+# maitainers may have a plan for it, now I do NOT need it
+if [ -d $TMP/$PKGNAM$SOURCE_NAME$VERSION ]; then
+ rm -rf $TMP/$PKGNAM$SOURCE_NAME$VERSION
+fi
+
+# mkdir html and copy html file from source
+mkdir -p $PKGDEST/$MYPREFIX/html/$PKGNAM
+cp html/* $PKGDEST/$MYPREFIX/html/$PKGNAM/
+
+# use the index.html file from version 0.7.55.9 - provides link to blog!
+# rename original first
+mv $PKGDEST/$MYPREFIX/html/$PKGNAM/index.html $PKGDEST/$MYPREFIX/html/$PKGNAM/index.html-$VERSION
+cp $CWD/index.html_v0.7.55.9 $PKGDEST/$MYPREFIX/html/$PKGNAM/index.html
+
+# copy missing logo.png image to html directory
+cp $CWD/logo.png $PKGDEST/$MYPREFIX/html/$PKGNAM/
+
+# copy the blog and doc, very educational
+mkdir -p $PKGDEST/$MYPREFIX/html/$PKGNAM/blog $PKGDEST/$MYPREFIX/html/$PKGNAM/overpass-doc
+
+cp $CWD/blog-doc/blog/* $PKGDEST/$MYPREFIX/html/$PKGNAM/blog/
+cp -r $CWD/blog-doc/overpass-doc/* $PKGDEST/$MYPREFIX/html/$PKGNAM/overpass-doc/
+
+mkdir -p $PKGDEST/install
+cat $CWD/slack-desc > $PKGDEST/install/slack-desc
+
+# Save those package-making files .. may save your ass someday
+mkdir -p $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION
+cp $CWD/LICENSE $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/$PKGNAM.SlackBuild $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/README $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/slack-desc $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+
+cd $PKGDEST
+/sbin/makepkg -l y -c n $TMP/$PKGNAM-$VERSION-$ARCH-$BUILD$TAG.tgz

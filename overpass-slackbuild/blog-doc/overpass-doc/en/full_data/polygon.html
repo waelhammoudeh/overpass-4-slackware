@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Polygon and Around</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Overpass API User's Manual</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Preface</a></div>
+<div type="parent"><a href="../targets/index.html">Downstream Tools</a></div>
+<div type="parent"><strong><a href="index.html">Spatial Data Selection</a></strong></div>
+
+<div type="sibling"><a href="bbox.html">Bounding Boxes</a></div>
+<div type="sibling"><a href="osm_types.html">Geometries</a></div>
+<div type="sibling"><a href="map_apis.html">Further Map APIs</a></div>
+<div type="sibling"><strong> Polygon and Around</strong></div>
+<div type="sibling"><a href="area.html">Filter by area</a></div>
+<div type="sibling"><a href="other_sources.html">Other sources</a></div>
+
+</nav>
+<div type="parent"><a href="../criteria/index.html">Find Objects</a></div>
+<div type="parent"><a href="../counting/index.html">Counting Objects</a></div>
+<div type="parent"><a href="../analysis/index.html">Analysing data</a></div>
+<div type="parent"><a href="../more_info/index.html">More information</a></div>
+
+<hr />
+
+<h1>Polygon and Around</h1>
+
+<p>Where to filter can be shaped more versatile than with a bounding box.</p>
+
+<p>Coordinates in degrees of latitude and longitude are easy to understand as a concept,
+but few people can recall latitude and longitude of their locations of interest.
+For this reason we first present spatial selection by known objects.</p>
+
+<p>Although the selection of all objects within a known area is outstandingly frequent,
+it is presented in <a href="area.html">its own section</a>,
+because a couple of caveats apply.</p>
+
+<p>This section starts with a subsection how to
+filter for the objects in proximity to known and selected objects.
+The subsequent section is about filtering for objects in proximity of given coordinates.
+The section concludes by presenting
+how to filter by a polygon or multipolygon as an outline.</p>
+
+<nav>
+<h3>Content</h3>
+
+<div type="subsection"><a href="polygon.html#around">Filter Relative to Selected Objects</a></div>
+<div type="subsection"><a href="polygon.html#absolute_around">Filter Around Absolute Coordinates</a></div>
+<div type="subsection"><a href="polygon.html#polygon">Polygons as Filters</a></div>
+
+</nav>
+
+<p><a name="around"/></p>
+
+<h2>Filter Relative to Selected Objects</h2>
+
+<p>It is a sophisticated task
+to conclude from a couple of words to a specific location.
+For this reason this job ought be done a proper geocoder, e.g. <a href="../criteria/nominatim.html#nominatim">Nominatim</a>;
+thus we do not pursue that here.
+The power of Nominatim can be combined with Overpass API by the search by coordinate,
+and this is the topic of the next section.</p>
+
+<p>Nonetheless, in many cases a name alone already <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.0&amp;lon=10.0&amp;zoom=6&amp;Q=nwr%5Bname%3D%22K%C3%B6lner%20Dom%22%5D%3B%0Aout%20geom%3B">identifies</a> the desired object:</p>
+
+<pre>
+<codeline>nwr[name="Kölner Dom"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>In line 1 we select all objects
+that have a tag <code>name</code> with value <code>Kölner Dom</code>.
+These are stored in the set <code>_</code>.
+In line 2 the statement <code>out geom</code> prints all the objects that are in the set <code>_</code>.</p>
+
+<p>Please recall that <a href="../targets/turbo.html#basics">the magnifying glass</a> zooms to the results.
+In particular for indirect filters, it makes sense to
+run the leading object search first,
+because there may exist objects of the same name <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.0&amp;lon=10.0&amp;zoom=6&amp;Q=nwr%5Bname%3D%22Viktualienmarkt%22%5D%3B%0Aout%20geom%3B">in unexpected places</a>:</p>
+
+<pre>
+<codeline>nwr[name="Viktualienmarkt"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>A <a href="bbox.html#filter">bounding box</a> or using an enclosing area <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=48.0&amp;lon=11.5&amp;zoom=10&amp;Q=area%5Bname%3D%22M%C3%BCnchen%22%5D%3B%0Anwr%28area%29%5Bname%3D%22Viktualienmarkt%22%5D%3B%0Aout%20geom%3B">can help</a>:</p>
+
+<pre>
+<codeline>area[name="München"];</codeline>
+<codeline>nwr(area)[name="Viktualienmarkt"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>The desired object or objects are selected as set <code>_</code> after line 2.</p>
+
+<p>We can now find all objects within 100 meters distance <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.94&amp;lon=6.96&amp;zoom=14&amp;Q=nwr%5Bname%3D%22K%C3%B6lner%20Dom%22%5D%3B%0Anwr%28around%3A100%29%3B%0Aout%20geom%3B">around the</a> Kölner Dom:</p>
+
+<pre>
+<codeline>nwr[name="Kölner Dom"];</codeline>
+<codeline>nwr(around:100);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Against our expectations, but for good reason,
+Overpass Turbo warns that the size of the result is big.
+It is not immediately clear
+why railway tracks between Paris and Brussels, hundreds of kilometers away,
+should be considered to be close to the Kölner Dom.
+The problems are relations of substantial spatial extent,
+in this case railway services.
+Given that this is <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=48.135&amp;lon=11.575&amp;zoom=14&amp;Q=area%5Bname%3D%22M%C3%BCnchen%22%5D%3B%0Anwr%28area%29%5Bname%3D%22Viktualienmarkt%22%5D%3B%0Anwr%28around%3A100%29%3B%0Aout%20geom%3B">hardly better</a> close to the Viktualienmarkt
+due to hiking and cycling routes ...</p>
+
+<pre>
+<codeline>area[name="München"];</codeline>
+<codeline>nwr(area)[name="Viktualienmarkt"];</codeline>
+<codeline>nwr(around:100);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>... it ought be conjectured that the problem occurs frequently.
+This tightly limits the use of the <em>around</em> filter as a filter without further criteria.</p>
+
+<p>On the technical level,
+we again have our object to be used as reference before line 3 in the set <code>_</code>.
+The statement <code>around</code> now selects from all the objects those
+that have to at least one of the objects in the set <code>_</code> a distance from at most the provided value <code>100</code> in meters.</p>
+
+<p>An entire <a href="../criteria/chaining.html#lateral">subsection</a> is devoted to piping statements,
+and sets have been explained in <a href="../preface/design.html#sets">the preface</a>.
+The example <a href="../preface/design.html#sequential">there in the beginning</a> shows an application of the <em>around</em> filter
+that is helpful
+because it <a href="../criteria/union.html#intersection">combines</a> the filter with a filter for a tag.
+Tools to cope with overly large amounts of data have been discussed in the section <a href="osm_types.html#full">Geometries</a>.</p>
+
+<p>Another possible solution to at least display a meaningful subset of data,
+is to filter for <em>ways</em> instead of all objects
+and to select the <em>relations</em> that refer to this ways without asking for their geometry.
+For the <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.94&amp;lon=6.96&amp;zoom=14&amp;Q=nwr%5Bname%3D%22K%C3%B6lner%20Dom%22%5D%3B%0Away%28around%3A100%29%3B%0Aout%20geom%3B%0Arel%28bw%29%3B%0Aout%3B">Kölner Dom</a>:</p>
+
+<pre>
+<codeline>nwr[name="Kölner Dom"];</codeline>
+<codeline>way(around:100);</codeline>
+<codeline>out geom;</codeline>
+<codeline>rel(bw);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Line 1 puts the named objects into the set <code>_</code>.
+Line 2 selects all <em>ways</em>
+that have to at least one of the objects in the set <code>_</code> a distance of at most 100 meters;
+the result replaces the content of the set <code>_</code>.
+Line 3 prints the result of set <code>_</code>, i.e. the in line 2 selected ways.
+Line 4 selects all <em>relations</em>
+that have at least one of the ways in <code>_</code> as a member
+and replaces the content of <code>_</code> with that selection.
+In line 5 the content of <code>_</code> is printed, i.e. the found relations,
+but in contrast to line 3 no coordinates are amended -
+this shrinks the <em>relations</em> to a size
+that is easier to handle.</p>
+
+<p><a name="absolute_around"/></p>
+
+<h2>Filter Around Absolute Coordinates</h2>
+
+<p>It can be searched not only around the given objects, but also around the given coordinates.
+An example close to Greenwich <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=15&amp;Q=nwr%28around%3A100%2C51%2E477%2C0%2E0%29%3B%0Aout%20geom%3B">on the prime meridian</a>:</p>
+
+<pre>
+<codeline>nwr(around:100,51.477,0.0);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Line 1 employs the filter in question:
+This query selects all objects into the set <code>_</code>
+that have to the given coordinate a distance of at most 100 meters.
+Line 2 prints the content of the set <code>_</code>.</p>
+
+<p>The same warnings as for all other full data searches with <em>relations</em> do apply:
+very quickly you are flooded with very much data.
+Fortunately, the reduction tricks of <a href="osm_types.html#full">bounding boxes</a> and <a href="polygon.html#around">from the last section</a> do apply here, too.</p>
+
+<p>Nobody is obliged to search for <em>relations</em>.
+You can as well search only for <em>nodes</em>, <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=15&amp;Q=way%28around%3A100%2C51%2E477%2C0%2E0%29%3B%0Aout%20geom%3B">only for <em>ways</em></a> ...</p>
+
+<pre>
+<codeline>way(around:100,51.477,0.0);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>... or only for <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=15&amp;Q=%28%0A%20%20node%28around%3A100%2C51%2E477%2C0%2E0%29%3B%0A%20%20way%28around%3A100%2C51%2E477%2C0%2E0%29%3B%0A%29%3B%0Aout%20geom%3B"><em>nodes</em> and <em>ways</em></a>:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  node(around:100,51.477,0.0);</codeline>
+<codeline>  way(around:100,51.477,0.0);</codeline>
+<codeline>);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Here we use an <em>union</em> statement (will be introduced <a href="../criteria/union.html#union">later</a>)
+to add the results of the quest for <em>nodes</em> to the results of the quest for <em>ways</em>.
+The statements in lines 2 and 3 each filter for an object type by an <em>around</em> filter.
+And the <em>union</em> statement combines both into the final selection into the set <code>_</code>.</p>
+
+<p>This approach can handle a radius of 1000 and more meters
+and still delivers not too much data.</p>
+
+<p>Relations can be <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=15&amp;Q=%28%0A%20%20node%28around%3A1000%2C51%2E477%2C0%2E0%29%3B%0A%20%20way%28around%3A1000%2C51%2E477%2C0%2E0%29%3B%0A%29%3B%0Aout%20geom%3B%0Arel%28%3C%29%3B%0Aout%3B">amended</a> like above without geometry:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  node(around:1000,51.477,0.0);</codeline>
+<codeline>  way(around:1000,51.477,0.0);</codeline>
+<codeline>);</codeline>
+<codeline>out geom;</codeline>
+<codeline>rel(&lt;);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>The set <code>_</code> still contains before line 5 the result of the <em>union</em> statement.
+The filter <code>(&lt;)</code> only admits objects
+that have at least one object from its input as a member.
+These are amongst the relations exactly those that have components within the search radius.</p>
+
+<p>We conclude with yet another tool for searches that do not fit well into a bounding box:
+One can search in the proximity of a polyline.
+For this purpose one defines a path over two or more coordinates,
+and then all objects are found
+that have a <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=13&amp;Q=%28%0A%20%20node%28around%3A100%2C51%2E477%2C0%2E0%2C51%2E46%2C%2D0%2E03%29%3B%0A%20%20way%28around%3A100%2C51%2E477%2C0%2E0%2C51%2E46%2C%2D0%2E03%29%3B%0A%29%3B%0Aout%20geom%3B%0Arel%28%3C%29%3B%0Aout%3B">lower distance to that path</a> than the given value:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  node(around:100,51.477,0.0,51.46,-0.03);</codeline>
+<codeline>  way(around:100,51.477,0.0,51.46,-0.03);</codeline>
+<codeline>);</codeline>
+<codeline>out geom;</codeline>
+<codeline>rel(&lt;);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>In comparison to the preceding query, only lines 2 and 3 have changed;
+the coordinates are written one after another separated by commas.</p>
+
+<p><a name="polygon"/></p>
+
+<h2>Polygons as Filters</h2>
+
+<p>Another method to handle free-form areas of interest is to search by a self-defined polygon.
+Again, this helps if the area of interest does not well fit into a bounding box.</p>
+
+<p><a href="area.html">Areas</a> already cover many use cases
+by enabling the search exactly within a named area.
+But when it comes to slightly extend such areas
+or to cut out arbitrary free forms
+then it is inevitable to use an explicit polygon as the boundary.</p>
+
+<p>For illustrative purposes, a search only for nodes <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=14&amp;Q=node%28poly%3A%2251%2E47%20%2D0%2E01%2051%2E477%200%2E01%2051%2E484%20%2D0%2E01%22%29%3B%0Aout%20geom%3B">with a triangle as boundary</a> is presented
+such that the form of the polygon can be spotted on the map:</p>
+
+<pre>
+<codeline>node(poly:"51.47 -0.01 51.477 0.01 51.484 -0.01");</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>In line 1 we search for <em>nodes</em>
+and the filter <code>(poly:...)</code> only admits objects
+that are situated within the inside the quotation marks noted polygon.
+This polygon is a list of coordinates of the form latitude-longitude
+where between the numbers is only whitespace allowed.
+After the final coordinate, the Overpass API always adds the edge to close the polygon.</p>
+
+<p>Very much data is produced by <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%28poly%3A%2251%2E47%20%2D0%2E01%2051%2E477%200%2E01%2051%2E484%20%2D0%2E01%22%29%3B%0Aout%20geom%3B">the search for all three types of objects</a>:</p>
+
+<pre>
+<codeline>nwr(poly:"51.47 -0.01 51.477 0.01 51.484 -0.01");</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Like <a href="polygon.html#around">before</a> this can be mitigated by the two steps <em>nodes</em> plus <em>ways</em> and then reverse resolution of the <em>relations</em>.
+The data reduction is effected by <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=14&amp;Q=%28%0A%20%20node%28poly%3A%2251%2E47%20%2D0%2E01%2051%2E477%200%2E01%2051%2E484%20%2D0%2E01%22%29%3B%0A%20%20way%28poly%3A%2251%2E47%20%2D0%2E01%2051%2E477%200%2E01%2051%2E484%20%2D0%2E01%22%29%3B%0A%29%3B%0Aout%20geom%3B%0Arel%28%3C%29%3B%0Aout%3B">avoiding the geometry</a> of the <em>relations</em>:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  node(poly:"51.47 -0.01 51.477 0.01 51.484 -0.01");</codeline>
+<codeline>  way(poly:"51.47 -0.01 51.477 0.01 51.484 -0.01");</codeline>
+<codeline>);</codeline>
+<codeline>out geom;</codeline>
+<codeline>rel(&lt;);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Can the search area contain holes or have multiple components?</p>
+
+<p>Multiple components can be realized by an <em>union</em> statement.
+Because <em>union</em> statements can contain any number of statements,
+we can just write the <em>query</em> statements for the components one after another.
+The <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.487&amp;lon=0.0&amp;zoom=13&amp;Q=%28%0A%20%20node%28poly%3A%2251%2E47%20%2D0%2E01%2051%2E477%200%2E01%2051%2E484%20%2D0%2E01%22%29%3B%0A%20%20way%28poly%3A%2251%2E47%20%2D0%2E01%2051%2E477%200%2E01%2051%2E484%20%2D0%2E01%22%29%3B%0A%20%20node%28poly%3A%2251%2E491%20%2D0%2E01%2051%2E498%20%2D0%2E03%2051%2E505%20%2D0%2E01%22%29%3B%0A%20%20way%28poly%3A%2251%2E491%20%2D0%2E01%2051%2E498%20%2D0%2E03%2051%2E505%20%2D0%2E01%22%29%3B%0A%29%3B%0Aout%20geom%3B%0Arel%28%3C%29%3B%0Aout%3B"><em>nodes</em> and <em>ways</em> variant</a>:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  node(poly:"51.47 -0.01 51.477 0.01 51.484 -0.01");</codeline>
+<codeline>  way(poly:"51.47 -0.01 51.477 0.01 51.484 -0.01");</codeline>
+<codeline>  node(poly:"51.491 -0.01 51.498 -0.03 51.505 -0.01");</codeline>
+<codeline>  way(poly:"51.491 -0.01 51.498 -0.03 51.505 -0.01");</codeline>
+<codeline>);</codeline>
+<codeline>out geom;</codeline>
+<codeline>rel(&lt;);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>The outline is stated here twice,
+once for the <em>node</em> query and once for the <em>way</em> query.
+Unfortunately, there is currently no way around this.</p>
+
+<p>For holes, it might be tentative to use the block statement <a href="../criteria/chaining.html#difference">difference</a>.
+That statement prunes as well the objects that lie partly in the desired polygon and partly in the hole,
+because both arguments of the difference match those objects.</p>
+
+<p>Instead, one can duplicate the vertex on the outer line
+that is closest to the hole.
+Then one can insert the vertex sequence describing the hole between these two vertices.</p>
+
+<p>If we, for example, want to cut out from the triangle <code>51.47 -0.01 51.477 0.01 51.484 -0.01</code>
+the triangle <code>51.483 -0.0093 51.471 -0.0093 51.477 0.008</code> then</p>
+
+<ul>
+<li>We first duplicate the closest vertex <code>51.484 -0.01</code>,
+thus have the sequence <code>51.47 -0.01 51.477 0.01 51.484 -0.01 51.484 -0.01</code>.</li>
+<li>Repeat the first vertex of the hole at its end,
+thus get for the hole the sequence <code>51.483 -0.0093 51.471 -0.0093 51.477 0.008 51.483 -0.0093</code>.</li>
+<li>Insert the hole description between the two copies of the duplicated vertex:
+<code>51.47 -0.01 51.477 0.01 51.484 -0.01 51.483 -0.0093 51.471 -0.0093 51.477 0.008 51.483 -0.0093 51.484 -0.01</code></li>
+</ul>
+
+<p>For the sake of Illustration the <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=14&amp;Q=node%28poly%3A%2251%2E47%20%2D0%2E01%2051%2E477%200%2E01%2051%2E484%20%2D0%2E01%0A%20%2051%2E483%20%2D0%2E0093%2051%2E471%20%2D0%2E0093%2051%2E477%200%2E008%0A%20%2051%2E483%20%2D0%2E0093%2051%2E484%20%2D0%2E01%22%29%3B%0Aout%20geom%3B">final request</a>.
+This request works as well for all the other object types
+and multiple query statements can be combined by an <em>union</em> statement.
+But then one sees worse the actually selected area:</p>
+
+<pre>
+<codeline>node(poly:"51.47 -0.01 51.477 0.01 51.484 -0.01</codeline>
+<codeline>  51.483 -0.0093 51.471 -0.0093 51.477 0.008</codeline>
+<codeline>  51.483 -0.0093 51.484 -0.01");</codeline>
+<codeline>out geom;</codeline>
+</pre>
+<hr/>
+<p>next: <a href="area.html">Filter by area</a></p>
+
+</body>
+</html>

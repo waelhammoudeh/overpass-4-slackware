@@ -1,0 +1,39 @@
+OSM OverPass API software
+
+This is the README file for the overpassAPI software slackware build script.
+
+Open Street Maps overpassAPI is a query language for OSM data.
+(Formerly known as OSM Server Side Scripting, or OSM3S before 2011)
+It acts as a database over the web: the client sends a query to the
+API and gets back the data set that corresponds to the query.
+
+Source url: "https://dev.overpass-api.de/releases/osm-3s_v0.7.56.8.tar.gz"
+Please note that the source on github.com is old.
+     
+Required Packages:
+
+ - expat : provided with Slackware current
+
+Important Notes:
+ - This SlackBuild script compiles the overpassAPI software from source,
+   package destination {PKGDEST} installation root is set to /usr/local/.
+ - This script creates two new directories under /usr/local/ with names
+   "cgi-bin" and "templates".
+ - Blog directory along with overpass-doc are added to the package in the
+   html directory; for educational purposes. Available on the web online too.
+ - This script replaces the "index.html" file in the html directory with
+   that used in version 0.7.55.9.
+ - This script does NOT setup any web server.
+ 
+The goal is to setup overpassAPI server on a local machine, compiling  and
+installing the software is a first step. After installing the package, we
+can move to the next step; populate the data base. By the way overpass uses
+its own data base engine.
+  
+Enjoy :)
+Wael Hammoudeh
+
+   
+   
+  
+

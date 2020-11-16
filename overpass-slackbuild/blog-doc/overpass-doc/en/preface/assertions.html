@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Assertions</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Overpass API User's Manual</a>  </p>
+
+<nav>
+<div type="parent"><strong><a href="index.html">Preface</a></strong></div>
+
+<div type="sibling"><a href="preface.html">OpenStreetMap and the Overpass API</a></div>
+<div type="sibling"><a href="osm_data_model.html">The Data Model of OpenStreetMap</a></div>
+<div type="sibling"><a href="glossary.html">Glossary</a></div>
+<div type="sibling"><a href="design.html">Run time model</a></div>
+<div type="sibling"><strong> Assertions</strong></div>
+<div type="sibling"><a href="commons.html">Commons</a></div>
+
+</nav>
+<div type="parent"><a href="../targets/index.html">Downstream Tools</a></div>
+<div type="parent"><a href="../full_data/index.html">Spatial Data Selection</a></div>
+<div type="parent"><a href="../criteria/index.html">Find Objects</a></div>
+<div type="parent"><a href="../counting/index.html">Counting Objects</a></div>
+<div type="parent"><a href="../analysis/index.html">Analysing data</a></div>
+<div type="parent"><a href="../more_info/index.html">More information</a></div>
+
+<hr />
+
+<h1>Assertions</h1>
+
+<p>The Overpass API will specific tagging schemes neither promote nor hamper.
+It is intended to be backwards compatible for decades.</p>
+
+<nav>
+<h3>Content</h3>
+
+<div type="subsection"><a href="assertions.html#local">Locally Fast</a></div>
+<div type="subsection"><a href="assertions.html#faithful">Faithful to the Data Model</a></div>
+<div type="subsection"><a href="assertions.html#tags">Tagging Neutrality</a></div>
+<div type="subsection"><a href="assertions.html#antiwar">Immutability</a></div>
+<div type="subsection"><a href="assertions.html#ql">Versatile Query Language</a></div>
+<div type="subsection"><a href="assertions.html#infrastructure">Infrastructure</a></div>
+<div type="subsection"><a href="assertions.html#libre">Free and Open</a></div>
+
+</nav>
+
+<p><a name="local"/></p>
+
+<h2>Locally Fast</h2>
+
+<p>The Overpass API is designed
+to be quick to deliver data that is spatially close to each other.
+Spatially disperse data can be delivered by the Overpass API as well,
+but then it has no longer any advantage over a generic database.</p>
+
+<p>Therefore, in many places in this manual
+you will be deferred to one of the many other OpenStreetMap tools
+if it is stronger optimized for the respective purpose.</p>
+
+<p><a name="faithful"/></p>
+
+<h2>Faithful to the Data Model</h2>
+
+<p>The data model of OpenStreetMap has, by its simplicity,
+substantially contributed to the success of OpenStreetMap.
+But for virtually every use case, one must convert the data to a different data model,
+because otherwise the processing times would be too high.
+This applies in particular to the rendering of a map and even more to routing and POI search.</p>
+
+<p>None of these conversions are lossless,
+every data model emphasizes some aspects, ignores other aspects and interprets the rest in the best possible way.
+Thus, even a representation that is as faithful to reality as possible
+may lead in the map, at routing and in other use cases to unexpected results.</p>
+
+<p>Many mappers quite often address this by mis-mapping facts
+that deliver in exchange for more desired results in the tool of choice.
+The mapper rarely recognizes that the results are, that way, worse in other tools.
+This practice is referred to by the expression <a target="_blank" rel="noopener" href="https://wiki.openstreetmap.org/wiki/Tagging_for_the_renderer">(mis-)mapping for the renderer</a>.</p>
+
+<p>The problem is that mapping against the facts in then promoted by a pretty map appearance
+and faithful mapping is discouraged by an ugly map appearance.
+For a third party the mapper has a hard time to proof that he indeed models faithfully.</p>
+
+<p>Therefore, the Overpass API operates on the original data model:
+It is precisely the mission of the Overpass API to show the data as it is modeled in OpenStreetMap.</p>
+
+<p>This shifts the burden:
+actually faultily modeled data can be demonstrated to be flawed.
+For faithfully modeled data, it can be verified,
+and it at least can be shown the full context.</p>
+
+<p><a name="tags"/></p>
+
+<h2>Tagging Neutrality</h2>
+
+<p>It is a trait of mankind that quickly occurs the opposite phenomenon:
+Prophets pop up to spread the doctrine they believe were immaculate.</p>
+
+<p>An example is multipolygons:
+The problems to solve are
+to model on the one hand areas with holes
+and on the other hand areas that intrinsically and actually touch each other.
+E.g. countries fill the complete landmass, i.e. any border is always the border of multiple countries.
+To model that with closed ways only is not possible.</p>
+
+<p>From the use case <em>holes</em> the convention remained
+that the tags are placed on the outer ring way.
+This largely came from that the renderer had difficulties with relations.
+Concurrently, some users have difficulties with certain particularities,
+and that repeatedly has been an issue under the headline <em>touching inner rings</em>.</p>
+
+<p>In total, multipolygon relations are a recurring subject
+and editing them still requires good knowledge.</p>
+
+<p>Some mappers have misunderstood this
+such that multipolygon relations were the somewhat more mighty object,
+and they have converted simple ways to multipolygons.
+But this does not have any benefit
+and both hampers the editing and bloats the database.</p>
+
+<p>There are many controversies in other subjects:</p>
+
+<ul>
+<li>Footway in parallel to carriageways can be modeled as separate ways,
+or they can be by a complex system of rules represented by tags on the carriageway
+or one can restrict implicit modeling to simple cases with no potential to misunderstandings.</li>
+<li>In streets either all parts of the street can get a name.
+Or one restricts the name to at most one carriageway per direction of the method of transport with highest speed.</li>
+<li>In buildings with shops the shop can be the same object as the building or just a node in the building.
+The address can be mapped on only one of the two objects or on both.</li>
+</ul>
+
+<p>To ensure that I create a universally useful tool
+I keep it out of such dissents as much as possible.</p>
+
+<p>For this reason the Overpass API is strictly tagging neutral,
+i.e. no tag gets special treatment.</p>
+
+<p><a name="antiwar"/></p>
+
+<h2>Immutability</h2>
+
+<p>Another problem in this context is the ambition
+to automatically change the data.
+Although the idea sounds compelling,
+it causes <a target="_blank" rel="noopener" href="https://2016.stateofthemap.org/2016/staying-on-the-right-side-best-practices-in-editing/">many problems</a>.</p>
+
+<p>For this reason the Overpass API does not support
+to rewrite OpenStreetMap objects on the fly.
+For the clearly existing and clearly justified need
+to rewrite objects
+the class of <em>deriveds</em> has been introduced.
+These are sufficiently different from OpenStreetMap objects
+such that they cannot be directly written back.</p>
+
+<p>Edits with various degrees of automation can still profit from the Overpass API.
+Examples of this can be found in the section <a href="../targets/index.html">JOSM</a>.</p>
+
+<p><a name="ql"/></p>
+
+<h2>Versatile Query Language</h2>
+
+<p>Geodata bears its own intrinsic ordering criterion by <em>spatial proximity</em>.
+For this reason they do not fit in any category
+that is catered for by any well established query language.
+For this reason Overpass API at all brings its own query language.</p>
+
+<p>The query language is not only geared to use spatial proximity,
+but can also accommodate for all of the particularities of the OpenStreetMap data model.
+It is also crafted to ensure
+that queries behave sane and nice on a publicly shared server,
+i.e. neither huge attack surfaces exist, nor performance problems shall occur.</p>
+
+<p>Finally, it turned out
+that the OpenStreetMap community wants and profits from well complex searches.
+They are catered for
+by making the language as logically rigid and orthogonal as possible
+such that nearly anything can be combined with anything.</p>
+
+<p><a name="infrastructure"/></p>
+
+<h2>Infrastructure</h2>
+
+<p>The Overpass API is designed to be infrastructure.
+Thus, it is neither an end user software, nor a prototype.</p>
+
+<p>Decisions on interfaces, in particular regarding the query language,
+and over required dependencies are likely to have an impact for decades.
+For this reason, alterations are introduced cautiously
+and not before a form is found that can persist in the long run.</p>
+
+<p>To be an infrastructure connected to the internet means
+one must retain a sane load management even in the face of insane patterns of requests.
+More on this in the <a href="commons.html#magnitudes">next section</a>.</p>
+
+<p><a name="libre"/></p>
+
+<h2>Free and Open</h2>
+
+<p>The Overpass API shall be held against the <a target="_blank" rel="noopener" href="https://www.gnu.org/philosophy/free-sw.html">four freedoms</a> of open source.</p>
+
+<h3>Execute, Distribute</h3>
+
+<p>For this aim it does not suffice to offer the public instances,
+because they have inevitably finite capacity.</p>
+
+<p>Only with the publication of the <a target="_blank" rel="noopener" href="https://github.com/drolbr/Overpass-API">source code</a> in a form
+that makes the <a target="_blank" rel="noopener" href="../../../no_frills.html">installation of independent instances</a> simple
+the freedoms are warranted.
+This includes designing the software such that eligible hardware is easy to obtain.</p>
+
+<h3>Adapt, Modify</h3>
+
+<p>Here the <a target="_blank" rel="noopener" href="https://github.com/drolbr/Overpass-API">source code</a> is the essential ingredient.
+The <a target="_blank" rel="noopener" href="https://github.com/drolbr/Overpass-API/blob/master/COPYING">license</a> caters for the legal side.</p>
+<hr/>
+<p>next: <a href="commons.html">Commons</a></p>
+
+</body>
+</html>

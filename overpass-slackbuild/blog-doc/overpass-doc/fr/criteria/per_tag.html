@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Par Tag</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Mode d'emploi d'API Overpass</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Introduction</a></div>
+<div type="parent"><a href="../targets/index.html">Utilisation</a></div>
+<div type="parent"><a href="../full_data/index.html">Toutes les données dans une région</a></div>
+<div type="parent"><strong><a href="index.html">Trouver des objets</a></strong></div>
+
+<div type="sibling"><a href="nominatim.html">Alternatives</a></div>
+<div type="sibling"><strong> Par Tag</strong></div>
+<div type="sibling"><a href="chaining.html">Enchainer</a></div>
+<div type="sibling"><a href="union.html">Opérations ET et OU</a></div>
+<div type="sibling"><a href="lrs.html">Listes de point-vergule</a></div>
+<div type="sibling"><a href="misc_criteria.html">Plus des criterions</a></div>
+
+</nav>
+<div type="parent"><a href="../counting/index.html">Compter d'objets</a></div>
+<div type="parent"><a href="../analysis/index.html">Analyser des données</a></div>
+<div type="parent"><a href="../more_info/index.html">Plus d'informations</a></div>
+
+<hr />
+
+<h1>Par Tag</h1>
+
+<p>Requêter pour tous les objets qui possèdent un attribut particulier.</p>
+
+<nav>
+<h3>Sommaire</h3>
+
+<div type="subsection"><a href="per_tag.html#global">Globalement</a></div>
+<div type="subsection"><a href="per_tag.html#local">Localement</a></div>
+<div type="subsection"><a href="per_tag.html#regex">Particulièrement</a></div>
+<div type="subsection"><a href="per_tag.html#numbers">Par nombre</a></div>
+
+</nav>
+
+<p><a name="global"/></p>
+
+<h2>Globalement</h2>
+
+<p>Nous voulons trouver tous les objets dans le monde entier,
+où un <a href="../preface/osm_data_model.html#tags">attribut</a> donné est présent.</p>
+
+<p>Ceci n'est utile que via l'API Overpass pour les attributs ayant moins de 10 000 occurrences;
+vous pouvez trouver le numéro correspondant sur <a href="nominatim.html#taginfo">Taginfo</a>.
+Avec des nombres plus importants, cela peut prendre trop de temps,
+pour obtenir les données,
+ou le navigateur plante pendant l'affichage
+ou les deux.</p>
+
+<p>Les requêtes <a href="per_tag.html#local">avec restrictions spatiales</a> fonctionnent également bien sur les attributs fréquents.</p>
+
+<p>Un exemple typique pour les attributs rares sont les noms de choses, <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.47&amp;lon=0.0&amp;zoom=12&amp;Q=nwr%5Bname%3D%22K%C3%B6ln%22%5D%3B%0Aout%20center%3B">ici</a> Cologne (<em>Köln</em> en Allemand):</p>
+
+<pre>
+<codeline>nwr[name="Köln"];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Comme vous pouvez le voir, vous ne voyez rien après avoir cliqué sur <em>Exécuter</em>.
+Seule <a href="../targets/turbo.html#basics">la loupe</a> permet de voir les données.
+Nous utilisons une vue globale de la carte glissante pour toutes les requêtes suivantes,
+pour que tu n'aies pas à te recentrer.</p>
+
+<p>Cependant, même dans des cas évidents, de telles recherches peuvent échouer.
+Il y a <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=nwr%5Bname%3D%22Frankfurt%22%5D%3B%0Aout%20center%3B">des résultats</a> pour Francfort (<em>Frankfurt</em> en Allemand) à travers le monde,
+et l'objet pour la ville sur la Main n'est même pas là:</p>
+
+<pre>
+<codeline>nwr[name="Frankfurt"];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>La raison en est que l'ajout <em>am Main</em> est dans le nom.
+L'API Overpass négligerait <a href="../preface/assertions.html#faithful">sa tâche principale</a>,
+si elle trouve quand même l'objet.
+Une recherche interprétative est la tâche d'un géocodeur, par exemple <a href="nominatim.html">Nominatim</a>.</p>
+
+<p>Cependant, il y a des requêtes pour cela, par exemple par des <em>expressions régulières</em>.
+Nous pouvons <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=nwr%5Bname%7E%22%5EFrankfurt%22%5D%3B%0Aout%20center%3B">rechercher</a> tous les objets dont le nom commence par <em>Frankfurt</em>;
+à cause des nombreux résultats, la recherche prend beaucoup de temps,
+mais la taille de résultat reste inoffensive dans ce cas malgré le message d'avertissement:</p>
+
+<pre>
+<codeline>nwr[name~"^Frankfurt"];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Beaucoup d'autres utilisations typiques des <em>expressions régulières</em> sont expliquées <a href="per_tag.html#regex">ci-dessous</a>.</p>
+
+<p>Ce sont maintenant beaucoup de résultats,
+surtout les rues dont le nom commence par <em>Frankfurt</em>.
+En règle générale, toutefois, vous recherchez un type d'objet spécifique.
+Dans le cas d'une limite de ville, c'est toujours une <em>relation</em>.
+Nous pouvons le rechercher spécifiquement,
+<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=10&amp;Q=relation%5Bname%3D%22K%C3%B6ln%22%5D%3B%0Aout%20geom%3B">en écrivant</a> <em>relation</em> au lieu de <em>nwr</em> (pour Nodes-Ways-Relations):</p>
+
+<pre>
+<codeline>relation[name="Köln"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Ici, aussi le <a href="../targets/formats.html#extras">type de sortie</a> passe de <em>center</em> à <em>geom</em>,
+pour que vous puissiez voir la géométrie complète de l'objet.</p>
+
+<p>En conséquence, il y a aussi les types <em>node</em> et <em>way</em> au lieu de <em>nwr</em>.
+Ils ne renvoient que des nœuds ou que des voies.</p>
+
+<p>Enfin, les attributs avec des caractères spéciaux (tout sauf les lettres, les chiffres et le trait de soulignement) dans la <em>clé</em> ou la <em>valeur</em> doivent être mentionnées.
+L'observateur attentif ne s'est pas échappé,
+que la valeur dans les requêtes est toujours entre guillemets en haut.
+Cela serait également nécessaire pour les clés;
+la requête ci-dessus est écrit entièrement formellement:
+<!-- NO_QL_LINK --></p>
+
+<pre>
+<codeline>relation["name"="Köln"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Cependant, l'API Overpass ajoute les guillemets tacitement,
+quand il est clair qu'il s'agit d'une intention.
+Ceci ne peut pas fonctionner avec les caractères spéciaux,
+parce que les caractères spéciaux pourraient aussi avoir une autre signification
+et l'utilisateur peut s'être trompé ailleurs lors de la rédaction de la requête.</p>
+
+<p>Les guillemets sont utilisés dans les valeurs,
+en antéposant un backslash.</p>
+
+<p><a name="local"/></p>
+
+<h2>Localement</h2>
+
+<p>Si vous voulez rechercher tous les objets avec un attribut dans une zone,
+il s'agit en fait d'une combinaison de plusieurs opérateurs;
+ceci est systématiquement décrit aux points <a href="union.html">Opérations ET et OU</a> et <a href="chaining.html">Enchainer</a>.
+Voici seulement quelques cas standard.</p>
+
+<p>Tous les objets dans un lieu unique sont par exemple <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=10&amp;Q=area%5Bname%3D%22K%C3%B6ln%22%5D%3B%0Anwr%5Bamenity%3Dcafe%5D%28area%29%3B%0Aout%20center%3B">tous les cafés de Cologne</a>:</p>
+
+<pre>
+<codeline>area[name="Köln"];</codeline>
+<codeline>nwr[amenity=cafe](area);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>La fonction exacte de la première ligne est expliquée sous <a href="../full_data/area.html#per_tag">Surfaces</a>.
+Nous sommes particulièrement intéressés par la deuxième ligne:
+Il s'agit d'une <em>requête</em> de type cible <em>nwr</em> (c'est-à-dire que nous recherchons des <em>nœuds</em>, des chemins (<em>ways</em>) et des <em>relations</em>);
+premièrement le filtre <code>[amenity=cafe]</code> est mis,
+c'est-à-dire que nous n'autorisons que les objets pour lesquels l'attribut avec la clé <em>amenity</em> existe et est définie sur la valeur <em>cafe</em>.
+Deuxièmement, le filtre <code>(area)</code> limitant la zone est mis.</p>
+
+<p>Le filtre <code>(area)</code> fonctionne <a href="../preface/design.html#sequential">par enchaînement</a>.</p>
+
+<p>De cette façon, nous recherchons les objets pour lesquels la condition d'attribut et la condition spatiale s'appliquent.
+Celles-ci sont, encore une fois <a href="../preface/design.html#sequential">d'affilée</a>,
+prêt à être édité dans la ligne suivante.</p>
+
+<p>Si c'est trop compliqué pour vous,
+mais il y a aussi un moyen plus simple:
+Vous pouvez utiliser <a href="../full_data/bbox.html#filter">un rectangle englobant</a> pour limiter l'espace et le combiner avec le filtre pour un attribut (<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=10&amp;Q=nwr%5Bamenity%3Dcafe%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20center%3B">exemple</a>):</p>
+
+<pre>
+<codeline>nwr[amenity=cafe]({{bbox}});</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>L'élément central ici est aussi la ligne commençant par <em>nwr</em>:
+Le filtre <code>[amenity=cafe]</code> fonctionne comme dans l'exemple précédent;
+Le filtre <code>({{bbox}})</code> est remplit par <a href="../targets/turbo.html#convenience">Overpass Turbo</a> pour nous avec le rectangle englobant de délimitation actuellement visible,
+et l'API Overpass applique ensuite cette rectangle englobant comme deuxième filtre.</p>
+
+<p>Comme pour tous les filtres, l'ordre des deux filtres <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=10&amp;Q=nwr%28%7B%7Bbbox%7D%7D%29%5Bamenity%3Dcafe%5D%3B%0Aout%20center%3B">n'a pas d'importance</a>:</p>
+
+<pre>
+<codeline>nwr({{bbox}})[amenity=cafe];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>a le même résultat que la requête précédente.</p>
+
+<p>Encore une fois, le type d'instruction de requête entre <em>node</em> (le nœud), <em>way</em> (le chemin) et la <em>relation</em> peut et doit être choisi de manière appropriée,
+par exemple, <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.94&amp;lon=6.95&amp;zoom=14&amp;Q=way%5Brailway%3Drail%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">seulement les chemins</a> pour les chemins de fér:</p>
+
+<pre>
+<codeline>way[railway=rail]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p><a name="regex"/></p>
+
+<h2>Particulièrement</h2>
+
+<p>Dans le cas de Francfort, nous avons déjà rencontré le problème,
+que nous voulons chercher une valeur sans être précis.
+Un outil très puissant sont les <a target="_blank" rel="noopener" href="https://www.gnu.org/software/grep/manual/grep.html#Regular-Expressions">expressions régulières</a>.
+Une introduction systématique aux expressions régulières dépasse le cadre de ce manuel,
+mais il y a au moins quelques exemples de cas courants.</p>
+
+<p>Dans de nombreux cas, nous connaissons le début d'un nom.
+Par exemple, nous cherchons ici les rues dont le nom <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22%5EEmmy%22%5D%3B%0Aout%20geom%3B">commence</a> par <em>Emmy</em>:</p>
+
+<pre>
+<codeline>way[name~"^Emmy"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Le caractère le plus important dans toute la requête est le tilde <code>~</code>.
+Il s'affiche sur la première ligne du filtre,
+que les valeurs doivent être évaluées par une expression régulière.
+Maintenant, toutes les valeurs existantes pour la clé <code>name</code> dans la base de données sont comparées avec l'expression régulière après le tilde.</p>
+
+<p>Le deuxième caractère le plus important est l'accent circonflexe dans l'expression <code>^Emmy</code>;
+ceci fait partie de l'expression régulière
+et assurez-vous que seules les valeurs qui commencent avec <code>Emmy</code> correspondent.
+Tout compte fait, c'est écrit:</p>
+
+<p>Trouver tous les objets de type <code>way</code> (chemin),
+qui ont un attribut avec une clé <code>name</code> et une valeur,
+en commençant par <code>Emmy</code>.</p>
+
+<p>La deuxième ligne contient alors une <a href="../targets/formats.html#extras">instruction de sortie</a> correspondante.</p>
+
+<p>Vous pouvez également rechercher des valeurs,
+<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22Noether%24%22%5D%3B%0Aout%20geom%3B">se terminant</a> à une certaine valeur, par exemple <em>Noether</em>:</p>
+
+<pre>
+<codeline>way[name~"Noether$"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Le tilde <code>~</code> affiche à nouveau le filtre après une expression régulière.
+Le signe du dollar <code>$</code> défini dans l'expression régulière,
+que la valeur devrait se terminer par <code>Noether</code>.</p>
+
+<p>La <a href="../targets/turbo.html#basics">loupe comme</a> fonction confort de l'<em>Overpass Turbo</em> permet de zoomer sur le seul résultat à Paris.</p>
+
+<p>Il est également possible de rechercher une sous-chaîne,
+quelque part <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22Noether%22%5D%3B%0Aout%20geom%3B">au milieu</a>:</p>
+
+<pre>
+<codeline>way[name~"Noether"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Il suffit d'écrire la chaîne de caractères sans caractères supplémentaires.</p>
+
+<p>Ça devient un peu plus difficile,
+si vous voulez trouver deux (ou plusieurs) chaînes de caractères,
+p. ex. nom et prénom,
+mais on ne sais pas ce qu'il y a entre les deux.
+Dans <em>Emmy Noether</em>, le trait d'union et l'espace sont tous deux présents.
+Vous pouvez <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22Emmy%5B%20%2D%5DNoether%22%5D%3B%0Aout%20geom%3B">mettre entre crochets</a> tous les caractères possibles (deux ou plus):</p>
+
+<pre>
+<codeline>way[name~"Emmy[ -]Noether"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Vous pouvez également autoriser <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22Emmy%2ENoether%22%5D%3B%0Aout%20geom%3B">tous les caractères</a> en même temps:</p>
+
+<pre>
+<codeline>way[name~"Emmy.Noether"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Le charactère décisif ici est le point <code>.</code>.
+Il représente un seul caractère arbitraire.</p>
+
+<p>Parfois, c'est nécessaire,
+pour autoriser <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22Johann%2E%2ABach%22%5D%3B%0Aout%20geom%3B">un nombre quelconque de caractères intermédiaires</a>.
+Vous recherchez donc deux chaînes de caractères distinctes.
+Le compositeur <em>Bach</em> en est un exemple;
+il a encore plus de prénoms d'après <em>Johann</em>:</p>
+
+<pre>
+<codeline>way[name~"Johann.*Bach"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Ici, les deux caractères spéciaux point <code>.</code> et étoile <code>*</code> travaillent ensemble.
+Le point correspond à n'importe quel caractère,
+et l'étoile signifie,
+que le caractère précédent peut être répété aussi souvent que souhaité (pas du tout, une ou plusieurs fois).</p>
+
+<p>Le point d'interrogation vient s'y ajouter:
+Le caractère précedent peut apparaître <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22Gerh%3Fardo%3F%2EMercator%22%5D%3B%0Aout%20geom%3B">zéro ou une seule fois</a>.
+Cela nous aide avec <em>Gerhard</em> ou <em>Gerard</em> ou <em>Gerardo Mercator</em>:</p>
+
+<pre>
+<codeline>way[name~"Gerh?ardo?.Mercator"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Enfin, il convient de mentionner le cas,
+qui <a href="union.html">revient</a> à ET et OU:
+Trouvez <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=way%5Bhighway%7E%22%5E%28trunk%7Cprimary%7Csecondary%7Ctertiary%29%24%22%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">une valeur dans une liste</a> telle que les valeurs par défaut <em>trunk</em>, <em>primary</em>, <em>secondary</em>, <em>tertiary</em> pour les routes principales!</p>
+
+<pre>
+<codeline>way[highway~"^(trunk|primary|secondary|tertiary)$"]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Nous sommes intéressés par le filtre <code>[highway~"^(trunk|primary|secondary|tertiary)$"]</code>;
+le tilde <code>~</code> montre l'expression régulière.
+Dans l'expression régulière, l'accent circonflexe au début et le signe du dollar à la fin signifient,
+que la <em>valeur</em> totale, et pas seulement une sous-chaîne, doit correspondre à la valeur intermédiaire.
+La ligne verticale <code>|</code> signifie OU,
+et les pinces font en sorte que ça arrive,
+que l'accent circonflexe et de dollar n'affectent pas qu'une seule valeur.</p>
+
+<p><a name="numbers"/></p>
+
+<h2>Par nombre</h2>
+
+<p>...</p>
+<hr/>
+<p>prochaine: <a href="chaining.html">Enchainer</a></p>
+
+</body>
+</html>

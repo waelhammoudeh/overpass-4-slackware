@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+<channel>
+  <title>Overpass API Blog</title>
+  <link>https://dev.overpass-api.de/blog/</link>
+  <description>Overpass API Blog</description>
+
+  <item>
+    <title>Version 0.7.56 Examples</title>
+    <link>https://dev.overpass-api.de/blog/total_0_7_56.html</link>
+    <guid>https://dev.overpass-api.de/blog/total_0_7_56.html</guid>
+    <description>Version 0.7.56 Examples</description>
+    <pubDate>2020-04-14</pubDate>
+  </item>
+  <item>
+    <title>Into a Flat World</title>
+    <link>https://dev.overpass-api.de/blog/flat_world.html</link>
+    <guid>https://dev.overpass-api.de/blog/flat_world.html</guid>
+    <description>Into a Flat World</description>
+    <pubDate>2018-07-16</pubDate>
+  </item>
+  <item>
+    <title>Compound Values</title>
+    <link>https://dev.overpass-api.de/blog/compound_values.html</link>
+    <guid>https://dev.overpass-api.de/blog/compound_values.html</guid>
+    <description>Compound Values</description>
+    <pubDate>2018-06-30</pubDate>
+  </item>
+  <item>
+    <title>Sliced Time and Space</title>
+    <link>https://dev.overpass-api.de/blog/sliced_time_and_space.html</link>
+    <guid>https://dev.overpass-api.de/blog/sliced_time_and_space.html</guid>
+    <description>Sliced Time and Space</description>
+    <pubDate>2018-06-02</pubDate>
+  </item>
+  <item>
+    <title>Loop and Group</title>
+    <link>https://dev.overpass-api.de/blog/loop_and_group.html</link>
+    <guid>https://dev.overpass-api.de/blog/loop_and_group.html</guid>
+    <description>Loop and Group</description>
+    <pubDate>2018-05-15</pubDate>
+  </item>
+  <item>
+    <title>Running a Server with <em>systemd</em></title>
+    <link>https://dev.overpass-api.de/blog/systemd.html</link>
+    <guid>https://dev.overpass-api.de/blog/systemd.html</guid>
+    <description>Running a Server with <em>systemd</em></description>
+    <pubDate>2017-10-27</pubDate>
+  </item>
+  <item>
+    <title>In OSM We Trust</title>
+    <link>https://dev.overpass-api.de/blog/fahrenheit_451.html</link>
+    <guid>https://dev.overpass-api.de/blog/fahrenheit_451.html</guid>
+    <description>In OSM We Trust</description>
+    <pubDate>2017-05-09</pubDate>
+  </item>
+  <item>
+    <title>Some Performance Hints</title>
+    <link>https://dev.overpass-api.de/blog/performance_hints.html</link>
+    <guid>https://dev.overpass-api.de/blog/performance_hints.html</guid>
+    <description>Some Performance Hints</description>
+    <pubDate>2017-05-01</pubDate>
+  </item>
+  <item>
+    <title>Some State of the Public Transport</title>
+    <link>https://dev.overpass-api.de/blog/some_tagging_in_pt.html</link>
+    <guid>https://dev.overpass-api.de/blog/some_tagging_in_pt.html</guid>
+    <description>Some State of the Public Transport</description>
+    <pubDate>2017-04-24</pubDate>
+  </item>
+  <item>
+    <title>Bounding Boxes</title>
+    <link>https://dev.overpass-api.de/blog/bounding_boxes.html</link>
+    <guid>https://dev.overpass-api.de/blog/bounding_boxes.html</guid>
+    <description>Bounding Boxes</description>
+    <pubDate>2017-04-17</pubDate>
+  </item>
+  <item>
+    <title>Version 0.7.54 Completed</title>
+    <link>https://dev.overpass-api.de/blog/final_0_7_54.html</link>
+    <guid>https://dev.overpass-api.de/blog/final_0_7_54.html</guid>
+    <description>Version 0.7.54 Completed</description>
+    <pubDate>2017-04-10</pubDate>
+  </item>
+  <item>
+    <title>Textual Results</title>
+    <link>https://dev.overpass-api.de/blog/textual_data.html</link>
+    <guid>https://dev.overpass-api.de/blog/textual_data.html</guid>
+    <description>Textual Results</description>
+    <pubDate>2017-04-03</pubDate>
+  </item>
+  <item>
+    <title>More about Numbers</title>
+    <link>https://dev.overpass-api.de/blog/more_numbers.html</link>
+    <guid>https://dev.overpass-api.de/blog/more_numbers.html</guid>
+    <description>More about Numbers</description>
+    <pubDate>2017-03-20</pubDate>
+  </item>
+  <item>
+    <title>Working with Numbers</title>
+    <link>https://dev.overpass-api.de/blog/numbers.html</link>
+    <guid>https://dev.overpass-api.de/blog/numbers.html</guid>
+    <description>Working with Numbers</description>
+    <pubDate>2017-03-13</pubDate>
+  </item>
+  <item>
+    <title>Finding Dark POIs</title>
+    <link>https://dev.overpass-api.de/blog/dark_pois.html</link>
+    <guid>https://dev.overpass-api.de/blog/dark_pois.html</guid>
+    <description>Finding Dark POIs</description>
+    <pubDate>2017-03-06</pubDate>
+  </item>
+
+</channel>
+</rss>

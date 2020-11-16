@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Alternativen</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Handbuch zur Overpass API</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Einführung</a></div>
+<div type="parent"><a href="../targets/index.html">Verwendung</a></div>
+<div type="parent"><a href="../full_data/index.html">Räumliche Datenauswahl</a></div>
+<div type="parent"><strong><a href="index.html">Objekte Finden</a></strong></div>
+
+<div type="sibling"><strong> Alternativen</strong></div>
+<div type="sibling"><a href="per_tag.html">Per Tag</a></div>
+<div type="sibling"><a href="chaining.html">Verketten</a></div>
+<div type="sibling"><a href="union.html">Und- und Oder-Verknüpfung</a></div>
+<div type="sibling"><a href="lrs.html">Semikolon-Listen</a></div>
+<div type="sibling"><a href="misc_criteria.html">Mehr Suchkriterien</a></div>
+
+</nav>
+<div type="parent"><a href="../counting/index.html">Objekte Zählen</a></div>
+<div type="parent"><a href="../analysis/index.html">Daten Analysieren</a></div>
+<div type="parent"><a href="../more_info/index.html">Anhang</a></div>
+
+<hr />
+
+<h1>Alternativen</h1>
+
+<p>Die Overpass API sucht nach tatsächlichen OpenStreetMap-Daten.
+Manchmal wird aber auch eher eine intelligente Suche benötigt, das Geocodieren.
+Das können <em>Nominatim</em> und andere besser.</p>
+
+<!--
+  QA-Tools ?!?
+-->
+
+<nav>
+<h3>Inhalt</h3>
+
+<div type="subsection"><a href="nominatim.html#nominatim">Nominatim</a></div>
+<div type="subsection"><a href="nominatim.html#taginfo">Taginfo</a></div>
+
+</nav>
+
+<p><a name="nominatim"/></p>
+
+<h2>Nominatim</h2>
+
+<p>...
+<!-- <a target="_blank" rel="noopener" href="https://wiki.openstreetmap.org/wiki/Nominatim">Nominatim</a> --></p>
+
+<!--
+Es gibt aber genug Beispiele, bei denen schon der Name das richtige Objekt liefert ...
+
+    nwr[name="Kölner Dom"];
+    out geom;
+
+... oder zumindest der Name zusammen mit einer Ortsangabe:
+
+    area[name="Paris"];
+    nwr[name="Tour Eiffel"](area);
+    out geom;
+
+
+...
+
+[](https://overpass-turbo.eu/?lat=51.84&lon=12.23&zoom=12&Q=)
+
+    nwr["addr:street"="Bauhausstraße"]
+      ["addr:housenumber"="6"]
+      ["addr:postcode"="06846"]
+      ["addr:city"="Dessau-Roßlau"];
+    out geom;
+-->
+
+<p><a name="taginfo"/></p>
+
+<h2>Taginfo</h2>
+
+<p>...</p>
+<hr/>
+<p>weiter: <a href="per_tag.html">Per Tag</a></p>
+
+</body>
+</html>

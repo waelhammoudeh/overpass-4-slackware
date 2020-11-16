@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Des géométries</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Mode d'emploi d'API Overpass</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Introduction</a></div>
+<div type="parent"><a href="../targets/index.html">Utilisation</a></div>
+<div type="parent"><strong><a href="index.html">Toutes les données dans une région</a></strong></div>
+
+<div type="sibling"><a href="bbox.html">Rectangle englobant</a></div>
+<div type="sibling"><strong> Des géométries</strong></div>
+<div type="sibling"><a href="map_apis.html">Autres APIs disponibles</a></div>
+<div type="sibling"><a href="polygon.html">Polygone et autour</a></div>
+<div type="sibling"><a href="area.html">Requêter par surface</a></div>
+<div type="sibling"><a href="other_sources.html">Alternatives</a></div>
+
+</nav>
+<div type="parent"><a href="../criteria/index.html">Trouver des objets</a></div>
+<div type="parent"><a href="../counting/index.html">Compter d'objets</a></div>
+<div type="parent"><a href="../analysis/index.html">Analyser des données</a></div>
+<div type="parent"><a href="../more_info/index.html">Plus d'informations</a></div>
+
+<hr />
+
+<h1>Des géométries</h1>
+
+<p>Pour expliquer les variantes pour les données complètes d'OpenStreetMap,
+des détails des modèles des données d'OpenStreetMap sont introduits ici.</p>
+
+<nav>
+<h3>Sommaire</h3>
+
+<div type="subsection"><a href="osm_types.html#scope">Démarcation</a></div>
+<div type="subsection"><a href="osm_types.html#nodes_ways">Chemins et nœuds</a></div>
+<div type="subsection"><a href="osm_types.html#rels">Relations</a></div>
+<div type="subsection"><a href="osm_types.html#rels_on_rels">Relations sur relations</a></div>
+<div type="subsection"><a href="osm_types.html#full">Tous les objets ensemble</a></div>
+
+</nav>
+
+<p><a name="scope"/></p>
+
+<h2>Démarcation</h2>
+
+<p>Les types des objets ont déjà été présentés dans la <a href="../preface/osm_data_model.html">section correspondante de l'introduction</a>.
+Vous devriez donc déjà être familier avec les <em>nœuds</em>, les <em>chemins</em> et les <em>relations</em>.</p>
+
+<p>Ceux-ci peuvent être représentés de différentes manières;
+les formats de sortie tels que JSON ou XML sont expliqués dans la section <a href="../targets/formats.html">Formats de données</a>.
+Il explique également les niveaux de détail possibles en termes de structure, de géométrie, de attributs, de versions et d'attributs.</p>
+
+<p>Ici, il s'agit de savoir comment l'achèvement des <em>chemins</em> et des <em>relations</em> leur fournit une géométrie utilisable,
+sans que la taille du résultat de la requête ne devienne incontrôlable.</p>
+
+<p><a name="nodes_ways"/></p>
+
+<h2>Chemins et nœuds</h2>
+
+<p>Avec les <em>nœuds</em>, une géométrie utilisable est facile à obtenir:
+Tous les modes de sortie sauf les <code>out ids</code> et les <code>out tags</code> ont les coordonnées des nœuds avec eux,
+parce que, par définition, ils font partie des nœuds dans le modèle de données de l'OSM.</p>
+
+<p>Par contre, en équipant les <em>chemins</em> de la géométrie, il y a déjà plusieurs possibilités:
+Dans le cas le plus simple, votre programme peut traiter des coordonnées supplémentaires sur les chemins.
+Vous pouvez visualiser la différence, par exemple dans Overpass Turbo,
+en comparant les résultats des deux requêtes suivantes dans l'onglet <em>Données</em> (en haut à droite):
+<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%0Aout%3B">Sans coordonnées</a></p>
+
+<pre>
+<codeline>way(51.477,-0.001,51.478,0.001);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>et <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%0Aout%20geom%3B">avec coordonnées</a></p>
+
+<pre>
+<codeline>way(51.477,-0.001,51.478,0.001);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Dans le modèle de données original d'OpenStreetMap, cependant, aucune coordonnée n'est fournie à <em>chemins</em>.
+Les <em>chemins</em> ont déjà des références à des identifiants de noeuds.
+Par conséquent, il y a encore des programmes qui ne peuvent pas traiter les coordonnées sur <em>chemins</em>.
+Pour ces derniers, il y a deux gradations pour fournir la géométrie de la manière traditionnelle.</p>
+
+<p>Le minimum de données supplémentaires est nécessaire pour ne demander que les coordonnées des nœuds.
+La commande <code>node(w)</code> demande après la sortie des chemins de trouver les nœuds référencés dans les chemins;
+le mode <code>out skel</code> réduit la quantité de données aux coordonnées pures; l'addition <code>qt</code> économise l'effort de tri de la sortie: <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%0Aout%20qt%3B%0Anode%28w%29%3B%0Aout%20skel%20qt%3B">(Lien)</a></p>
+
+<pre>
+<codeline>way(51.477,-0.001,51.478,0.001);</codeline>
+<codeline>out qt;</codeline>
+<codeline>node(w);</codeline>
+<codeline>out skel qt;</codeline>
+</pre>
+
+<p>Je recommande à nouveau de regarder la sortie dans l'onglet <em>Données</em> dans le coin supérieur droit.
+Vous ne pouvez voir les nœuds que lorsque vous faites défiler vers le bas.</p>
+
+<p>Ce modèle est plus proche du modèle de données original,
+mais il y a des programmes qui ne peuvent pas le gérer.
+Il y a une convention pour trier les nœuds strictement avant les chemins et les éléments entre eux par identifiant.
+Pour ça, nous devons stocker les nœuds en plus des chemins avant de sortir;
+Ceci est fait par l'idiome <code>(._ ; node(w) ;);</code> constitué des trois commandes <code>._</code>, <code>node(w)</code> et <code>(...)</code>:
+<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%0A%28%2E%5F%3B%20node%28w%29%3B%29%3B%0Aout%3B">(Lien)</a></p>
+
+<pre>
+<codeline>way(51.477,-0.001,51.478,0.001);</codeline>
+<codeline>(._; node(w););</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Les nœuds et les chemins de faire ensemble sont expliqués <a href="osm_types.html#full">dans la section terminale</a>.</p>
+
+<p><a name="rels"/></p>
+
+<h2>Relations</h2>
+
+<p>Comme pour <em>chemins</em>, le cas le plus simple est celui des <em>relations</em>,
+que le programme cible peut évaluer directement la géométrie intégrée.
+Encore une fois, la comparaison directe appropriée:
+<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%0Aout%3B">Sans coordonnées</a></p>
+
+<pre>
+<codeline>relation(51.477,-0.001,51.478,0.001);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>et <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%0Aout%20geom%3B">avec coordonnées</a></p>
+
+<pre>
+<codeline>relation(51.477,-0.001,51.478,0.001);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Contrairement à <em>chemins</em>, les données deviennent un ordre de grandeur de plus:
+C'est parce que dans la variante sans coordonnées de voies nous ne voyons que l'identifiant,
+alors que chaque voie se compose en fait de plusieurs nœuds et a donc un nombre correspondant de coordonnées.</p>
+
+<p>Les relations avec les chemins comme majorité des membres sont également la règle.
+Par conséquent, il y a le mécanisme décrit dans le paragraphe <em>Restriction d'affichage</em> sur <a href="bbox.html#crop">Rectangle englobant</a>,
+pour limiter la géométrie à livrer à un rectangle englobant: <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%0Aout%20geom%28%7B%7Bbbox%7D%7D%29%3B">(Lien)</a></p>
+
+<pre>
+<codeline>relation(51.477,-0.001,51.478,0.001);</codeline>
+<codeline>out geom({{bbox}});</codeline>
+</pre>
+
+<p>Cependant, le modèle de données original d'OpenStreetMap ne fournit pas de coordonnées également pour les relations.
+Pour les programmes qui nécessitent le modèle de données d'origine, il y a à nouveau deux niveaux.
+Si possible, seules les coordonnées peuvent être obtenues en sortant les relations et en résolvant leurs références.
+Cela nécessite deux routes, car les relations peuvent avoir des nœuds comme membres,
+d'autre part les chemins et ceux-ci à leur tour nœuds comme membres.
+En tout, nous devrions utiliser quatre commandes.
+Mais parce qu'il s'agit d'un cas courant, il y a une commande de collection très courte <code>&gt;</code>: <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%0Aout%20qt%3B%0A%3E%3B%0Aout%20skel%20qt%3B">(Lien)</a></p>
+
+<pre>
+<codeline>relation(51.477,-0.001,51.478,0.001);</codeline>
+<codeline>out qt;</codeline>
+<codeline>&gt;;</codeline>
+<codeline>out skel qt;</codeline>
+</pre>
+
+<p>Par rapport à la requête précédente, la quantité de données a pratiquement doublé,
+puisque la référence et la destination de référence doivent toujours être incluses.</p>
+
+<p>La variante entièrement compatible nécessite encore plus de données.
+Ceci forme l'idiome <code>(._; &gt;;);</code> à partir des trois commandes <code>._</code>, <code>&gt;</code> et <code>(...)</code>:
+<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%0A%28%2E%5F%3B%20%3E%3B%29%3B%0Aout%3B">(Lien)</a></p>
+
+<pre>
+<codeline>relation(51.477,-0.001,51.478,0.001);</codeline>
+<codeline>(._; &gt;;);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Existe-t-il une solution pour limiter le nombre de coordonnées reçues à le rectangle englobant?
+Parce qu'une relation est contenue dans un rectangle englobant,
+si au moins un de ses membres est contenu dans le rectangle englobant,
+nous pouvons y arriver,
+en demandant les membres et en résolvant les relations.
+Ici, la commande <code>&lt;</code> aide:
+c'est un raccourci pour trouver toutes les <em>chemins</em> et les <em>relations</em>,
+qui ont les <em>nœuds</em> ou les <em>chemins</em> donnés en tant que membres.
+Nous cherchons donc tous les <em>nœuds</em> et tous les <em>chemins</em> dans le rectangle englobant.
+Ensuite, nous les gardons par ordre <code>._</code> et cherchons toutes les relations,
+qui les ont comme membres: <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20node%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%0A%20%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0A%28%2E%5F%3B%20%3C%3B%29%3B%0Aout%3B">(Lien)</a></p>
+
+<pre>
+<codeline>( node(51.477,-0.001,51.478,0.001);</codeline>
+<codeline>  way(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>(._; &lt;;);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Les objets qui sont membres des relations peuvent être reconnus par les différentes couleurs de l'affichage.
+Mieux encore, vous pouvez trouver les relations dans l'affichage <em>Données</em> en faisant défiler complètement vers le bas.</p>
+
+<p>La plupart des membres des relations ne sont pas téléchargés du tout, mais seulement ceux qui sont dans le rectangle englobant.
+Cette requête n'est pas très pratique, car nous ne chargeons pas tous les nœuds utilisés dans les chemins.
+Une version complète se trouve dans la section <a href="osm_types.html#full">Tous ensemble</a> ci-dessous.</p>
+
+<p><a name="rels_on_rels"/></p>
+
+<h2>Relations sur relations</h2>
+
+<p>Montrer le problème des relations sur les relations,
+nous n'avons même pas besoin d'agrandir beaucoup le rectangle englobant.
+Nous commençons par la requête d'en haut sans relations sur les relations: <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=relation%2851%2E47%2C%2D0%2E01%2C51%2E48%2C0%2E01%29%3B%0A%28%2E%5F%3B%20%3E%3B%29%3B%0Aout%3B">(Lien)</a></p>
+
+<pre>
+<codeline>relation(51.47,-0.01,51.48,0.01);</codeline>
+<codeline>(._; &gt;;);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Nous remplaçons maintenant la résolution des relations vers le bas par</p>
+
+<ul>
+<li>une résolution rétrograde sur les relations de relations</li>
+<li>la résolution en avant complète des relations trouvées jusqu'aux coordonnées</li>
+</ul>
+
+<p>Ce sont les commandes <code>rel(br)</code> et <code>&gt;&gt;</code>: <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=relation%2851%2E47%2C%2D0%2E01%2C51%2E48%2C0%2E01%29%3B%0A%28%20rel%28br%29%3B%20%3E%3E%3B%29%3B%0Aout%3B">(Lien)</a></p>
+
+<pre>
+<codeline>relation(51.47,-0.01,51.48,0.01);</codeline>
+<codeline>( rel(br); &gt;&gt;;);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Selon le navigateur, cela ralentira votre navigateur ou produira un message d'avertissement.
+Nous voulions un coin dans la banlieue de Greenwich et nous avons obtenu des données de presque tout Londres,
+puisqu'il existe une relation de groupement <em>Quietways</em>.
+La quantité déjà importante de données s'est à nouveau multipliée.</p>
+
+<p>Même s'il ne devrait plus y avoir de relation de groupement à un moment donné,
+comme c'est également le cas pour notre zone de test avec une longueur de bord d'environ cent mètres:
+Voulez-vous sérieusement rendre votre application sensible à cela
+que ça ne marche plus,
+dès qu'un cartographe inexpérimenté crée une ou plusieurs relations de groupement dans la zone cible?</p>
+
+<p>C'est pourquoi je déconseille fortement de travailler avec les relations sur les relations.
+La structure des données crée le risque,
+de connecter involontairement de très grandes quantités de données.</p>
+
+<p>Si vous voulez absolument traiter les relations sur les relations,
+est une solution plus facile à gérer,
+pour ne charger que les relations,
+mais plus faire la résolution en avant.
+Par conséquent, nous ajoutons la résolution arrière <code>rel(br)</code> à la dernière requête du paragraphe <em>Relations</em>: <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20node%2851%2E47%2C%2D0%2E01%2C51%2E48%2C0%2E01%29%3B%0A%20%20way%2851%2E47%2C%2D0%2E01%2C51%2E48%2C0%2E01%29%3B%20%29%3B%0A%28%2E%5F%3B%20%3C%3B%20rel%28br%29%3B%20%29%3B%0Aout%3B">(Lien)</a></p>
+
+<pre>
+<codeline>( node(51.47,-0.01,51.48,0.01);</codeline>
+<codeline>  way(51.47,-0.01,51.48,0.01); );</codeline>
+<codeline>(._; &lt;; rel(br); );</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p><a name="full"/></p>
+
+<h2>Tous les objets ensemble</h2>
+
+<p>Nous rassemblons ici les variantes les plus judicieuses.</p>
+
+<p>Si votre programme cible peut gérer les coordonnées de l'objet,
+alors vous pouvez obtenir tous les nœuds, chemins et relations dans le rectangle englobant comme suit: <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20node%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%0A%20%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20geom%20qt%3B%0A%3C%3B%0Aout%20qt%3B">(Lien)</a></p>
+
+<pre>
+<codeline>( node(51.477,-0.001,51.478,0.001);</codeline>
+<codeline>  way(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out geom qt;</codeline>
+<codeline>&lt;;</codeline>
+<codeline>out qt;</codeline>
+</pre>
+
+<p>Cela recueille</p>
+
+<ul>
+<li>tous les nœuds du rectangle englobant (sélection dans ligne 1, sortie dans ligne 3)</li>
+<li>toutes les chemins du rectangle englobant,
+même celles qui ne traversent que sans nœud le rectangle englobant (sélection dans ligne 2, sortie dans ligne 3).</li>
+<li>toutes les relations qui ont au moins un nœud ou une voie dans le rectangle englobant en tant que membre,
+sans géométrie indépendante (sélection dans ligne 4, sortie dans ligne 5)</li>
+</ul>
+
+<p>Vous obtenez les mêmes données sans aucune relation si vous n'utilisez que les lignes 1 à 3 comme requête.</p>
+
+<p>Les relations sur les relations sont obtenues
+en complétant la ligne 4 par un réunion de relations et de relations sur les relations: <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20node%2851%2E47%2C%2D0%2E01%2C51%2E48%2C0%2E01%29%3B%0A%20%20way%2851%2E47%2C%2D0%2E01%2C51%2E48%2C0%2E01%29%3B%20%29%3B%0Aout%20geom%20qt%3B%0A%28%20%3C%3B%20rel%28br%29%3B%20%29%3B%0Aout%20qt%3B">(Lien)</a></p>
+
+<pre>
+<codeline>( node(51.47,-0.01,51.48,0.01);</codeline>
+<codeline>  way(51.47,-0.01,51.48,0.01); );</codeline>
+<codeline>out geom qt;</codeline>
+<codeline>( &lt;; rel(br); );</codeline>
+<codeline>out qt;</codeline>
+</pre>
+
+<p>Vous pouvez également sortir les données dans un format strictement traditionnel avec tri par type d'élément et géométrie indirecte uniquement.
+Cela nécessite, en particulier, la résolution vers l'avant des chemins
+pour obtenir tous les nœuds pour la géométrie.
+Ensuite, nous devons remplacer l'instruction <code>&lt;</code> par une variante plus précise,
+sinon la commande <code>&lt;</code> collectera les chemins aux nœuds ajoutés.
+La première variante devient alors: <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20node%2851%2E47%2C%2D0%2E01%2C51%2E48%2C0%2E01%29%3B%0A%20%20way%2851%2E47%2C%2D0%2E01%2C51%2E48%2C0%2E01%29%3B%20%29%3B%0A%28%20%2E%5F%3B%0A%20%20%28%0A%20%20%20%20rel%28bn%29%2D%3E%2Ea%3B%0A%20%20%20%20rel%28bw%29%2D%3E%2Ea%3B%0A%20%20%29%3B%20%29%3B%0A%28%20%2E%5F%3B%0A%20%20node%28w%29%3B%20%29%3B%0Aout%3B">(Lien)</a></p>
+
+<pre>
+<codeline>( node(51.47,-0.01,51.48,0.01);</codeline>
+<codeline>  way(51.47,-0.01,51.48,0.01); );</codeline>
+<codeline>( ._;</codeline>
+<codeline>  (</codeline>
+<codeline>    rel(bn)-&gt;.a;</codeline>
+<codeline>    rel(bw)-&gt;.a;</codeline>
+<codeline>  ); );</codeline>
+<codeline>( ._;</codeline>
+<codeline>  node(w); );</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Ici, les lignes 3 à 7 sont responsables des relations.
+Sans les lignes 4 à 8, mais avec les lignes 9 à 11 pour enrichissement des chemins et la sortie,
+vous n'avez que des noeuds et des chemins.</p>
+
+<p>Inversement, les relations sur les relations peuvent être collectées,
+en ajoutant la nouvelle ligne 8 à la ligne 7: <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20node%2851%2E47%2C%2D0%2E01%2C51%2E48%2C0%2E01%29%3B%0A%20%20way%2851%2E47%2C%2D0%2E01%2C51%2E48%2C0%2E01%29%3B%20%29%3B%0A%28%20%2E%5F%3B%0A%20%20%28%0A%20%20%20%20rel%28bn%29%2D%3E%2Ea%3B%0A%20%20%20%20rel%28bw%29%2D%3E%2Ea%3B%0A%20%20%29%3B%0A%20%20rel%28br%29%3B%20%29%3B%0A%28%20%2E%5F%3B%0A%20%20node%28w%29%3B%20%29%3B%0Aout%3B">(Lien)</a></p>
+
+<pre>
+<codeline>( node(51.47,-0.01,51.48,0.01);</codeline>
+<codeline>  way(51.47,-0.01,51.48,0.01); );</codeline>
+<codeline>( ._;</codeline>
+<codeline>  (</codeline>
+<codeline>    rel(bn)-&gt;.a;</codeline>
+<codeline>    rel(bw)-&gt;.a;</codeline>
+<codeline>  );</codeline>
+<codeline>  rel(br); );</codeline>
+<codeline>( ._;</codeline>
+<codeline>  node(w); );</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>Il existe d'autres variantes,
+même s'ils ont une signification plutôt historique que à présent.
+Nous en présentons deux dans le <a href="map_apis.html">prochain sous-chapitre</a>.</p>
+
+<!-- Traduit avec www.DeepL.com/Translator, partiellement redigé -->
+<hr/>
+<p>prochaine: <a href="map_apis.html">Autres APIs disponibles</a></p>
+
+</body>
+</html>

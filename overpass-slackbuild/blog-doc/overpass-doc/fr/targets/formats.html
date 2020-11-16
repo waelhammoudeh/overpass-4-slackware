@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Formats de données</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Mode d'emploi d'API Overpass</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Introduction</a></div>
+<div type="parent"><strong><a href="index.html">Utilisation</a></strong></div>
+
+<div type="sibling"><strong> Formats de données</strong></div>
+<div type="sibling"><a href="turbo.html">Overpass Turbo</a></div>
+
+</nav>
+<div type="parent"><a href="../full_data/index.html">Toutes les données dans une région</a></div>
+<div type="parent"><a href="../criteria/index.html">Trouver des objets</a></div>
+<div type="parent"><a href="../counting/index.html">Compter d'objets</a></div>
+<div type="parent"><a href="../analysis/index.html">Analyser des données</a></div>
+<div type="parent"><a href="../more_info/index.html">Plus d'informations</a></div>
+
+<hr />
+
+<h1>Formats de données</h1>
+
+<p>Il y a plusieurs formats de données pour récupérer des objets d'OpenStreetMap.
+Nous présenterons tous les formats qui ont une application immédiate.</p>
+
+<nav>
+<h3>Sommaire</h3>
+
+<div type="subsection"><a href="formats.html#scope">Démarcation</a></div>
+<div type="subsection"><a href="formats.html#faithful">Niveaux de verbosité traditionnels</a></div>
+<div type="subsection"><a href="formats.html#extras">Variantes</a></div>
+<div type="subsection"><a href="formats.html#json">JSON et GeoJSON</a></div>
+<div type="subsection"><a href="formats.html#csv">CSV</a></div>
+
+</nav>
+
+<p><a name="scope"/></p>
+
+<h2>Démarcation</h2>
+
+<p>Les types de données ont déjà été présentés dans <a href="../preface/osm_data_model.html">la section appropriée de l'introduction</a>.
+Vous devriez donc déjà être familier avec les <em>nœuds</em>, les <em>chemins</em> et les <em>relations</em>.</p>
+
+<p>Cette section explique les formats de sortie.
+D'autre part, les différents degrés de détail possibles sont présentés.
+L'outil qui a besoin de quel format de sortie est expliqué dans la section sur l'outil.</p>
+
+<p>Le problème commun de compléter la géométrie des objets OpenStreetMap,
+est dédié à <a href="../full_data/osm_types.html">la section sur les géométries</a> dans le chapitre <a href="../full_data/index.html">Toutes les données dans une région</a>.</p>
+
+<p><a name="faithful"/></p>
+
+<h2>Niveaux de verbosité traditionnels</h2>
+
+<p>D'abord au niveau de détail:
+Alors que les formats de sortie sont contrôlés par un paramètre global pour chaque requête,
+les niveaux de détail de chaque instruction de sortie sont contrôlés par ses paramètres.
+Il est ainsi possible de mélanger différents niveaux de détail dans une même requête;
+cette capacité est nécessaire pour une quantité optimale de données <a href="../full_data/osm_types.html#full">de certaines variantes géométriques</a>.
+C'est ce qui est noté pour <a href="index.html">chaque application</a>.</p>
+
+<p>Nous donnons également un exemple autour de Greenwich, la banlieue de Londres.
+L'exemple est principalement choisi de telle sorte qu'il fournit seulement une quantité maitrisable des <em>nœuds</em>, <em>chemins</em> et <em>relations</em>,
+pour bien voir les données de l'onglet <em>Données</em> d'Overpass Turbo.</p>
+
+<p>Pour les niveaux de détail originaux d'OpenStreetMap, il existe une hiérarchie pour les activer:</p>
+
+<p>L'instruction <em>out ids</em> <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20ids%3B">revient</a>:</p>
+
+<pre>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out ids;</codeline>
+</pre>
+
+<ul>
+<li>les identifiants des objets</li>
+</ul>
+
+<p>L'instruction <em>out skel</em> <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20skel%3B">fournit</a> en outre les informations nécessaires,
+pour construire la géométrie:</p>
+
+<pre>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out skel;</codeline>
+</pre>
+
+<ul>
+<li>aux <em>nœuds</em>, leurs coordonnées</li>
+<li>à <em>chemins</em> et <em>relations</em> la liste des membres</li>
+</ul>
+
+<p>L'instruction <em>out</em> (sans ajouts) <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%3B">retourne</a> les géodonnées complètes,
+c'est à dire supplémentaires:</p>
+
+<pre>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<ul>
+<li>les attributs de tous les objets</li>
+</ul>
+
+<p>L'instruction <em>out meta</em> <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20meta%3B">retourne</a> en plus:</p>
+
+<pre>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out meta;</codeline>
+</pre>
+
+<ul>
+<li>la version par objet</li>
+<li>l'horodatage de chaque objet</li>
+</ul>
+
+<p>Enfin, l'instruction <em>out attribution</em> retourne les données suivantes:</p>
+
+<ul>
+<li>l'identifiant de groupe de modifications</li>
+<li>l'identifiant d'utilisateur</li>
+<li>le nom d'utilisateur pour cet identifiant</li>
+</ul>
+
+<p>Toutefois, ce dernier niveau de détail concerne les données qui, selon l'opinion dominante, relèvent de la protection des données.
+Un <a href="../analysis/index.html">effort accru</a> est donc nécessaire.
+Étant donné que ces données ne sont requises pour aucune des applications discutées dans ce chapitre,
+nous allons nous passer d'un exemple ici.</p>
+
+<p><a name="extras"/></p>
+
+<h2>Variantes</h2>
+
+<p>Il est possible d'ajouter trois degrés de détail à la géométrie supplémentaire.
+Toutes les combinaisons entre les degrés de détail qui viennent d'être présentés et les degrés de détail géométrique supplémentaires sont possibles.</p>
+
+<p>Le drapeau <em>center</em> active une coordonnée unique pour chaque objet.
+Ceci n'a pas de signification mathématique particulière,
+mais se trouve simplement au milieu du rectangle englobant d'objet:
+<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20ids%20center%3B">Exemple 1</a></p>
+
+<pre>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out ids center;</codeline>
+</pre>
+
+<p><a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20center%3B">Exemple 2</a></p>
+
+<pre>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Le drapeau <em>bb</em> (pour <em>Bounding-Box</em>, rectangle englobant en anglais) active le rectangle englobant pour chaque objet:
+<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20ids%20bb%3B">Exemple</a></p>
+
+<pre>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out ids bb;</codeline>
+</pre>
+
+<p>Le drapeau <em>geom</em> (pour <em>géométrie</em>) complète les coordonnées complètes.
+Le niveau minimum de détail requis pour cela est <em>skel</em>,
+donc cela fonctionne jusqu'à et y compris <em>l'attribution</em>:
+<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20skel%20geom%3B">Exemple</a></p>
+
+<pre>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out skel geom;</codeline>
+</pre>
+
+<p>Mais maintenant nous avons plus de quelques centaines de mètres dans un parc de Greenwich:
+aussi plusieurs centaines de kilomètres de sentiers pédestres dans l'est de l'Angleterre.
+Il s'agit d'un problème général de relations.
+Comme remède, il y a aussi un rectangle englobant pour la commande de sortie, <a href="../full_data/bbox.html#crop">voir là</a>.</p>
+
+<p>Enfin, il y a le format de sortie <em>tags</em>.
+Ceci est basé sur <em>ids</em> et affiche en plus des attributs, mais pas de géométries ou de structures.
+C'est particulièrement utile si vous <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20tags%3B">n'avez pas besoin des coordonnées</a> dans le résultat:</p>
+
+<pre>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out tags;</codeline>
+</pre>
+
+<p>Cependant, il peut également <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20tags%20center%3B">être combiné</a> avec les deux niveaux de géométrie <em>center</em> et <em>bb</em>:</p>
+
+<pre>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out tags center;</codeline>
+</pre>
+
+<p><a name="json"/></p>
+
+<h2>JSON et GeoJSON</h2>
+
+<p>Passons maintenant aux formats de données:
+Même que le niveau de détail peut être sélectionné pour chaque commande de sortie,
+le format de sortie n'est spécifié qu'une seule fois globalement pour chaque requête.
+De plus, le choix du format de sortie change la forme, mais pas le contenu.</p>
+
+<p>Au sein de JSON, l'enjeu est de combler un fossé.
+D'une part, il existe un format commun pour les géodonnées, appelé GeoJSON.
+D'autre part, les données OpenStreetMap doivent conserver leur structure,
+et ça ne correspond pas aux spécifications de GeoJSON.</p>
+
+<p>Comme solution, il y a la possibilité
+de créez des objets compatibles GeoJSON à partir des objets OpenStreetMap.
+Cependant, les objets OpenStreetMap originaux sont mappés fidèles à l'original dans JSON et ne sont pas GeoJSON.</p>
+
+<p>OpenStreetMap objets <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%5Bout%3Ajson%5D%3B%0A%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20geom%3B">dans JSON</a>:</p>
+
+<pre>
+<codeline>[out:json];</codeline>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Éléments dérivés <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%5Bout%3Ajson%5D%3B%0A%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aconvert%20item%20%3A%3A%3D%3A%3A%2C%3A%3Ageom%3Dgeom%28%29%2C%5Fosm%5Ftype%3Dtype%28%29%3B%0Aout%20geom%3B">dans JSON</a>:</p>
+
+<pre>
+<codeline>[out:json];</codeline>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>convert item ::=::,::geom=geom(),_osm_type=type();</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>La création d'éléments dérivés est un grand complexe de sujets avec <a href="../counting/index.html">son propre chapitre</a>.</p>
+
+<p><a name="csv"/></p>
+
+<h2>CSV</h2>
+
+<p>Il est souvent utile de pouvoir organiser les données sous forme de tableaux.
+Pour les données OpenStreetMap, cela signifie des colonnes sélectionnées par l'utilisateur.
+et une ligne pour chaque objet trouvé.</p>
+
+<p>La sélection des colonnes limite les informations disponibles sur l'objet pour la plupart des objets.
+Par exemple, les attributs qui ne sont pas demandées comme colonnes ne sont pas éditées.
+Des géométries plus complexes qu'une simple coordonnée ne peuvent pas non plus être affichées dans ce format.
+C'est ce qui distingue ce format des formats XML et JSON potentiellement sans perte.</p>
+
+<p>Le cas standard d'une colonne est la clé d'un attribut.
+La valeur de cet attribut est ensuite sortie vers l'objet pour chaque objet.
+Si l'objet n'a pas cet attribut, une valeur vide est sortie.
+Il existe des valeurs spéciales pour les autres propriétés de l'objet;
+ceux-ci commencent par <code>::</code>.
+<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%5Bout%3Acsv%28%3A%3Atype%2C%3A%3Aid%2Cname%29%5D%3B%0A%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20center%3B">exemple</a></p>
+
+<pre>
+<codeline>[out:csv(::type,::id,name)];</codeline>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>CSV lui-même signifiait à l'origine <em>comma separated value</em> (anglais: <em>valeur séparée par des virgules</em>).
+Cependant, les nombreux programmes qui l'utilisent ont développé des attentes différentes à l'égard des séparateurs.
+Ainsi, le séparateur peut être configuré et le titre peut <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=%5Bout%3Acsv%28%3A%3Atype%2C%3A%3Aid%2Cname%3Bfalse%3B%22%7C%22%29%5D%3B%0A%28%20way%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%5Bname%3D%22Blackheath%20Avenue%22%5D%3B%0A%20%20node%28w%29%3B%0A%20%20relation%2851%2E477%2C%2D0%2E001%2C51%2E478%2C0%2E001%29%3B%20%29%3B%0Aout%20center%3B">être activé et désactivé</a>:</p>
+
+<pre>
+<codeline>[out:csv(::type,::id,name;false;"|")];</codeline>
+<codeline>( way(51.477,-0.001,51.478,0.001)[name="Blackheath Avenue"];</codeline>
+<codeline>  node(w);</codeline>
+<codeline>  relation(51.477,-0.001,51.478,0.001); );</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Les <a href="index.html">applications respectives</a> indiquent quelle variante convient le mieux.</p>
+
+<!-- Traduit avec www.DeepL.com/Translator, partiellement redigé -->
+<hr/>
+<p>prochaine: <a href="turbo.html">Overpass Turbo</a></p>
+
+</body>
+</html>

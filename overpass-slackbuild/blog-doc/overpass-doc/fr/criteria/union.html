@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Opérations ET et OU</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Mode d'emploi d'API Overpass</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Introduction</a></div>
+<div type="parent"><a href="../targets/index.html">Utilisation</a></div>
+<div type="parent"><a href="../full_data/index.html">Toutes les données dans une région</a></div>
+<div type="parent"><strong><a href="index.html">Trouver des objets</a></strong></div>
+
+<div type="sibling"><a href="nominatim.html">Alternatives</a></div>
+<div type="sibling"><a href="per_tag.html">Par Tag</a></div>
+<div type="sibling"><a href="chaining.html">Enchainer</a></div>
+<div type="sibling"><strong> Opérations ET et OU</strong></div>
+<div type="sibling"><a href="lrs.html">Listes de point-vergule</a></div>
+<div type="sibling"><a href="misc_criteria.html">Plus des criterions</a></div>
+
+</nav>
+<div type="parent"><a href="../counting/index.html">Compter d'objets</a></div>
+<div type="parent"><a href="../analysis/index.html">Analyser des données</a></div>
+<div type="parent"><a href="../more_info/index.html">Plus d'informations</a></div>
+
+<hr />
+
+<h1>Opérations ET et OU</h1>
+
+<p>Requêtes sur des objets via des attributs multiples.</p>
+
+<nav>
+<h3>Sommaire</h3>
+
+<div type="subsection"><a href="union.html#intersection">Opération ET</a></div>
+<div type="subsection"><a href="union.html#union">Opération OU</a></div>
+<div type="subsection"><a href="union.html#full">Logique d'assemblage</a></div>
+
+</nav>
+
+<p><a name="intersection"/></p>
+
+<h2>Opération ET</h2>
+
+<p>Tout d'abord, nous voulons lier deux ou plusieurs conditions de cette façon
+que seuls les objets qui remplissent toutes les conditions sont trouvés.
+Nous avons déjà vu quelques exemples de liens ET:
+<a href="per_tag.html#local">un attribut et un rectangle englobant</a>,
+<a href="chaining.html#lateral">un attribut et une surface, un attribut et deux surfaces et deux attributs</a></p>
+
+<p>Nous travaillons sur la mission assez typique
+de trouver un distributeur de billets.
+Il y a l'attribut <code>amenity</code> avec la valeur <code>atm</code> pour ce but.
+En raison du grand nombre, l'<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Bamenity%3Datm%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20center%3B">exemple</a> a un petit rectangle englobant:</p>
+
+<pre>
+<codeline>nwr[amenity=atm]({{bbox}});</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Ainsi, un filtre après un attribut (ici <code>amenity=atm</code>) est combiné avec un filtre après un rectangle englobant,
+en écrivant simplement les deux filtres l'un après l'autre.</p>
+
+<p>L'ordre <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%28%7B%7Bbbox%7D%7D%29%5Bamenity%3Datm%5D%3B%0Aout%20center%3B">n'a pas d'importance</a>:</p>
+
+<pre>
+<codeline>nwr({{bbox}})[amenity=atm];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Mais il existe une autre possibilité d'enregistrer les distributeurs automatiques de billets:
+Ils font souvent partie d'une succursale bancaire;
+ils sont ensuite saisis en tant que <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Bamenity%3Dbank%5D%28%7B%7Bbbox%7D%7D%29%5Batm%3Dyes%5D%3B%0Aout%20center%3B">propriété de la succursale</a>:</p>
+
+<pre>
+<codeline>nwr[amenity=bank]({{bbox}})[atm=yes];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Comme dans tous les autres exemples, les filtres peuvent être disposés <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Batm%3Dyes%5D%5Bamenity%3Dbank%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20center%3B">dans n'importe quel ordre</a> dans l'instruction <em>query</em>:</p>
+
+<pre>
+<codeline>nwr[atm=yes][amenity=bank]({{bbox}});</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>La façon de combiner les deux types de cartographie est expliquée dans <a href="union.html#union">la section suivante</a>.
+Tout d'abord, il sera clarifié,
+qu'un nombre quelconque d'attributs ou d'autres critères peuvent être combinés:
+Dans l'<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=9&amp;Q=way%0A%20%20%5Bname%3D%22Venloer%20Stra%C3%9Fe%22%5D%0A%20%20%5Bref%3D%22B%2059%22%5D%0A%20%20%2850%2E96%2C6%2E85%2C50%2E98%2C6%2E88%29%0A%20%20%5Bmaxspeed%3D50%5D%0A%20%20%5Blanes%3D2%5D%0A%20%20%5Bhighway%3Dsecondary%5D%0A%20%20%5Boneway%3Dyes%5D%3B%0Aout%20geom%3B">exemple suivant</a>, omettez un ou plusieurs filtres pour l'essayer;
+le résultat changera toujours, parce que chacun des six filtres d'attributs et du rectangle englobant a une influence:</p>
+
+<pre>
+<codeline>way</codeline>
+<codeline>  [name="Venloer Straße"]</codeline>
+<codeline>  [ref="B 59"]</codeline>
+<codeline>  (50.96,6.85,50.98,6.88)</codeline>
+<codeline>  [maxspeed=50]</codeline>
+<codeline>  [lanes=2]</codeline>
+<codeline>  [highway=secondary]</codeline>
+<codeline>  [oneway=yes];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Étonnamment, cela s'applique également à notre exemple de guichet automatique bancaire:
+Il suffit souvent de chercher un attribut subordonné,
+parce que sur tous les objets avec l'attribut subordonné il y a aussi l'attribut général:</p>
+
+<ul>
+<li>Sur plus de 95% de tous les objets avec un attribut <code>admin_level</code> il y a l'attribut <code>boundary=administrative</code> selon <a target="_blank" rel="noopener" href="https://taginfo.openstreetmap.org/tags/boundary=administrative#combinations">Taginfo</a> (nombre et barre dans les colonnes à droite).</li>
+<li>Plus de 99% de tous les objets avec un attribut <code>fence_type</code> ont l'attribut <code>barrier=fence</code> selon <a target="_blank" rel="noopener" href="https://taginfo.openstreetmap.org/tags/fence_type=wood#combinations">Taginfo</a>.</li>
+</ul>
+
+<p>Une <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.473&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Bbarrier%3Dfence%5D%5Bfence%5Ftype%3Dwood%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">recherche</a> de clôtures (<code>barrier=fence</code>) avec l'attribut <code>fence_type=wood</code> fournit alors pratiquement le même résultat ...</p>
+
+<pre>
+<codeline>nwr[barrier=fence][fence_type=wood]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>... comme une <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.473&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Bfence%5Ftype%3Dwood%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">recherche</a> à seulement <code>fence_type=wood</code>:</p>
+
+<pre>
+<codeline>nwr[fence_type=wood]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Au contraire, on a plus de résultats sur les distributeurs de billets,
+<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Batm%3Dyes%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20center%3B">si on cherche</a> juste <code>atm=yes</code>:</p>
+
+<pre>
+<codeline>nwr[atm=yes]({{bbox}});</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>D'un point de vue sémantique, c'est très convaincant:
+Les distributeurs automatiques de billets peuvent également être installés dans les stations-service, les centres commerciaux ou d'autres bâtiments.</p>
+
+<p><a name="union"/></p>
+
+<h2>Opération OU</h2>
+
+<p>Nous voulons maintenant lier deux ou plusieurs conditions de cette façon,
+que tous les objets qui remplissent au moins une des conditions sont trouvés.
+Nous en avons déjà vu quelques exemples ici aussi:
+<a href="../targets/formats.html#faithful">Tous les objets dans des rectangles englobants</a>,
+<a href="chaining.html#topdown">compléter les objets avec les objets usagés</a>,
+<a href="../preface/design.html#block_statements">comme exemple d'instruction de bloc</a></p>
+
+<p>Pour notre exemple d'en haut, nous devons résoudre le problème,
+pour trouver <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=%28%0A%20%20nwr%5Bamenity%3Datm%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20nwr%5Batm%3Dyes%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%29%3B%0Aout%20center%3B">à la fois</a> les guichets automatiques autonomes et ceux des banques:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  nwr[amenity=atm]({{bbox}});</codeline>
+<codeline>  nwr[atm=yes]({{bbox}});</codeline>
+<codeline>);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>L'opération OU reprend l'instruction de bloc <em>union</em> aux lignes 1 à 4.
+Elle exécute son bloc intérieur.
+L'instruction dans la ligne 2 écrit comme résultat tous les objets dans l'ensemble <code>_</code>,
+qui ont un attribut <code>amenity</code> avec la valeur <code>atm</code> et qui sont situés dans le rectangle englobant remplie par Overpass Turbo.
+L'instruction <em>union</em> conserve une copie de ce résultat.
+La ligne 3 écrit comme résultat tous les objets dans l'ensemble <code>_</code>,
+qui portent un attribut <code>atm</code> avec la valeur <code>yes</code> et qui sont situés dans le rectangle englobant à nouveau remplis par Overpass-Turbo.
+L'instruction <em>union</em> conserve une copie de ce résultat.
+Union écrit alors tous les objets dans l'ensemble <code>_</code>,
+qui apparaissent dans au moins un des résultats partiels - la liaison OU souhaitée.</p>
+
+<p>C'est un cas courant
+de devoir accepter une liste assez longue de valeurs admissibles pour un attribut.
+Si vous voulez trouver par exemple toutes les routes adaptées aux voitures,
+puis une liste de valeurs pour <code>highway</code> se forme comme
+<code>motorway</code>, <code>motorway_link</code>,
+<code>trunk</code>, <code>trunk_link</code>,
+<code>primary</code>, <code>secondary</code>, <code>tertiary</code>,
+<code>unclassified</code>, <code>residential</code>.
+Avec l'instruction <em>union</em> on <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.473&amp;lon=0.0&amp;zoom=15&amp;Q=%28%0A%20%20way%5Bhighway%3Dmotorway%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dmotorway%5Flink%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dtrunk%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dtrunk%5Flink%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dprimary%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dsecondary%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dtertiary%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dunclassified%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dresidential%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%29%3B%0Aout%20geom%3B">peut interroger</a> ceci comme:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  way[highway=motorway]({{bbox}});</codeline>
+<codeline>  way[highway=motorway_link]({{bbox}});</codeline>
+<codeline>  way[highway=trunk]({{bbox}});</codeline>
+<codeline>  way[highway=trunk_link]({{bbox}});</codeline>
+<codeline>  way[highway=primary]({{bbox}});</codeline>
+<codeline>  way[highway=secondary]({{bbox}});</codeline>
+<codeline>  way[highway=tertiary]({{bbox}});</codeline>
+<codeline>  way[highway=unclassified]({{bbox}});</codeline>
+<codeline>  way[highway=residential]({{bbox}});</codeline>
+<codeline>);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Vous pouvez également utiliser les <a href="per_tag.html#regex">expressions régulières</a> présentées dans la section précédente
+et en <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.473&amp;lon=0.0&amp;zoom=15&amp;Q=way%28%7B%7Bbbox%7D%7D%29%0A%20%20%5Bhighway%7E%22%5E%28motorway%7Cmotorway%5Flink%7Ctrunk%7Ctrunk%5Flink%7Cprimary%7Csecondary%7Ctertiary%7Cunclassified%7Cresidential%29%24%22%5D%3B%0Aout%20geom%3B">a juste besoin</a>:</p>
+
+<pre>
+<codeline>way({{bbox}})</codeline>
+<codeline>  [highway~"^(motorway|motorway_link|trunk|trunk_link|primary|secondary|tertiary|unclassified|residential)$"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Les lignes 1 et 2 forment une instruction <em>query</em> pour les chemins avec deux filtres;
+Le filtre <code>({{bbox}})</code> pour les boîtes de délimitation est <a href="../full_data/bbox.html#filter">déjà connu</a>.
+De l'autre filtre, le tilde <code>~</code> est le caractère le plus important;
+il accepte des objets qui ont un <em>attribut</em> avec le <em>clé</em> à gauche du tilde, ici <code>highway</code>, et une valeur,
+qui est admis par l'expression régulière à droite du tilde.</p>
+
+<p>La syntaxe avec l'accent circonflexe <code>^</code> au début et le symbole dollar <code>$</code> à la fin,
+que la valeur doit correspondre à l'ensemble de la valeur et pas seulement à une chaîne de caractères y compris.
+La ligne verticale sépare différentes alternatives les unes des autres,
+ici un total de 9 valeurs potentielles pour l'attribut.</p>
+
+<p>La section des <a href="per_tag.html#regex">expressions régulières</a> contient d'autres exemples.</p>
+
+<p>Cependant, dans notre exemple des distributeurs, nous n'avons pas de clé commun.
+Les expressions régulières ne nous aident donc pas ici.</p>
+
+<p>Mais ce qui se répète, c'est la condition sur le rectangle englobant.
+Si vous voulez éviter la répétition,
+vous pouvez avancher la condition commune et garder le résultat dans un ensemble;
+<code>tous</code> est un nom descriptif pour lui.
+Souvent, ça raccourcit également la durée d'exécution de <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%28%7B%7Bbbox%7D%7D%29%2D%3E%2Etous%3B%0A%28%0A%20%20nwr%2Etous%5Bamenity%3Datm%5D%3B%0A%20%20nwr%2Etous%5Batm%3Dyes%5D%3B%0A%29%3B%0Aout%20center%3B">la requête</a>:</p>
+
+<pre>
+<codeline>nwr({{bbox}})-&gt;.tous;</codeline>
+<codeline>(</codeline>
+<codeline>  nwr.tous[amenity=atm];</codeline>
+<codeline>  nwr.tous[atm=yes];</codeline>
+<codeline>);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>L'instruction de bloc <em>union</em> des lignes 2 à 5 est maintenant précédée d'une instruction <em>query</em> à la ligne 1.
+Là, tous les objets du rectangle englobant sont stockés dans l'ensemble <code>tous</code>.
+Cet ensemble est utilisé deux fois dans le bloc <em>union</em>:
+la ligne 3 et à la ligne 4, <code>.tous</code> est un filtre qui limite le résultat au contenu de <code>tous</code>.
+Dans la ligne 3, on trouve exactement les objets,
+qui sont dans l'ensemble <code>tous</code> et ont un attribut <code>amenity</code> avec la valeur <code>atm</code>.
+Dans la ligne 4, on trouve exactement les objets,
+qui sont dans l'ensemble <code>tous</code> et ont un attribut <code>atm</code> avec la valeur <code>yes</code>.</p>
+
+<p>Et si on prenait l'ensemble <code>_</code>?
+Cela serait techniquement possible.
+Mais alors nous devrions nous rappeler de rediriger la sortie à chaque ligne du bloc.
+Oublier cela est une source populaire d'erreurs.</p>
+
+<p><a name="full"/></p>
+
+<h2>Logique d'assemblage</h2>
+
+<p>...</p>
+<hr/>
+<p>prochaine: <a href="lrs.html">Listes de point-vergule</a></p>
+
+</body>
+</html>

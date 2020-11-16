@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Und- und Oder-Verknüpfung</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Handbuch zur Overpass API</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Einführung</a></div>
+<div type="parent"><a href="../targets/index.html">Verwendung</a></div>
+<div type="parent"><a href="../full_data/index.html">Räumliche Datenauswahl</a></div>
+<div type="parent"><strong><a href="index.html">Objekte Finden</a></strong></div>
+
+<div type="sibling"><a href="nominatim.html">Alternativen</a></div>
+<div type="sibling"><a href="per_tag.html">Per Tag</a></div>
+<div type="sibling"><a href="chaining.html">Verketten</a></div>
+<div type="sibling"><strong> Und- und Oder-Verknüpfung</strong></div>
+<div type="sibling"><a href="lrs.html">Semikolon-Listen</a></div>
+<div type="sibling"><a href="misc_criteria.html">Mehr Suchkriterien</a></div>
+
+</nav>
+<div type="parent"><a href="../counting/index.html">Objekte Zählen</a></div>
+<div type="parent"><a href="../analysis/index.html">Daten Analysieren</a></div>
+<div type="parent"><a href="../more_info/index.html">Anhang</a></div>
+
+<hr />
+
+<h1>Und- und Oder-Verknüpfung</h1>
+
+<p>Suche nach Objekten anhand mehrerer Tags und sonstiger Kriterien.</p>
+
+<nav>
+<h3>Inhalt</h3>
+
+<div type="subsection"><a href="union.html#intersection">Und-Verknüpfung</a></div>
+<div type="subsection"><a href="union.html#union">Oder-Verknüfung</a></div>
+<div type="subsection"><a href="union.html#full">Gemischte Logik</a></div>
+
+</nav>
+
+<p><a name="intersection"/></p>
+
+<h2>Und-Verknüpfung</h2>
+
+<p>Zunächst wollen wir zwei oder mehr Bedingungen so verknüpfen,
+dass nur Objekte gefunden werden, die alle Bedingungen erfüllen.
+Einige Beispiele für Und-Verknüpfungen haben wir bereits gesehen:
+<a href="per_tag.html#local">Tag und Bounding-Box</a>,
+<a href="chaining.html#lateral">Tag und Gebiet, Tag und zwei Gebiete sowie zwei Tags</a></p>
+
+<p>Wir arbeiten und an dem Standardfall entlang,
+einen Geldautomaten finden zu wollen.
+Es gibt dafür das Tag <code>amenity</code> mit Wert <code>atm</code>.
+Wegen der großen Anzahl hat das <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Bamenity%3Datm%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20center%3B">Beispiel</a> eine kleine Bounding-Box:</p>
+
+<pre>
+<codeline>nwr[amenity=atm]({{bbox}});</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Es werden also ein Filter nach einem Tag (hier <code>amenity=atm</code>) mit einem Filter nach einer Bounding-Box kombiniert,
+indem man beide Filter einfach hintereinander schreibt.</p>
+
+<p>Die Reihenfolge spielt dabei <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%28%7B%7Bbbox%7D%7D%29%5Bamenity%3Datm%5D%3B%0Aout%20center%3B">keine Rolle</a>:</p>
+
+<pre>
+<codeline>nwr({{bbox}})[amenity=atm];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Es gibt aber eine weitere Möglichkeit Geldautomaten einzutragen:
+Oft sind sie Bestandteil einer Bankfiliale;
+sie werden dann als <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Bamenity%3Dbank%5D%28%7B%7Bbbox%7D%7D%29%5Batm%3Dyes%5D%3B%0Aout%20center%3B">Eigenschaft der Filiale</a> eingetragen:</p>
+
+<pre>
+<codeline>nwr[amenity=bank]({{bbox}})[atm=yes];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Wie in allen anderen Beispielen können auch hier die Filter innerhalb der <em>Query</em>-Anweisung <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Batm%3Dyes%5D%5Bamenity%3Dbank%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20center%3B">beliebig gereiht</a> werden:</p>
+
+<pre>
+<codeline>nwr[atm=yes][amenity=bank]({{bbox}});</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Wie man beide Mapping-Arten kombiniert, wird im <a href="union.html#union">nächsten Abschnitt</a> erläutert.
+Erst soll noch klargestellt werden,
+dass beliebig viele Tags oder sonstige Kriterien kombiniert werden können:
+Lassen Sie zum Ausprobieren <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=9&amp;Q=way%0A%20%20%5Bname%3D%22Venloer%20Stra%C3%9Fe%22%5D%0A%20%20%5Bref%3D%22B%2059%22%5D%0A%20%20%2850%2E96%2C6%2E85%2C50%2E98%2C6%2E88%29%0A%20%20%5Bmaxspeed%3D50%5D%0A%20%20%5Blanes%3D2%5D%0A%20%20%5Bhighway%3Dsecondary%5D%0A%20%20%5Boneway%3Dyes%5D%3B%0Aout%20geom%3B">im folgenden Beispiel</a> mal ein oder mehrere Filter weg;
+es wird sich immer das Ergebnis ändern, da jeder der sechs Tag-Filter und auch die Bounding-Box Einfluss hat:</p>
+
+<pre>
+<codeline>way</codeline>
+<codeline>  [name="Venloer Straße"]</codeline>
+<codeline>  [ref="B 59"]</codeline>
+<codeline>  (50.96,6.85,50.98,6.88)</codeline>
+<codeline>  [maxspeed=50]</codeline>
+<codeline>  [lanes=2]</codeline>
+<codeline>  [highway=secondary]</codeline>
+<codeline>  [oneway=yes];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Auf überraschende Weise trifft das übrigens auch auf unser Geldautomaten-Beispiel zu:
+Oft reicht es, gezielt nach einem speziellen Tag zu suchen,
+denn an allen Objekten mit dem speziellen Tag steht auch das allgemeine Tag:</p>
+
+<ul>
+<li>An über 95% aller Objekte mit einem Tag <code>admin_level</code> steht <a target="_blank" rel="noopener" href="https://taginfo.openstreetmap.org/tags/boundary=administrative#combinations">laut Taginfo</a> (Zahl und Balken in den Spalten ganz rechts) das Tag <code>boundary=administrative</code>.</li>
+<li>An über 99% aller Objekte mit einem Tag <code>fence_type</code> steht <a target="_blank" rel="noopener" href="https://taginfo.openstreetmap.org/tags/fence_type=wood#combinations">laut Taginfo</a> das Tag <code>barrier=fence</code>.</li>
+</ul>
+
+<p>Eine <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.473&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Bbarrier%3Dfence%5D%5Bfence%5Ftype%3Dwood%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">Suche nach</a> Zäunen (<code>barrier=fence</code>) mit Eigenschaft <code>fence_type=wood</code> liefert dann auch praktisch das gleiche Ergebnis ...</p>
+
+<pre>
+<codeline>nwr[barrier=fence][fence_type=wood]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>... wie eine <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.473&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Bfence%5Ftype%3Dwood%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">Suche nach</a> nur <code>fence_type=wood</code>:</p>
+
+<pre>
+<codeline>nwr[fence_type=wood]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Bei den Geldautomaten haben wir dagegen mehr Treffer,
+wenn wir nur nach <code>atm=yes</code> <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Batm%3Dyes%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20center%3B">suchen</a>:</p>
+
+<pre>
+<codeline>nwr[atm=yes]({{bbox}});</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Fachlich ist das durchaus überzeugend:
+Geldautomaten können eben auch an Tankstellen, in Einkaufszentren oder anderen Gebäuden stehen.</p>
+
+<p><a name="union"/></p>
+
+<h2>Oder-Verknüfung</h2>
+
+<p>Wir wollen nun zwei oder mehr Bedingungen so verknüpfen,
+dass alle Objekte gefunden werden, die mindestens eine der Bedingungen erfüllen.
+Auch hier haben wir schon einige Beispiele gesehen:
+<a href="../targets/formats.html#faithful">Alle Objekte in Bounding-Boxen</a>,
+<a href="chaining.html#topdown">Ergänzung benutzter Objekte</a>,
+<a href="../preface/design.html#block_statements">Als Beispiel eines Block-Statements</a></p>
+
+<p>Für unser Beispiel von oben müssen wir das Problem lösen,
+sowohl alleine stehende Geldautomaten als auch solche in Banken <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=%28%0A%20%20nwr%5Bamenity%3Datm%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20nwr%5Batm%3Dyes%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%29%3B%0Aout%20center%3B">zu finden</a>:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  nwr[amenity=atm]({{bbox}});</codeline>
+<codeline>  nwr[atm=yes]({{bbox}});</codeline>
+<codeline>);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Unsere Verknpüfung übernimmt das <em>Union</em>-Statement in den Zeilen 1 bis 4.
+Es führt seinen inneren Block aus.
+Zeile 2 schreibt als Ergebnis in das Set <code>_</code> alle Objekte,
+die ein Tag <code>amenity</code> mit Wert <code>atm</code> haben und in der von <a href="../targets/turbo.html#convenience">Overpass-Turbo</a> befüllten Bounding-Box liegen.
+<em>Union</em> behält eine Kopie dieses Ergebnisses.
+Zeile 3 schreibt als Ergebnis in das Set <code>_</code> alle Objekte,
+die ein Tag <code>atm</code> mit Wert <code>yes</code> haben und in der erneut von <em>Overpass-Turbo</em> befüllten Bounding-Box liegen.
+Danach schreibt <em>Union</em> ins Set <code>_</code> als Ergebnis alle Objekte,
+die in mindestens einem der Teilergebnisse vorkommen - die gewünschte <em>Oder-Verknüpfung</em>.</p>
+
+<p>Ein gängiger Fall ist es,
+eine recht lange Liste an Werten eines Tags prüfen zu müssen.
+Möchte man z.B. alle PKW-tauglichen Straßen finden,
+so entsteht an Werten für <code>highway</code> eine Liste der Art
+<code>motorway</code>, <code>motorway_link</code>,
+<code>trunk</code>, <code>trunk_link</code>,
+<code>primary</code>, <code>secondary</code>, <code>tertiary</code>,
+<code>unclassified</code>, <code>residential</code>.
+Mit <em>Union</em> kann man dies <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.473&amp;lon=0.0&amp;zoom=15&amp;Q=%28%0A%20%20way%5Bhighway%3Dmotorway%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dmotorway%5Flink%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dtrunk%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dtrunk%5Flink%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dprimary%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dsecondary%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dtertiary%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dunclassified%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dresidential%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%29%3B%0Aout%20geom%3B">abfragen als</a>:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  way[highway=motorway]({{bbox}});</codeline>
+<codeline>  way[highway=motorway_link]({{bbox}});</codeline>
+<codeline>  way[highway=trunk]({{bbox}});</codeline>
+<codeline>  way[highway=trunk_link]({{bbox}});</codeline>
+<codeline>  way[highway=primary]({{bbox}});</codeline>
+<codeline>  way[highway=secondary]({{bbox}});</codeline>
+<codeline>  way[highway=tertiary]({{bbox}});</codeline>
+<codeline>  way[highway=unclassified]({{bbox}});</codeline>
+<codeline>  way[highway=residential]({{bbox}});</codeline>
+<codeline>);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Man kann aber auch die im vorherigen Abschnitt vorgestellten <a href="per_tag.html#regex">regulären Ausdrücke</a> benutzen
+und <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.473&amp;lon=0.0&amp;zoom=15&amp;Q=way%28%7B%7Bbbox%7D%7D%29%0A%20%20%5Bhighway%7E%22%5E%28motorway%7Cmotorway%5Flink%7Ctrunk%7Ctrunk%5Flink%7Cprimary%7Csecondary%7Ctertiary%7Cunclassified%7Cresidential%29%24%22%5D%3B%0Aout%20geom%3B">braucht nur noch</a>:</p>
+
+<pre>
+<codeline>way({{bbox}})</codeline>
+<codeline>  [highway~"^(motorway|motorway_link|trunk|trunk_link|primary|secondary|tertiary|unclassified|residential)$"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Zeilen 1 und 2 bilden ein <em>Query</em>-Statement für <em>Ways</em> mit zwei Filtern;
+der Filter <code>({{bbox}})</code> für Bounding-Boxen <a href="../full_data/bbox.html#filter">ist bekannt</a>.
+Vom anderen Filter ist die Tilde <code>~</code> das wichtigste Zeichen;
+sie passt auf Objekte, die ein Tag mit Key links von der Tilde, hier <code>highway</code>, und mit einem Wert tragen,
+der auf den Ausdruck rechts von der Tilde passt.</p>
+
+<p>Die Syntax mit Caret <code>^</code> am Anfang und <code>$</code> am Ende kennzeichnet,
+dass der Wert im Ganzen und nicht nur die bestmögliche Teilzeichenkette des Wertes passen muss.
+Der senkrechte Strich wiederum trennt verschiedene Alternativen voneinander,
+hier insgesamt 9 potentielle Werte für das Tag.</p>
+
+<p>Der Abschnitt zu <a href="per_tag.html#regex">regulären Ausdrücken</a> enthält mehr Beispiele.</p>
+
+<p>In unserem Geldautomaten-Beispiel haben wir allerdings keinen gemeinsamen Key.
+Die Regulären Ausdrücke helfen uns daher hier nicht.</p>
+
+<p>Was sich aber wiederholt, ist die Bedingung auf die Bounding-Box.
+Will man die Wiederholung vermeiden,
+so kann man die gemeinsame Bedingung vorziehen und das Ergebnis in einem Set zwischenspeichern;
+<code>all</code> ist ein sprechender Name dafür.
+Oft verkürzt es auch die Laufzeit der <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%28%7B%7Bbbox%7D%7D%29%2D%3E%2Eall%3B%0A%28%0A%20%20nwr%2Eall%5Bamenity%3Datm%5D%3B%0A%20%20nwr%2Eall%5Batm%3Dyes%5D%3B%0A%29%3B%0Aout%20center%3B">Abfrage</a>:</p>
+
+<pre>
+<codeline>nwr({{bbox}})-&gt;.all;</codeline>
+<codeline>(</codeline>
+<codeline>  nwr.all[amenity=atm];</codeline>
+<codeline>  nwr.all[atm=yes];</codeline>
+<codeline>);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Dem <em>Union</em>-Statement in den Zeile 2 bis 5 ist jetzt ein <em>Query</em>-Statement in Zeile 1 vorangestellt.
+Dort werden alle Objekte, die in der Bounding-Box liegen, im Set <code>all</code> abgelegt.
+Dieses Set wird im <em>Union</em>-Block zweimal benutzt:
+In Zeile 3 und Zeile 4 ist jeweils <code>.all</code> ein Filter, der das Ergebnis auf den Inhalt von <code>all</code> beschränkt.
+Es werden also in Zeile 3 genau die Objekte gefunden,
+die im Set <code>all</code> liegen und die ein Tag <code>amenity</code> mit Wert <code>atm</code> besitzen.
+In Zeile 4 werden genau die Objekte gefunden,
+die im Set <code>all</code> liegen und die ein Tag <code>atm</code> mit Wert <code>yes</code> besitzen.</p>
+
+<p>Warum nehmen wir nicht einfach das Set <code>_</code>?
+Zwar wäre dies technisch möglich.
+Allerdings müssten wir dann bei jeder Zeile im Block daran denken, die Ausgabe umzuleiten.
+Das zu vergessen ist dann eine beliebte Quelle von Fehlern.</p>
+
+<p><a name="full"/></p>
+
+<h2>Gemischte Logik</h2>
+
+<!--
+highway mixed + name
+-->
+
+<p>...</p>
+
+<!-- Hinweis auf Evals -->
+<!-- [](../preface/design.html#evaluators) -->
+
+<!-- Around, mehrere Areas -->
+
+<!-- Normalformen -->
+<!-- Negation? -->
+<hr/>
+<p>weiter: <a href="lrs.html">Semikolon-Listen</a></p>
+
+</body>
+</html>

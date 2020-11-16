@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Trouver des objets</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Mode d'emploi d'API Overpass</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Introduction</a></div>
+<div type="parent"><a href="../targets/index.html">Utilisation</a></div>
+<div type="parent"><a href="../full_data/index.html">Toutes les données dans une région</a></div>
+<div type="parent"><strong>Trouver des objets</strong></div>
+
+<div type="sibling"><a href="nominatim.html">Alternatives</a></div>
+<div type="sibling"><a href="per_tag.html">Par Tag</a></div>
+<div type="sibling"><a href="chaining.html">Enchainer</a></div>
+<div type="sibling"><a href="union.html">Opérations ET et OU</a></div>
+<div type="sibling"><a href="lrs.html">Listes de point-vergule</a></div>
+<div type="sibling"><a href="misc_criteria.html">Plus des criterions</a></div>
+
+</nav>
+<div type="parent"><a href="../counting/index.html">Compter d'objets</a></div>
+<div type="parent"><a href="../analysis/index.html">Analyser des données</a></div>
+<div type="parent"><a href="../more_info/index.html">Plus d'informations</a></div>
+
+<hr />
+
+<h1>Trouver des objets</h1>
+
+<p>La tâche la plus fréquente de l'API Overpass:
+Trouver des données par des critères commes possédant un tag particulier, situé proche d'un endroit ou d'autres critères.</p>
+
+<p><a href="nominatim.html">Alternatives</a> <br />
+L'API Overpass opére toujours sur les données d'OpenStreetMap originales.
+Souvent on veut plutôt une interprétation intelligente, par example du géocodage.
+Le service <em>Nominatim</em> et plusieurs autres services sont mieux adaptés à cette tâche que l'API Overpass.</p>
+
+<p><a href="per_tag.html">Par Tag</a> <br />
+Requêter pour tous les objets qui possèdent un attribut particulier.</p>
+
+<p><a href="chaining.html">Enchainer</a> <br />
+Comment on peut enchainer plusieures instructions de manière à pouvoir 
+requêter par des critères relatifs à d'autres objets.</p>
+
+<p><a href="union.html">Opérations ET et OU</a> <br />
+Requêtes sur des objets via des attributs multiples.</p>
+
+<p><a href="lrs.html">Listes de point-vergule</a> <br />
+Aides pour traiter des attributs qui ont dans leurs valeurs plusieurs entrées separées par point-vergule.</p>
+
+<p><a href="misc_criteria.html">Plus des criterions</a> <br />
+Encore plus des criterions comme cherchant par longeur, par version d'objet, par nombre d'changeset ou nombre des members.</p>
+<hr/>
+<p>prochaine: <a href="nominatim.html">Alternatives</a></p>
+
+</body>
+</html>

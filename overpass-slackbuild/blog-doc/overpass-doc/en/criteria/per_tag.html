@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Per Tag</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Overpass API User's Manual</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Preface</a></div>
+<div type="parent"><a href="../targets/index.html">Downstream Tools</a></div>
+<div type="parent"><a href="../full_data/index.html">Spatial Data Selection</a></div>
+<div type="parent"><strong><a href="index.html">Find Objects</a></strong></div>
+
+<div type="sibling"><a href="nominatim.html">Alternatives</a></div>
+<div type="sibling"><strong> Per Tag</strong></div>
+<div type="sibling"><a href="chaining.html">Pipeline Building</a></div>
+<div type="sibling"><a href="union.html">Combining by And and Or</a></div>
+<div type="sibling"><a href="lrs.html">List represented sets</a></div>
+<div type="sibling"><a href="misc_criteria.html">Further Search Criteria</a></div>
+
+</nav>
+<div type="parent"><a href="../counting/index.html">Counting Objects</a></div>
+<div type="parent"><a href="../analysis/index.html">Analysing data</a></div>
+<div type="parent"><a href="../more_info/index.html">More information</a></div>
+
+<hr />
+
+<h1>Per Tag</h1>
+
+<p>Request all objects that bear a chosen tag.</p>
+
+<nav>
+<h3>Content</h3>
+
+<div type="subsection"><a href="per_tag.html#global">Global</a></div>
+<div type="subsection"><a href="per_tag.html#local">Local</a></div>
+<div type="subsection"><a href="per_tag.html#regex">Special</a></div>
+<div type="subsection"><a href="per_tag.html#numbers">Per Number</a></div>
+
+</nav>
+
+<p><a name="global"/></p>
+
+<h2>Global</h2>
+
+<p>We would like to find worldwide all objects
+that bear a given <a href="../preface/osm_data_model.html#tags">tag</a>.</p>
+
+<p>This only makes sense with the Overpass API for tags with less than 10'000 occurrences.
+The respective number can be found at <a href="nominatim.html#taginfo">Taginfo</a>.
+For larger numbers, it can take too much time
+to get the data at all
+or the browser crashes on the attempt of showing them
+or both.</p>
+
+<p>Searches that are <a href="per_tag.html#local">spatially constrained</a> do work well even for frequent tags.</p>
+
+<p>A typical example for rare tags are names of things, <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.47&amp;lon=0.0&amp;zoom=12&amp;Q=nwr%5Bname%3D%22K%C3%B6ln%22%5D%3B%0Aout%20center%3B">here</a> <em>Köln</em>
+(German name of <em>Cologne</em>):</p>
+
+<pre>
+<codeline>nwr[name="Köln"];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Even after triggering the request by <em>Execute</em> nothing visible happens.
+Instead, clicking the <a href="../targets/turbo.html#basics">magnifier</a> moves the viewport to the data.
+We use a global viewport for all of the following requests
+such that you do not need to move the viewport.</p>
+
+<p>Such searches can fail in seemingly straightforward cases, too.
+The term <em>Frankfurt</em> <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=nwr%5Bname%3D%22Frankfurt%22%5D%3B%0Aout%20center%3B">collects results</a> all over the globe,
+but the biggest city of that name, Frankfurt am Main, is not found at all:</p>
+
+<pre>
+<codeline>nwr[name="Frankfurt"];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Having the suffix <em>am Main</em> in the name hampers the city from being found.
+Overpass API would neglect its <a href="../preface/assertions.html#faithful">mission</a>
+if it found an object beside that mismatch.
+An interpreting search constitutes a job for a geocoder, e.g. <a href="nominatim.html">Nominatim</a>.</p>
+
+<p>Still Overpass API posesses filters suitable to catch the name with suffix, e.g. by a <em>regular expression</em>.
+We can <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=nwr%5Bname%7E%22%5EFrankfurt%22%5D%3B%0Aout%20center%3B">request all objects</a>
+whose names start with <em>Frankfurt</em>;
+due to the large number of hits this search takes time,
+but the result's size is harmless in this case despite the warning message:</p>
+
+<pre>
+<codeline>nwr[name~"^Frankfurt"];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Many more typical use cases for <em>regular expressions</em> are elaborated on <a href="per_tag.html#regex">later</a>.</p>
+
+<p>These are not exactly few hits,
+in particular roads whose names start with <em>Frankfurt</em>.
+In most cases we search for only one of the three OpenStreetMap object types.
+The boundaries of a city are always encoded as a <em>relation</em>.
+We can narrow down to this object type
+as we <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=10&amp;Q=relation%5Bname%3D%22K%C3%B6ln%22%5D%3B%0Aout%20geom%3B">replace</a> <em>nwr</em> (for nodes-ways-relations) by <em>relation</em>:</p>
+
+<pre>
+<codeline>relation[name="Köln"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Here the <a href="../targets/formats.html#extras">output verbosity</a> has been changed from <em>center</em> to <em>geom</em>
+to show the full geometry of the object.</p>
+
+<p>Correspondingly, there are the types <em>node</em> and <em>way</em> instead of <em>nwr</em>.
+They deliver only nodes respectively ways.</p>
+
+<p>Finally a remark about tags with special characters (everything except letters, digits, and the underscore) in the <em>key</em> or in the <em>value</em>:
+The attentive reader might have spotted that the <em>value</em> in the tag filter is always in quotation marks.
+Quotation marks are suggested around <em>keys</em> as well,
+thus the request above shall strictly look like:
+<!-- NO_QL_LINK --></p>
+
+<pre>
+<codeline>relation["name"="Köln"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>But Overpass API silently wraps the key in quotation marks
+whenever it is clear that an ordinary literal is intended.
+This cannot work with special characters
+because special characters can have a special meaning
+and the user might have made a typo elsewhere in writing down the requests.</p>
+
+<p>Quotation marks in literals are escaped
+by prepending them with a backslash.</p>
+
+<p><a name="local"/></p>
+
+<h2>Local</h2>
+
+<p>If one requests all objects with a certain tag within a certain area,
+then it is actually a combination of more than one filter.
+Combining filters is described thoroughly in <a href="union.html">Combining by And and Or</a> and <a href="chaining.html">Pipelineing</a>.
+Here we keep focus on certain standard use cases.</p>
+
+<p>All objects in a unique area are e.g. <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=10&amp;Q=area%5Bname%3D%22K%C3%B6ln%22%5D%3B%0Anwr%5Bamenity%3Dcafe%5D%28area%29%3B%0Aout%20center%3B">all cafés in Cologne</a>:</p>
+
+<pre>
+<codeline>area[name="Köln"];</codeline>
+<codeline>nwr[amenity=cafe](area);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>The section <a href="../full_data/area.html#per_tag">Areas</a> covers the operating mode of the first line.
+Our attention here goes to line two:
+This is a <em>query</em> for types <em>nwr</em> (i.e. <em>nodes</em>, <em>ways</em>, and <em>relations</em>).
+The presence of the first filter <code>[amenity=cafe]</code> determines
+that only objects are admissible that carry a tag with key <em>amenity</em> and value <em>cafe</em>.
+The second filter <code>(area)</code> restricts the result to objects from a certain area.</p>
+
+<p>The filter <code>(area)</code> operates based on <a href="../preface/design.html#sequential">the step-by-step paradigm</a>.</p>
+
+<p>This way we select objects that fulfill both the tag condition and the spatial condition.
+These selected objects are, again by <a href="../preface/design.html#sequential">the step-by-step paradigm</a>,
+available for the following statement.
+This prints them to the user.</p>
+
+<p>If this sounds too complex to you
+then a different and simpler way may appeal to you:
+You can shape the result spatially <a href="../full_data/bbox.html#filter">by bounding box</a>
+and combine this with a filter for a tag (<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=10&amp;Q=nwr%5Bamenity%3Dcafe%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20center%3B">example</a>):</p>
+
+<pre>
+<codeline>nwr[amenity=cafe]({{bbox}});</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>The central element again here is the statement starting with <em>nwr</em>:
+The filter <code>[amenity=cafe]</code> works the same way as before.
+The filter <code>({{bbox}})</code> is expanded by <a href="../targets/turbo.html#convenience">Overpass Turbo</a> to the current viewport as a bounding box,
+and Overpass API uses that bounding box as the second and spatial filter.</p>
+
+<p>The order of the two filters <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=10&amp;Q=nwr%28%7B%7Bbbox%7D%7D%29%5Bamenity%3Dcafe%5D%3B%0Aout%20center%3B">does not matter</a> -  it never matters for filters:</p>
+
+<pre>
+<codeline>nwr({{bbox}})[amenity=cafe];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>has the same result as the request before.</p>
+
+<p>The target type of the <em>query</em> statement can and shall be selected amongst <em>node</em>, <em>way</em>, and <em>relation</em> here, too.
+For example for railway tracks <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.94&amp;lon=6.95&amp;zoom=14&amp;Q=way%5Brailway%3Drail%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">only ways</a>:</p>
+
+<pre>
+<codeline>way[railway=rail]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p><a name="regex"/></p>
+
+<h2>Special</h2>
+
+<!-- Checked until here -->
+
+<p>We have already desired to search in a fuzzy way, in the case of <em>Frankfurt</em>.
+<a target="_blank" rel="noopener" href="https://www.gnu.org/software/grep/manual/grep.html#Regular-Expressions">Regular expressions</a> are a very powerful tool for this.
+A systematic introduction to regular expressions would go beyond the scope of this manual,
+but it will provide a couple of examples for commonplace needs.</p>
+
+<p>In some cases we know how a name starts.
+For example, we <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22%5EEmmy%22%5D%3B%0Aout%20geom%3B">request here</a> all streets whose names start with <em>Emmy</em>:</p>
+
+<pre>
+<codeline>way[name~"^Emmy"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>The most important character in the entire request is the tilde <code>~</code>.
+It turns the filter in the first line into a filter for regular expressions.
+Now all in the database existing values for the tag with key <code>name</code> are compared against the regular expression that follows after the tilde.</p>
+
+<p>The second most important character is the caret in the expression <code>^Emmy</code>.
+It is part of the regular expression
+and ensures that only values match that start with <code>Emmy</code>.
+In total, the request could be stated as:</p>
+
+<p>Find all objects of the type <em>way</em>
+that have a tag with key <code>name</code> and a value
+that starts with <code>Emmy</code>.</p>
+
+<p>An appropriate <a href="../targets/formats.html#extras">output statement</a> follows in the second line.</p>
+
+<p>Similarly, one can search for values
+that <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22Noether%24%22%5D%3B%0Aout%20geom%3B">end on</a> a given value, e.g. <em>Noether</em>:</p>
+
+<pre>
+<codeline>way[name~"Noether$"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>The tilde <code>~</code> again marks the filter to be for a regular expression.
+The dollar sign <code>$</code> within the regular expression defines that the value shall end on <code>Noether</code>.</p>
+
+<p>The <a href="../targets/turbo.html#basics">magnifier</a> as a convenience feature in <em>Overpass Turbo</em> zooms to the single result, in Paris.</p>
+
+<p>It is also possible to search for a substring that is <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22Noether%22%5D%3B%0Aout%20geom%3B">anywhere inside</a>:</p>
+
+<pre>
+<codeline>way[name~"Noether"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Write down the substring without any extra special characters for this purpose.</p>
+
+<p>It is slightly more difficult
+to search for two (or more) substrings, e.g. first name and surname,
+when one does not know what is between the two substrings.
+The names <em>Emmy</em> and <em>Noether</em> appear as divided by a space as well as by a hyphen.
+Regular expressions allow to state this by putting all acceptable characters in <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22Emmy%5B%20%2D%5DNoether%22%5D%3B%0Aout%20geom%3B">a pair of brackets</a>:</p>
+
+<pre>
+<codeline>way[name~"Emmy[ -]Noether"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Alternatively, one can admit <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22Emmy%2ENoether%22%5D%3B%0Aout%20geom%3B">any single character</a>:</p>
+
+<pre>
+<codeline>way[name~"Emmy.Noether"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>The single dot <code>.</code> does the job.
+In a regular expression, a dot means
+that every string with an arbitrary character at this position is a match.</p>
+
+<p>Sometimes it is necessary to admit <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22Johann%2E%2ABach%22%5D%3B%0Aout%20geom%3B">any number of</a> characters.
+One actually searches for two separated substrings.
+An example is the composer and musician <em>Bach</em>;
+he has beside <em>Johann</em> more first names:</p>
+
+<pre>
+<codeline>way[name~"Johann.*Bach"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>The two characters dot <code>.</code> and asterisk <code>*</code> shape that search term.
+The dot matches an arbitrary character,
+and the asterisk means
+that the expression before (here <code>.</code>) may repeat any times (not at all, once, or multiple times).</p>
+
+<p>Another repetition operator is the question mark <code>?</code>.
+Then the expression before (below <code>h</code> on first and <code>o</code> on second occurrence) may appear <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=0.0&amp;lon=0.0&amp;zoom=1&amp;Q=way%5Bname%7E%22Gerh%3Fardo%3F%2EMercator%22%5D%3B%0Aout%20geom%3B">not at all or once</a>.
+This helps with <em>Gerhard</em> respectively <em>Gerard</em> respectively <em>Gerardo Mercator</em>:</p>
+
+<pre>
+<codeline>way[name~"Gerh?ardo?.Mercator"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>The last example covers a use case that will reappear <a href="union.html">later on</a> with the combination operators:
+Find a value <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=16&amp;Q=way%5Bhighway%7E%22%5E%28trunk%7Cprimary%7Csecondary%7Ctertiary%29%24%22%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">from a given list</a> like e.g. the standard values <em>trunk</em>, <em>primary</em>, <em>secondary</em>, <em>tertiary</em> for arterial streets!</p>
+
+<pre>
+<codeline>way[highway~"^(trunk|primary|secondary|tertiary)$"]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>We focus on the filter <code>[highway~"^(trunk|primary|secondary|tertiary)$"]</code>.
+The tilde <code>~</code> indicates the regular expression.
+In the regular expression the caret at the beginning and the dollar sign at the end enforce
+that the full <em>value</em> and not only a substring is a match to the search term.
+The pipe sign <code>|</code> represents the logical <em>or</em>,
+and the parentheses cater for
+that caret and dollar sign apply to the full expression and not only one of the alternatives.</p>
+
+<p><a name="numbers"/></p>
+
+<h2>Per Number</h2>
+
+<p>...</p>
+<hr/>
+<p>next: <a href="chaining.html">Pipeline Building</a></p>
+
+</body>
+</html>

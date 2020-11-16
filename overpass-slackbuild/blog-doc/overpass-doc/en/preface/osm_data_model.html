@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>The Data Model of OpenStreetMap</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Overpass API User's Manual</a>  </p>
+
+<nav>
+<div type="parent"><strong><a href="index.html">Preface</a></strong></div>
+
+<div type="sibling"><a href="preface.html">OpenStreetMap and the Overpass API</a></div>
+<div type="sibling"><strong> The Data Model of OpenStreetMap</strong></div>
+<div type="sibling"><a href="glossary.html">Glossary</a></div>
+<div type="sibling"><a href="design.html">Run time model</a></div>
+<div type="sibling"><a href="assertions.html">Assertions</a></div>
+<div type="sibling"><a href="commons.html">Commons</a></div>
+
+</nav>
+<div type="parent"><a href="../targets/index.html">Downstream Tools</a></div>
+<div type="parent"><a href="../full_data/index.html">Spatial Data Selection</a></div>
+<div type="parent"><a href="../criteria/index.html">Find Objects</a></div>
+<div type="parent"><a href="../counting/index.html">Counting Objects</a></div>
+<div type="parent"><a href="../analysis/index.html">Analysing data</a></div>
+<div type="parent"><a href="../more_info/index.html">More information</a></div>
+
+<hr />
+
+<h1>The Data Model of OpenStreetMap</h1>
+
+<p>To understand how Overpass API works
+the data model of OpenStreetMap is introduced here ahead of everything else.</p>
+
+<p>In this section we introduce the basic data structures of OpenStreetMap.
+OpenStreetMap foremost contains three kinds of data:</p>
+
+<ul>
+<li>Geometries, more precisely coordinates and references to the coordinates, locate the objects on Earth's surface.</li>
+<li>Short bits of text give each object a semantical meaning.</li>
+<li>Meta data facilitates to attribute the sources to the data.</li>
+</ul>
+
+<p>All selection criteria of the query language deal with properties of these data structures.</p>
+
+<p>In addition, multiple data formats can represent the data.
+These data formats are presented in the section <a href="../targets/formats.html">Data Formats</a>.</p>
+
+<p>Handling the different object type such that it results in manageable geometry deserves a tutorial.
+This tutorial is the section <a href="../full_data/osm_types.html">Geometries</a>.</p>
+
+<nav>
+<h3>Content</h3>
+
+<div type="subsection"><a href="osm_data_model.html#tags">Tags</a></div>
+<div type="subsection"><a href="osm_data_model.html#nwr">Nodes, Ways, Relations</a></div>
+<div type="subsection"><a href="osm_data_model.html#areas">Areas</a></div>
+<div type="subsection"><a href="osm_data_model.html#metas">Meta Data</a></div>
+<div type="subsection"><a href="osm_data_model.html#declined">Layers, Categories, Identities</a></div>
+
+</nav>
+
+<p><a name="tags"/></p>
+
+<h2>Tags</h2>
+
+<p>The semantical data of OpenStreetMap are encoded in short bits of text, so called <em>tags</em>.
+<em>Tags</em> always consist of a <em>key</em> and a <em>value</em>.
+Each object can have for each <em>key</em> at most one <em>value</em>.
+Beside a length restriction to 255 characters for each key and value no further constraints apply.</p>
+
+<p>The data model does not distinguish any particular tag or key.
+Tags can be chosen spontaneously and to best expedience;
+this policy is highly likely to have promoted the success of OpenStreetMap.</p>
+
+<p>Latin lowercase letters and rarely the special characters <code>:</code> and <code>_</code> virtually exclusively prevail amongst the keys.
+The tags fall into the two informal categories:</p>
+
+<p><em>Classifying tags</em> have one of a few keys,
+and for each key only few values exist.
+Deviating values are perceived as erroneous.
+For example, the public road grid for motorized vehicles is identified by the key <a target="_blank" rel="noopener" href="https://taginfo.openstreetmap.org/keys/highway">highway</a> and one of fewer than 20 customary values.</p>
+
+<p>In such tags, a value occasionally accommodates multiple customary values concatenated by semicolon.
+This is a generally at least tolerated practice to set multiple values for a single key on the same object.</p>
+
+<p><em>Describing tags</em> have only fixed keys
+while anything is accepted in the value
+including lowercase and uppercase letters as well as numbers, special characters, and punctuation marks.
+Names are the most prominent use case.
+But descriptions, identifiers, or even sizes as well are commonplace.</p>
+
+<p>The most generally acclaimed sources for key's and value's semantics are:</p>
+
+<ul>
+<li>the <a target="_blank" rel="noopener" href="https://wiki.openstreetmap.org/wiki/Map_Features">OSM wiki</a>.
+It offers longer textual descriptions.
+But it can happen that the texts rather reflect the respective author's vision than the actual use.</li>
+<li><a target="_blank" rel="noopener" href="https://taginfo.openstreetmap.org/">Taginfo</a>.
+Counts tags by their actual appearance.
+Collects links to most other resources of information about the respective tags.</li>
+</ul>
+
+<p>The complete chapter <a href="../criteria/index.html">Find Objects</a> is devoted to search of objects by tags.</p>
+
+<p><a name="nwr"/></p>
+
+<h2>Nodes, Ways, Relations</h2>
+
+<p>OpenStreetMap has three types of objects.
+Every object can carry an arbitrary number of tags.
+Also, every object has an id.
+The combination of type and id is unique, but the id alone is not.</p>
+
+<p><em>Nodes</em> are defined as a coordinate in addition to the id and tags.
+A node can represent a point of interest, or an object of minuscule extent.
+Because nodes are the only type of object that has a coordinate,
+most of the nodes serve only as a coordinate for an intermediate point within a way
+and carry no tags.</p>
+
+<p><em>Ways</em> consists of a sequence of references to nodes in addition to the id and tags.
+This way ways get a geometry by using the coordinates of the referenced nodes.
+But they also get a topology:
+two ways are connected if both point at a position to the same node.</p>
+
+<p>Ways can refer to the same node multiple times.
+The common case for this is a closed way where the first and last entry point to the same node.
+All other cases are syntactically correct but semantically deprecated.</p>
+
+<p><em>Relations</em> have a sequence of members in addition to the id and tags.
+Each member is a pair of a reference to a node, a way or a relation and a so-called role.
+The role is a text string.
+Relations have been invented to represent turn restrictions
+thus having few members.
+Nowadays, they also serve as boundaries of countries, counties, multipolygons, and routes.
+Therefore, their formal structure wildly varies,
+and in particular boundary and route relations can extend over hundreds or thousands of kilometers.</p>
+
+<p>The geometry of relations only manifests by the interpretation of the data user.
+The multipolygon interpretation has found general acclaim:
+like for ways, such relations are understood as an area if the members form closed rings.
+Interpretations start at the question whether the presence of the tag <em>area</em>=<em>yes</em> is required for this.
+Other relations like routes or turn restrictions obtain their geometry as the sum of the geometries of their members of type node and way.</p>
+
+<p>Relations on top of relations are technically possible,
+but have little practical relevance.
+With relations on relations the risk is further elevated
+to end up with large amounts of data already if just the members of a single relation are resolved.
+For that reason there are so many different approaches depending on context to resolve references of relations partially
+that a <a href="../full_data/osm_types.html#rels_on_rels">whole section</a> is dedicated to that.</p>
+
+<p><a name="areas"/></p>
+
+<h2>Areas</h2>
+
+<p>Areas do not have an explicit data structure in OpenStreetMap.
+They are instead modeled by closed <em>ways</em> or <em>relations</em>.
+Tags do matter to distinguish areas from ways closed for other reasons,
+in the simplest case by the tag <em>area</em>=<em>yes</em>.</p>
+
+<p>Closed ways are used if the area is contiguous and does not have holes.
+A way is closed if its first and last reference point to the same node.</p>
+
+<p>Relations are used if a way does no longer suffice for the area.
+Beside holes and disjoint parts this also happens
+when the boundary of the area is supposed to be assembled of multiple ways.
+This is applicable virtually only to boundaries of large areas (cities, counties, countries).</p>
+
+<p>Like with ways the area is defined by its boundary.
+The in the relation referenced ways therefore must fit and sum up to closed rings.
+More information on the <a target="_blank" rel="noopener" href="https://github.com/osmlab/fixing-polygons-in-osm/blob/master/doc/background.md">conventions</a>.</p>
+
+<p><a name="metas"/></p>
+
+<h2>Meta Data</h2>
+
+<p>OpenStreetMap is a full-fledged version control system.
+Old versions are retained as well as all the data necessary to assign changes to users.</p>
+
+<p>There always is per object and state a <em>version number</em> and <em>timestamp</em>.
+Old states with old version numbers are retained.
+Therefore the Overpass API is capable by <a href="../analysis/index.html">special methods</a> to access old states.
+Unless on special request, it always operates on current data.</p>
+
+<p>In addition, changed are grouped to <em>changesets</em>.
+These are associated to the uploading mapper.
+The grouping is done automatically by the editing software
+and in general one changeset per upload event is created.</p>
+
+<p><em>Changesets</em> again carry tags and it is possible to discuss changesets with multiple mappers.
+These texts are not processed by the Overpass API.</p>
+
+<p>This way each object as a whole is at any moment assigned to a single mapper.
+That mapper is always the mapper who has uploaded the most recent version.
+Objects with higher version number than 1 therefore usually keep properties from earlier versions,
+although those properties are not attributable to the current mapper.</p>
+
+<p><a name="declined"/></p>
+
+<h2>Layers, Categories, Identities</h2>
+
+<p>By contrast, thematic layers do not exist in OpenStreetMap,
+and they are absent for a reason.
+For some people supermarkets are together with post offices, banks and ATMs are locations
+where one can obtain cash.
+For other mappers, supermarkets constitute a group rather together with bakeries and butchers
+because one can buy food there.</p>
+
+<p>Therefore, classification plays only a marginal role in OpenStreetMap.
+It is rather preferable to record objective properties.
+Disputes at large have been prevented,
+and most mappers can record their point of view without substantial distortions.</p>
+
+<p>Another often expected structures are categories,
+no matter whether very general like all branches of a fast food chain
+or all post boxes in Scotland.
+OpenStreetMap is a spatial database.
+Lists of all objects with a special property in a limited area can be computed.
+By the way, Overpass API is one of the tools intended to deliver that,
+the chapter <a href="../criteria/index.html">Find Objects</a> explains how to do that.</p>
+
+<p>Lists of worldwidely all objects with a property have at best a weak spatial relevance.
+Although each branch has a location,
+the fast food chain as a whole obtains its spatial information solely through its branches.</p>
+
+<p>Finally, the concept of identity leaves precedence to its spatial manifestation.
+Similar to the issue with layers, different mappers have different ideas
+what belongs to a thing as complex as a large railway station.
+Only tracks and platforms?
+The reception building as well, or only if it caters passengers needs,
+or only if the railway company owns the building?
+The place before the station, the bus stop that is named after the railway station?
+The points that by railway operating rules are associated with the station even if substantially far away?</p>
+
+<p>If one needs an anchor to point at a certain object on the ground,
+then it is best to use a coordinate.
+Stationary objects do not move by their very definition
+and the positional accuracy in OpenStreetMap is good enough
+such that a coordinate is the best anchor for linking.</p>
+<hr/>
+<p>next: <a href="glossary.html">Glossary</a></p>
+
+</body>
+</html>

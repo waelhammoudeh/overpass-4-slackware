@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Overpass Turbo</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Overpass API User's Manual</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Preface</a></div>
+<div type="parent"><strong><a href="index.html">Downstream Tools</a></strong></div>
+
+<div type="sibling"><a href="formats.html">Data Formats</a></div>
+<div type="sibling"><strong> Overpass Turbo</strong></div>
+
+</nav>
+<div type="parent"><a href="../full_data/index.html">Spatial Data Selection</a></div>
+<div type="parent"><a href="../criteria/index.html">Find Objects</a></div>
+<div type="parent"><a href="../counting/index.html">Counting Objects</a></div>
+<div type="parent"><a href="../analysis/index.html">Analysing data</a></div>
+<div type="parent"><a href="../more_info/index.html">More information</a></div>
+
+<hr />
+
+<h1>Overpass Turbo</h1>
+
+<p>The standard tool to develop requests.</p>
+
+<nav>
+<h3>Content</h3>
+
+<div type="subsection"><a href="turbo.html#overview">Overview</a></div>
+<div type="subsection"><a href="turbo.html#basics">Basics</a></div>
+<div type="subsection"><a href="turbo.html#symbols">Symbols</a></div>
+<div type="subsection"><a href="turbo.html#convenience">Convenience</a></div>
+<div type="subsection"><a href="turbo.html#limitations">Limitations</a></div>
+
+</nav>
+
+<p><a name="overview"/></p>
+
+<h2>Overview</h2>
+
+<p>Overpass Turbo is a website
+to execute requests towards Overpass API
+and to watch the result on a map.</p>
+
+<p>Many examples in this manual link to Overpass Turbo with a predefined request text.</p>
+
+<p>A public instance is available at <a target="_blank" rel="noopener" href="https://overpass-turbo.eu">https://overpass-turbo.eu</a>.
+It is, like Overpass API, open source,
+and the source code is available from <a target="_blank" rel="noopener" href="https://github.com/tyrasd/overpass-turbo">Github</a>.
+Martin Raifer has developed Overpass Turbo,
+and I'm grateful to him both for the idea and the software.</p>
+
+<p>Almost all output formats
+that the Overpass API can emit
+can be understood by Overpass Turbo.
+Very large result sets cause difficulties;
+the JavaScript engines even of contemporary browsers then get strained in their memory management.
+For this reason, Overpass Turbo will ask you
+if it has received a large set of results
+if you accept the risk to freeze your browser by the amount of data.</p>
+
+<p>There are many popular and helpful features in Overpass Turbo,
+but they exceed the mission of this manual.
+Instead, the proper <a target="_blank" rel="noopener" href="https://wiki.openstreetmap.org/wiki/Overpass_turbo">documentation of Overpass Turbo</a> introduces them.
+Features not introduced here include e.g. <em>styles</em> and the request generator <em>wizard</em>.
+This manual concentrates on the immediate interaction between Overpass Turbo and the Overpass query language.</p>
+
+<p><a name="basics"/></p>
+
+<h2>Basics</h2>
+
+<p>The interface of the website consists of multiple parts;
+these parts are differently arranged between desktop and mobile site version.
+Please open <a target="_blank" rel="noopener" href="https://overpass-turbo.eu">the site</a> now in a separated browser tab.</p>
+
+<p>In the desktop version there is on the left a large text field;
+please type or paste your request here.
+The right part is a slippy map.
+By the two tabs in the upper right corner
+this part can be switched between the map view and a text field showing the received raw data.</p>
+
+<p>In the mobile version the text field sits above the slippy map.
+The second text field for the received raw data is below the slippy map.
+Instead of the tabs you switch between the two parts by intense scrolling.</p>
+
+<p>We exercise the standard use case:
+Please enter into the text field ...</p>
+
+<pre>
+<codeline>nwr[name="Canary Wharf"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>... or use <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=18&amp;Q=nwr%5Bname%3D%22Canary%20Wharf%22%5D%3B%0Aout%20geom%3B">this link</a>!</p>
+
+<p>Please click now on <em>Execute</em>.
+For a short moment a progress meter asks you to be patient.
+Then you see almost exactly the same as before.</p>
+
+<p>Please click now on the magnifier.
+This is on the left brim of the slippy map the third symbol counted from the top,
+below the plus and minus buttons.
+The slippy map moves to the center of the results and the finest possible resolution
+such that still all results fit into the viewport.</p>
+
+<p>The objects marked in the map view are now exactly the objects that the request has found.</p>
+
+<p>It is often useful to view the raw returned data.
+It gets shown when you click on the tab <em>Data</em> above the upper right corner of the map view
+respectively with scrolling in the mobile version.</p>
+
+<p>Meanwhile, all on the map highlighted objects are clickable
+and show on click, depending on the degree of detail of the request,
+their id, their tags, and their metadata.</p>
+
+<p>Eventually you will get the warning
+that not for all objects the geometry has been delivered.
+Then you can try out the automatic completion of the request.
+Or you replace all <code>out</code> in the request by their counterparts with geometry <code>out geom</code>.</p>
+
+<p>If you anticipate a large result
+or if you want to process the result anyway with a different tool than Overpass Turbo
+then you can directly export the data without an attempt to display them:
+Please go to <em>Export</em>, keep in the tab <em>Data</em>,
+and select <code>raw data directly from Overpass API</code>.
+For long running requests it is normal
+that apparently nothing happens after the click to trigger the request.</p>
+
+<p>I suggest you to put attention to two useful features:</p>
+
+<ul>
+<li>In the lower right corner of the map view
+a counter shows how many objects of each type have been returned in the last request.</li>
+<li>In the upper left corner there is a search input field.
+Although it is less powerful than <a href="../criteria/nominatim.html">Nominatim on openstreetmap.org</a>,
+it is usually good enough for the names of towns to place the slippy map at the right location.</li>
+</ul>
+
+<p><a name="symbols"/></p>
+
+<h2>Symbols</h2>
+
+<p>The <a target="_blank" rel="noopener" href="https://wiki.openstreetmap.org/wiki/Overpass_turbo">documentation of Overpass Turbo</a> already explains the colours.
+We put our attention rather to the interaction here:
+For a given object or type of object you have an idea
+whether it is a point, a line, a composition of both, something abstract or something with a fuzzy boundary.
+In the OpenStreetMap data structures it is modeled in some way;
+this can meet or differ from your expectation.</p>
+
+<p>The Overpass API offers <a href="formats.html#extras">tools</a>
+to change from the OpenStreetMap representation to a representation
+that better fits the presentation.
+This can happen by amending the coordinates, geometric simplification, or <a href="../full_data/bbox.html#crop">by cropping</a>.
+Overpass Turbo strives to always present in the best possible way,
+no matter whether the representation in OpenStreetMap makes sense,
+and also no matter whether the output format chosen in the request fits to the data or not.</p>
+
+<p>This section shall explain
+what presentation finally the given situation results in
+and how this is influenced by the request and the data.</p>
+
+<p>Objects appearing as points can have a yellow or a red interior.
+Those with yellow interior are <em>nodes</em>
+while those with red interior are <em>ways</em>.</p>
+
+<p>Ways can be morphed to points due to their small extent
+because otherwise they may become too unremarkable:
+Please zoom out in <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=19&amp;Q=%28%20way%28%7B%7Bbbox%7D%7D%29%5Bbuilding%5D%3B%0A%20%20way%28%7B%7Bbbox%7D%7D%29%5Bhighway%3Dsteps%5D%3B%20%29%3B%0Aout%20geom%3B">this example</a>
+and observe how buildings and streets morph into points!</p>
+
+<pre>
+<codeline>( way({{bbox}})[building];</codeline>
+<codeline>  way({{bbox}})[highway=steps]; );</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>If this hampers the presentation of a specific result,
+then you can turn that off at <em>Settings</em>, <em>Map</em>, <em>Don't display small features as POIs</em>.
+The setting comes into effect with the execution of the next request (or the same request again).</p>
+
+<p>Or the objects have been collapsed because <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.477&amp;lon=0.0&amp;zoom=19&amp;Q=way%28%7B%7Bbbox%7D%7D%29%5Bbuilding%5D%3B%0Aout%20center%3B">the request</a> has asked only for points by <code>out center</code>:</p>
+
+<pre>
+<codeline>way({{bbox}})[building];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Point objects can have a blue or a purple border;
+and this applies also to line segments or areas.
+In all these cases, <em>relations</em> are <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.5045&amp;lon=-0.0195&amp;zoom=16&amp;Q=rel%5Bname%3D%22Canary%20Wharf%22%5D%3B%0Aout%20geom%3B">involved</a>:</p>
+
+<pre>
+<codeline>rel[name="Canary Wharf"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Opposed to <em>nodes</em> or <em>ways</em>, the details of the <em>relation</em> then are not shown by a click on the object,
+but in the object's bubble there is just a link to the relation's presentation on the main server.
+Under normal circumstances, this is no problem.</p>
+
+<p>But if you have asked for a museum version different from the current version,
+then the data from the main page is still the current version
+and thus differs from the data returned from your request.
+Rather, you need to look into the raw data shown in the tab <em>Data</em>.</p>
+
+<p>If the line or boundary of the area is dashed,
+then the geometry of the object is incomplete.
+This is almost always an intended effect of the <a href="../full_data/bbox.html#crop">output clipping</a> (<a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4765&amp;lon=0.0&amp;zoom=16&amp;Q=%28%0A%20%20way%2851%2E475%2C%2D0%2E002%2C51%2E478%2C0%2E003%29%5Bhighway%3Dunclassified%5D%3B%0A%20%20rel%28bw%29%3B%0A%29%3B%0Aout%20geom%2851%2E475%2C%2D0%2E002%2C51%2E478%2C0%2E003%29%3B">example</a>):</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  way(51.475,-0.002,51.478,0.003)[highway=unclassified];</codeline>
+<codeline>  rel(bw);</codeline>
+<codeline>);</codeline>
+<codeline>out geom(51.475,-0.002,51.478,0.003);</codeline>
+</pre>
+
+<p>But it can also be the effect of a request
+that has added for a <em>way</em> some but not all <em>nodes</em>.
+Here we have loaded <em>ways</em> based on <em>nodes</em>,
+but we have <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4765&amp;lon=0.0&amp;zoom=17&amp;Q=%28%0A%20%20node%2851%2E475%2C%2D0%2E003%2C51%2E478%2C0%2E003%29%3B%0A%20%20way%28bn%29%3B%0A%29%3B%0Aout%3B">forgotten</a>
+to ask for the nodes referred by the ways but outside the bounding box:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  node(51.475,-0.003,51.478,0.003);</codeline>
+<codeline>  way(bn);</codeline>
+<codeline>);</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>The request <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4765&amp;lon=0.0&amp;zoom=17&amp;Q=%28%0A%20%20node%2851%2E475%2C%2D0%2E003%2C51%2E478%2C0%2E003%29%3B%0A%20%20way%28bn%29%3B%0A%29%3B%0Aout%20geom%3B">can be fixed</a> by <code>out geom</code>;
+more possibilities are listed in the section about <a href="../full_data/osm_types.html#nodes_ways">geometry</a>:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  node(51.475,-0.003,51.478,0.003);</codeline>
+<codeline>  way(bn);</codeline>
+<codeline>);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p><a name="convenience"/></p>
+
+<h2>Convenience</h2>
+
+<p>Overpass Turbo offers some convenience features.</p>
+
+<p>It can inject the bounding box of the current viewport into a request.
+In particular, it replaces every occurrence of the substring <code>{{bbox}}</code> by the coordinates of the four edges
+such that the server sees a valid bounding box.</p>
+
+<p>You can make the sent bounding box visible
+if you <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4765&amp;lon=0.0&amp;zoom=17&amp;Q=make%20example%20info%5Ftext%3D%22The%20current%20bounding%20box%20is%20%7B%7Bbbox%7D%7D%22%3B%0Aout%3B">set this substring</a> in a different location than usual
+(and then press execute):</p>
+
+<pre>
+<codeline>make example info_text="The current bounding box is {{bbox}}";</codeline>
+<codeline>out;</codeline>
+</pre>
+
+<p>A second handy feature is controlled by the button <em>Share</em> in the upper left corner.
+This creates a permanent link
+where you can get back the request written at the moment when the link has been created.
+Even if somebody else opens the link and edits the request,
+then the link still points to the originally stored request.</p>
+
+<p>It is also possible, per checkbox, to convey the current map viewport.
+This manifests as center coordinate and zoom level,
+in particular the visible map differs between screens of different sizes.</p>
+
+<p><a name="limitations"/></p>
+
+<h2>Limitations</h2>
+
+<p>Overpass Turbo can make sense of almost all output options of Overpass API.
+Nonetheless there are some limitations:</p>
+
+<p>Per object id and type Overpass Turbo shows only one object.
+Thus, <a href="index.html">diffs</a> cannot be visualized by Overpass Turbo in a meaningful way.</p>
+
+<p>Overpass Turbo does not show <a href="formats.html#json">GeoJSON</a> directly from the Overpass API.
+Overpass Turbo has its own conversion module for GeoJSON,
+and Martin is wary of the user confusion
+if both mechanisms are active in parallel.
+For the moment being, to show GeoJSON you need to use the experimental instance <a target="_blank" rel="noopener" href="https://olbricht.nrw/ovt/">https://olbricht.nrw/ovt/</a>.</p>
+<hr/>
+<p>next: <a href="../full_data/index.html">Spatial Data Selection</a></p>
+
+</body>
+</html>

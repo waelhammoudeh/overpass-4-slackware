@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+pre { background-color:#ccffff; padding: 0.5em; counter-reset: line; }
+div[type=sibling] { text-indent:1em; }
+codeline::before { counter-increment: line; content: counter(line)" "; color: #99cccc; }
+</style>
+  <title>Combining by And and Or</title>
+</head>
+<body style="font-family:sans-serif; max-width:32em">
+
+<p><a href="../index.html">Overpass API User's Manual</a>  </p>
+
+<nav>
+<div type="parent"><a href="../preface/index.html">Preface</a></div>
+<div type="parent"><a href="../targets/index.html">Downstream Tools</a></div>
+<div type="parent"><a href="../full_data/index.html">Spatial Data Selection</a></div>
+<div type="parent"><strong><a href="index.html">Find Objects</a></strong></div>
+
+<div type="sibling"><a href="nominatim.html">Alternatives</a></div>
+<div type="sibling"><a href="per_tag.html">Per Tag</a></div>
+<div type="sibling"><a href="chaining.html">Pipeline Building</a></div>
+<div type="sibling"><strong> Combining by And and Or</strong></div>
+<div type="sibling"><a href="lrs.html">List represented sets</a></div>
+<div type="sibling"><a href="misc_criteria.html">Further Search Criteria</a></div>
+
+</nav>
+<div type="parent"><a href="../counting/index.html">Counting Objects</a></div>
+<div type="parent"><a href="../analysis/index.html">Analysing data</a></div>
+<div type="parent"><a href="../more_info/index.html">More information</a></div>
+
+<hr />
+
+<h1>Combining by And and Or</h1>
+
+<p>Query for objects by multiple tags or other criteria.</p>
+
+<nav>
+<h3>Content</h3>
+
+<div type="subsection"><a href="union.html#intersection">Intersection</a></div>
+<div type="subsection"><a href="union.html#union">Union</a></div>
+<div type="subsection"><a href="union.html#full">Mixed Logic</a></div>
+
+</nav>
+
+<p><a name="intersection"/></p>
+
+<h2>Intersection</h2>
+
+<p>We start with combining two or more filters
+such that only objects are found that fulfill all of the conditions.
+Several such examples for intersections have already been introduced:
+<a href="per_tag.html#local">tag and bounding box</a>,
+<a href="chaining.html#lateral">tag and area, tag and two areas as well as two tags</a></p>
+
+<p>We fix as a default example for the moment
+to find an automatic teller machine.
+The tag <code>amenity</code> with value <code>atm</code> indicates such devices.
+Due to their large number
+the <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Bamenity%3Datm%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20center%3B">example</a> has a small bounding box:</p>
+
+<pre>
+<codeline>nwr[amenity=atm]({{bbox}});</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>We have realized the combination of the filter for the tag <code>[amenity=atm]</code> with then filter for the bounding box <code>({{bbox}})</code> here
+by just writing one filter after the other.</p>
+
+<p>The order <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%28%7B%7Bbbox%7D%7D%29%5Bamenity%3Datm%5D%3B%0Aout%20center%3B">does not matter</a>:</p>
+
+<pre>
+<codeline>nwr({{bbox}})[amenity=atm];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>But there is another way to tag automatic teller machines:
+Often they are part of a branch bank.
+Then they are tagged as <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Bamenity%3Dbank%5D%28%7B%7Bbbox%7D%7D%29%5Batm%3Dyes%5D%3B%0Aout%20center%3B">a property of that bank</a>:</p>
+
+<pre>
+<codeline>nwr[amenity=bank]({{bbox}})[atm=yes];</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>Like in all other examples,
+the filters can be ordered in <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Batm%3Dyes%5D%5Bamenity%3Dbank%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20center%3B">any order you want</a>:</p>
+
+<pre>
+<codeline>nwr[atm=yes][amenity=bank]({{bbox}});</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>It is explained in the <a href="union.html#union">next section</a> how to combine both search criteria.
+Before that, it shall be emphasized
+that any number of tags or other criteria can be combined:
+please leave out <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=50.95&amp;lon=6.95&amp;zoom=9&amp;Q=way%0A%20%20%5Bname%3D%22Venloer%20Stra%C3%9Fe%22%5D%0A%20%20%5Bref%3D%22B%2059%22%5D%0A%20%20%2850%2E96%2C6%2E85%2C50%2E98%2C6%2E88%29%0A%20%20%5Bmaxspeed%3D50%5D%0A%20%20%5Blanes%3D2%5D%0A%20%20%5Bhighway%3Dsecondary%5D%0A%20%20%5Boneway%3Dyes%5D%3B%0Aout%20geom%3B">in the following example</a> on or more filters;
+the result will always change because any of the six filters as well as the bounding box have an impact:</p>
+
+<pre>
+<codeline>way</codeline>
+<codeline>  [name="Venloer Straße"]</codeline>
+<codeline>  [ref="B 59"]</codeline>
+<codeline>  (50.96,6.85,50.98,6.88)</codeline>
+<codeline>  [maxspeed=50]</codeline>
+<codeline>  [lanes=2]</codeline>
+<codeline>  [highway=secondary]</codeline>
+<codeline>  [oneway=yes];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>This applies as well to the example of the automatic teller machines:
+Often it is enough to search for a more specific tag,
+because on objects with the specific tag there is almost always also set the more general tag.</p>
+
+<ul>
+<li>Over 95% of all objects with a tag <code>admin_level</code> also bear <a target="_blank" rel="noopener" href="https://taginfo.openstreetmap.org/tags/boundary=administrative#combinations">according to Taginfo</a> (numbers and bars in the columns to the right) the tag <code>boundary=administrative</code>.</li>
+<li>Over 99% of all objects with a tag <code>fence_type</code> also bear <a target="_blank" rel="noopener" href="https://taginfo.openstreetmap.org/tags/fence_type=wood#combinations">according to Taginfo</a> the tag <code>barrier=fence</code>.</li>
+</ul>
+
+<p>A <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.473&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Bbarrier%3Dfence%5D%5Bfence%5Ftype%3Dwood%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">request</a> for fences (<code>barrier=fence</code>) with the extra property <code>fence_type=wood</code> thus delivers effectively almost the same result ...</p>
+
+<pre>
+<codeline>nwr[barrier=fence][fence_type=wood]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>.. like a <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.473&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Bfence%5Ftype%3Dwood%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20geom%3B">request</a> only for <code>fence_type=wood</code>:</p>
+
+<pre>
+<codeline>nwr[fence_type=wood]({{bbox}});</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>The automatic teller machines deliver more results
+if we <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%5Batm%3Dyes%5D%28%7B%7Bbbox%7D%7D%29%3B%0Aout%20center%3B">reduce the criteria</a> to only <code>atm=yes</code>:</p>
+
+<pre>
+<codeline>nwr[atm=yes]({{bbox}});</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>The result is compelling on the semantic level:
+automatic teller machines may indeed be situated with gas stations, in malls or other buildings and not only in banks.</p>
+
+<p><a name="union"/></p>
+
+<h2>Union</h2>
+
+<p>Now we want to combine two or more criteria
+such that all objects are found
+that fulfill just at least one of the criteria.
+Also for this, we have seen quite some examples:
+<a href="../targets/formats.html#faithful">all objects in bounding boxes</a>,
+<a href="chaining.html#topdown">amending ways and relations</a>,
+<a href="../preface/design.html#block_statements">as an example for a block statement</a></p>
+
+<p>Our example from above leads to the challenge
+to request both free standing automatic teller machines and those in banks <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=%28%0A%20%20nwr%5Bamenity%3Datm%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20nwr%5Batm%3Dyes%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%29%3B%0Aout%20center%3B">with a single request</a>:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  nwr[amenity=atm]({{bbox}});</codeline>
+<codeline>  nwr[atm=yes]({{bbox}});</codeline>
+<codeline>);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>The statement <em>union</em> caters for combining both criteria;
+it spans lines 1 to 4.
+It executes its inner block.
+Line 2 writes as result into the set <code>_</code> all objects
+that have a tag <code>amenity</code> with value <code>atm</code> and in addition are situated in the bounding box <a href="../targets/turbo.html#convenience">supplied by Overpass Turbo</a>.
+The statement <em>union</em> keeps a copy of the result.
+Line 3 writes as a result into the set <code>_</code> all objects
+that have a tag <code>atm</code> with value <code>yes</code> and in addition are situated in the bounding box supplied again by <em>Overpass Turbo</em>.
+After that, <em>union</em> writes into the set <code>_</code> as a result all objects
+that it has seen in one of the partial results -
+these realizes precisely the desired combination by <em>or</em>.</p>
+
+<p>A frequent use case is
+to check a quite long number of given possible values for a given tag.
+If one wants to collect all roads usable by cars,
+then a list like
+<code>motorway</code>, <code>motorway_link</code>,
+<code>trunk</code>, <code>trunk_link</code>,
+<code>primary</code>, <code>secondary</code>, <code>tertiary</code>,
+<code>unclassified</code>, <code>residential</code>
+has to be handled.
+With an <em>union</em> statement, one can <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.473&amp;lon=0.0&amp;zoom=15&amp;Q=%28%0A%20%20way%5Bhighway%3Dmotorway%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dmotorway%5Flink%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dtrunk%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dtrunk%5Flink%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dprimary%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dsecondary%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dtertiary%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dunclassified%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%20%20way%5Bhighway%3Dresidential%5D%28%7B%7Bbbox%7D%7D%29%3B%0A%29%3B%0Aout%20geom%3B">request this as follows</a>:</p>
+
+<pre>
+<codeline>(</codeline>
+<codeline>  way[highway=motorway]({{bbox}});</codeline>
+<codeline>  way[highway=motorway_link]({{bbox}});</codeline>
+<codeline>  way[highway=trunk]({{bbox}});</codeline>
+<codeline>  way[highway=trunk_link]({{bbox}});</codeline>
+<codeline>  way[highway=primary]({{bbox}});</codeline>
+<codeline>  way[highway=secondary]({{bbox}});</codeline>
+<codeline>  way[highway=tertiary]({{bbox}});</codeline>
+<codeline>  way[highway=unclassified]({{bbox}});</codeline>
+<codeline>  way[highway=residential]({{bbox}});</codeline>
+<codeline>);</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>But one can also take advantage of the <a href="per_tag.html#regex">regular expressions</a> presented in the last section.
+Then one only needs <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.473&amp;lon=0.0&amp;zoom=15&amp;Q=way%28%7B%7Bbbox%7D%7D%29%0A%20%20%5Bhighway%7E%22%5E%28motorway%7Cmotorway%5Flink%7Ctrunk%7Ctrunk%5Flink%7Cprimary%7Csecondary%7Ctertiary%7Cunclassified%7Cresidential%29%24%22%5D%3B%0Aout%20geom%3B">as request</a>:</p>
+
+<pre>
+<codeline>way({{bbox}})</codeline>
+<codeline>  [highway~"^(motorway|motorway_link|trunk|trunk_link|primary|secondary|tertiary|unclassified|residential)$"];</codeline>
+<codeline>out geom;</codeline>
+</pre>
+
+<p>Lines 1 and 2 constitute a <em>query</em> statement for <em>ways</em> with two filters.
+The filter <code>({{bbox}})</code> for bounding boxes <a href="../full_data/bbox.html#filter">is well-known</a>.
+The tilde <code>~</code> is the most important character of the other filter.
+It lets the filter match on objects that have a tag with key as left from the tilde, here <code>highway</code>,
+and a value that matches the regular expression right of the tilde.</p>
+
+<p>The syntax with caret <code>^</code> in the beginning and <code>$</code> at the end indicates
+that the value must fit in total and not only a substring of the value can satisfy the expression.
+The pipe sign <code>|</code> divides the multiple matching alternatives from each other,
+here in total 9 different values for the tag.</p>
+
+<p>The section about <a href="per_tag.html#regex">regular expressions</a> presents more examples.</p>
+
+<p>In our example of automatic teller machines we do not have a common key.
+Thus, the regular expressions do not help here.</p>
+
+<p>Instead, the bounding box is used multiple times as a filter.
+If one wants to avoid the repetition,
+then one can pull the filter in the front
+and store the result in a named set;
+the name <code>all</code> speaks for itself.
+This trick often saves runtime for the <a target="_blank" rel="noopener" href="https://overpass-turbo.eu/?lat=51.4775&amp;lon=0.0&amp;zoom=14&amp;Q=nwr%28%7B%7Bbbox%7D%7D%29%2D%3E%2Eall%3B%0A%28%0A%20%20nwr%2Eall%5Bamenity%3Datm%5D%3B%0A%20%20nwr%2Eall%5Batm%3Dyes%5D%3B%0A%29%3B%0Aout%20center%3B">request</a>:</p>
+
+<pre>
+<codeline>nwr({{bbox}})-&gt;.all;</codeline>
+<codeline>(</codeline>
+<codeline>  nwr.all[amenity=atm];</codeline>
+<codeline>  nwr.all[atm=yes];</codeline>
+<codeline>);</codeline>
+<codeline>out center;</codeline>
+</pre>
+
+<p>A <em>query</em> statement in line 1 is prepended to the <em>union</em> statement now in lines 2 to 5.
+In this <em>query</em> statement all objects from the bounding box are cached in the set <code>all</code>.
+This set is used twice in the <em>union</em> block:
+A filter for a set <code>.all</code> is used both in lines 3 and 4;
+this filter restricts the result to the content of the set <code>all</code>.
+Thus, in line 3 are found exactly the objects
+that are in the set <code>all</code> and that have a tag with key <code>amenity</code> and value <code>atm</code>.
+In line 4 are found exactly the objects
+that are in the set <code>all</code> and that have a tag with key <code>atm</code> and value <code>yes</code>.</p>
+
+<p>Why do we not just take the set <code>_</code>?
+Although this would be technically possible,
+but we then would need to divert the result of each line individually.
+This is too easy to overlook and thus a frequent source of mistakes.</p>
+
+<p><a name="full"/></p>
+
+<h2>Mixed Logic</h2>
+
+<p>...</p>
+<hr/>
+<p>next: <a href="lrs.html">List represented sets</a></p>
+
+</body>
+</html>
