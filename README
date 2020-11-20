@@ -64,7 +64,7 @@ An Example Query:
    meaning do not include a separator character.
    
    Line 2 with "way(33.56090, -111.96920, 33.57510, -111.93470)[highway];" tells
-   the API software to look for a node that "way" within this bounding box that
+   the API software to look for a node that is "way" within this bounding box that
    has a tag named "highway" and this highway tag is set to true.
    Bounding box is defined with floating point numbers (south,west,north,east),
    another way to think of this bounding box is (point A, point B) such as:
