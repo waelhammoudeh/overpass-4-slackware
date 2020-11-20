@@ -24,7 +24,7 @@ CWD=$(pwd)
 PKGNAM=overpass
 VERSION=0.7.56.8
 SOURCE_NAME=osm-3s_v
-BUILD=${BUILD:-13}
+BUILD=${BUILD:-1}
 TAG=${TAG:-_wh}
 TMP=${TMP:-/tmp}
 SRC=$TMP/${SOURCE_NAME}${VERSION}
@@ -106,6 +106,9 @@ mkdir -p $PKGDEST/$MYPREFIX/html/$PKGNAM/blog $PKGDEST/$MYPREFIX/html/$PKGNAM/ov
 
 cp $CWD/blog-doc/blog/* $PKGDEST/$MYPREFIX/html/$PKGNAM/blog/
 cp -r $CWD/blog-doc/overpass-doc/* $PKGDEST/$MYPREFIX/html/$PKGNAM/overpass-doc/
+
+# remove directory - we still have zipped tar
+rm -rf $CWD/blog-doc
 
 mkdir -p $PKGDEST/install
 cat $CWD/slack-desc > $PKGDEST/install/slack-desc
