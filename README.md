@@ -229,6 +229,7 @@ TODO: write script to simplify dispatcher start and stop.
    START
    
    DB_ROOT=(replace with your DB_ROOT here, mine was /home)
+   
    VERSION=v0.7.55
    
    # remove stalled socket file if found
