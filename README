@@ -48,11 +48,58 @@ Installation and setup consist of the following steps:
    file you get from OSM server.
 3) Setup Apache web server on your local machine to use OverpassAPI.
 
-We will go through those steps below.
+An Example Query:
+   Again this is NOT a tutorial for overpass-API. But we will use an example
+   through this installation to make sure we are on the right tracks. For
+   full language explanation see this link:
+       "https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL"
+   I will use the following script with 3 lines to retrieve a list of street
+   names within a bounding box:
+    1  [out:csv("name";false)];
+    2  way(33.56090, -111.96920, 33.57510, -111.93470)[highway];
+    3  out;
+    
+   Line 1 with "[out:csv("name";false)];" defines the output type we want "csv"
+   and what is included in it "name", the false is an option to csv output here
+   meaning do not include a separator character.
+   
+   Line 2 with "way(33.56090, -111.96920, 33.57510, -111.93470)[highway];" tells
+   the API software to look for a node that "way" within this bounding box that
+   has a tag named "highway" and this highway tag is set to true.
+   Bounding box is defined with floating point numbers (south,west,north,east),
+   another way to think of this bounding box is (point A, point B) such as:
+   
+           |                    | B
+        ---|--------------------|---
+           |                    |
+           |                    |
+           |                    |
+        ---|--------------------|---
+         A |                    |
+         
+    where the points are defined in (longitude, latitude) pair.
+    Note that the numbers listed above are for good points in Phoenix, Arizona.
+    You need to replace them with good points within your database input file.
+   
+   Line 3 with "out;" tells the API software to return normal output to standard
+   output device - your screen.
+      
+    Before leaving; the three lines can be combined into one line:
+    
+    [out:csv("name";false)];way(33.56090, -111.96920, 33.57510, -111.93470)[highway];out;
+    
+    and that line can be fed as data for a public server "http://overpass-api.de/"
+    for query. Try to copy the next line into your browser!
 
-1) Build the Slackware package using the provided script and then install it on
-   your system. Use the link provided in the README file with script to get the
-   source. That link is: 
+http://overpass-api.de/api/interpreter?data=[out:csv(\"name\";false)];way(33.56090, -111.96920, 33.57510, -111.93470)[highway];out;
+
+
+Installation and Setup Details:
+
+1) Build the Slackware package using the provided SlackBuild script and then
+   install the produced package on your system. Use the link provided in the 
+   the script README file to get the source. That link is: 
+        
         "https://dev.overpass-api.de/releases/osm-3s_v0.7.56.8.tar.gz"
         
 2) Populate the database:
@@ -76,19 +123,24 @@ A) Decision time:
    file suffix. The OSM command line tool "Osmium" is used to work with files;
    you can use "osmium" to convert from type to another, get information about
    a file and many other uses. You can find a Slackware build script for osmium
-   on my repository. The type required to initial the database is .osm.bz2 type.
-   Read more about OSM data files at: 
+   on my repository. The file type required to initial the database is ".osm.bz2"
+   type. Read more about OSM data files at:
+   
      https://wiki.openstreetmap.org/wiki/Databases_and_data_access_APIs
+   
    In short your input file name needs to end with ".osm.bz2". To add to the mix;
    files may include "meta data" or extra data.
    A shell script is provided with the software to download and clone database.
    I have NOT used this script. If you want you can use "download_clone.sh".
+   
    This is what I did; I live in Phoenix, Arizona so I got a file for the state
    of Arizona with meta data and used that to initial my database.
    To download your file go to this web site:
-      https://osm-internal.download.geofabrik.de/index.html
+   
+        https://osm-internal.download.geofabrik.de/index.html
+        
    and choose your file - for state, country, region or planet.
-   If you choose a file with meta data - not available in .osm.bz2 type - then
+   If you choose a file with meta data - not available in ".osm.bz2" type - then
    you need to convert it with "osmium" to .osm.bz2 type with this command:
     $ osmium cat yourfile.osm.pbf -o yourfile.osm.bz2
    
@@ -99,12 +151,13 @@ A) Decision time:
        # mkdir /home/overpass
        I will refer to the /home part of the path above as {DB_ROOT}, so place
        your database directory anywhere you want.
-     - The input file I will use has meta data with the name "infile.osm.pbf"
+     - The input file I will use has meta data with the name "infile.osm.bz2"
      
 B) Create group and user:
    Do not run your server as root. As done with Postgresql SlackBuild, I create
    an overpass detecated group and user to limit access and permissions. This 
    can be done with the following:
+     
      # groupadd -g 1055 overpass
      # useradd -u 1055 -g 1055 -d {DB_ROOT}/overpass overpass
      
@@ -119,9 +172,9 @@ C) Initial The Data Base:
    command option as follows:
    1) infile: is the input file; has to be of type .osm.bz2
    2) data base directory: where to store the data base - destination
-   3) executable directory: this the bin directory root where overpass is
+   3) executable directory: this is the bin directory root where overpass is
       installed - /usr/local/ without the bin entery.
-   4) the meta option: if infile has no meta data, then meta=no.
+   4) the meta option: if infile has no meta data, then change to "--meta=no".
    
    Do the following to initial data base:
    - As root user change user to overpass with:
@@ -143,11 +196,16 @@ C) Initial The Data Base:
      
      My actual infile.osm.bz2 was "arizona-latest-internal.osm.bz2" for the
      state of Arizona with file size about 300 MB, on my machine the above
-     command to initial the data base took 32 minutes, with directory size
-     about 17 GB. YMMV!
+     command to initial the data base took about 32 minutes, with directory 
+     size about about 17 GB. YMMV!
      
    With those steps so far, you can query your data base on the command line.
-TODO: Provide example(s).
+   Using the example file provided with this README; and please replace with
+   good points from your database input file:
+   
+     $ osm3s_query --db-dir={DB_ROOT}/overpass < example
+   
+   above assumes you are in the directory where the example file is.
 
 Data base updates will not be covered here. See documentation in your 
 installation for that, or check online :)
@@ -155,7 +213,9 @@ installation for that, or check online :)
 D) Start / Stop the "dispatcher" daemon:
    Hoping everything above went as expected, to use the web interface for the
    overpass API a unix daemon needs to be running (started).
+   
 TODO: write script to simplify dispatcher start and stop.
+   
    The "dispatcher" is part of the software package built and installed in
    the first step above and can be found in /usr/local/bin directory. It should
    not be run as root, we will run it as the overpass user we created above,
@@ -177,7 +237,7 @@ TODO: write script to simplify dispatcher start and stop.
         rm -f $DB_ROOT/overpass/osm3s_$VERSION_osm_base
    fi
 
-   # start overpass dispatcher dameon; as user overpass not root
+   # start overpass dispatcher daemeon; as user overpass not root
     echo "Starting overpass disptcher ..."
     sudo -u overpass /usr/local/bin/dispatcher --osm-base --db-dir=$DB_ROOT/overpass/ --meta&
 
@@ -201,6 +261,12 @@ TODO: write script to simplify dispatcher start and stop.
     
     Do not include the START and END lines, they are just makers for lines to
     be included. You add the lines between them only.
+    
+    With the dispatcher daemon running, you can run the example without the
+    database option; as:
+    
+    $ osm3s_query 
+    < example
     
 3) Setup Apatche Web Server:
     
