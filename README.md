@@ -332,20 +332,3 @@ TODO: write script to simplify dispatcher start and stop.
             OR 
         http://myoverpass.local" 
     in a browser address bar
-    
-
-           
-           
-        
-    
-    
-    
-    
-    
-    
-/* example: get Street names in BBOX
-wget -O yafa343.csv "http://yafa.com/api/interpreter?data=[out:csv(\"name\";false)];way(33.56090, -111.96920, 33.57510, -111.93470)[highway];out;"
-*/
-# sort with:
-cat yafa343.csv | sort -bu
-# -bu -> b : ignore blanks, u : unique
