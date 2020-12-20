@@ -56,8 +56,11 @@ An Example Query:
    I will use the following script with 3 lines to retrieve a list of street
    names within a bounding box:
     1  [out:csv("name";false)];
+    
     2  way(33.56090, -111.96920, 33.57510, -111.93470)[highway];
+    
     3  out;
+    
     
    Line 1 with "[out:csv("name";false)];" defines the output type we want "csv"
    and what is included in it "name", the false is an option to csv output here
