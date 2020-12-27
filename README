@@ -143,29 +143,35 @@ A) Decision time:
    If you choose a file with meta data - not available in ".osm.bz2" type - then
    you need to convert it with "osmium" to .osm.bz2 type with this command:
     $ osmium cat yourfile.osm.pbf -o yourfile.osm.bz2
-   
+
    Before leaving this section, we are going to make our decisions / assumptions
    as follow:
      - Store database under /home directory since there is enough disk space,
-       so we make a directory as root with the name of "overpass";
-       # mkdir /home/overpass
+       in the step below - useradd - a directory entery with the name "overpass"
+       will be created under /home, that is "/home/overpass" as a path.
        I will refer to the /home part of the path above as {DB_ROOT}, so place
        your database directory anywhere you want.
      - The input file I will use has meta data with the name "infile.osm.bz2"
      
 B) Create group and user:
-   Do not run your server as root. As done with Postgresql SlackBuild, I create
-   an overpass detecated group and user to limit access and permissions. This 
+   Do not run your server as root. As done with PostgreSQL SlackBuild, I create
+   an overpass dedicated group and user to limit access and permissions. This 
    can be done with the following:
      
-     # groupadd -g 1055 overpass
-     # useradd -u 1055 -g 1055 -d {DB_ROOT}/overpass overpass
-     
-   Feel free to use different uid and gid above, I use high numbers to avoid
-   conflicts. Look in your /etc/group and /etc/psswd files first!!!
-   Now change the owner and group for overpass directory with:
-     # chown -R overpass:overpass {DB_ROOT}/overpass
-     
+     # groupadd -g 367 overpass
+     # useradd -u 367 -g 367 -d {DB_ROOT}/overpass overpass
+   
+   Note the space between the two overpass words; one is part of path, the other is
+   the user name we are adding!
+   
+   I want to thank Robby Workman from www.SlackBuilds.org for issuing and including the
+   above ids in the "Recommended UID/GIDs" document in their site. This avoids conflicts
+   with software installed from SlackBuilds.org, so I highly recommend you use the above
+   group and user ids.
+   
+   Feel free to use different gid/uid above, look in your /etc/group and /etc/psswd 
+   files first!!!
+
 C) Initial The Data Base:
    With the above assumptions we initial the data base using "init_osm3s.sh"
    provided with the software; this script takes three arguments and one 
@@ -197,7 +203,7 @@ C) Initial The Data Base:
      My actual infile.osm.bz2 was "arizona-latest-internal.osm.bz2" for the
      state of Arizona with file size about 300 MB, on my machine the above
      command to initial the data base took about 32 minutes, with directory 
-     size about about 17 GB. YMMV!
+     size about 17 GB. YMMV!
      
    With those steps so far, you can query your data base on the command line.
    Using the example file provided with this README; and please replace with
@@ -207,7 +213,7 @@ C) Initial The Data Base:
    
    above assumes you are in the directory where the example file is.
 
-Data base updates will not be covered here. See documentation in your 
+Database updates will not be covered here. See documentation in your 
 installation for that, or check online :)
 
 D) Start / Stop the "dispatcher" daemon:
@@ -334,18 +340,18 @@ TODO: write script to simplify dispatcher start and stop.
     in a browser address bar
     
 
-           
-           
-        
-    
-    
-    
-    
-    
-    
-/* example: get Street names in BBOX
-wget -O yafa343.csv "http://yafa.com/api/interpreter?data=[out:csv(\"name\";false)];way(33.56090, -111.96920, 33.57510, -111.93470)[highway];out;"
-*/
-# sort with:
-cat yafa343.csv | sort -bu
-# -bu -> b : ignore blanks, u : unique
+A short example: 
+Get street names in bounding box: (33.56090, -111.96920, 33.57510, -111.93470) - note this is good in Phoenix, Az. Use valid points for your DataBase!  
+Use the following in a terminal:
+ :~$ wget -O mystreetnames.csv "http://localhost/api/interpreter?data=[out:csv(\"name\";false)];way(33.56090, -111.96920, 33.57510, -111.93470)[highway];out;"
+
+Sort street names with:
+ :~$ cat mystreetnames.csv | sort -bu > mystreetnames.sorted
+View the list with "emacs" or "cat" or whatever
+ :~$ emacs mystreetnames.sorted
+ 
+Or copy the following line into your browser address bar: (removed the \ characters srounding "name")
+ http://localhost/api/interpreter?data=[out:csv("name";false)];way(33.56090, -111.96920, 33.57510, -111.93470)[highway];out;
+ 
+Enjoy,
+Wael Hammoudeh
