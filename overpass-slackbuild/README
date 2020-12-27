@@ -24,7 +24,18 @@ Important Notes:
  - This script replaces the "index.html" file in the html directory with
    that used in version 0.7.55.9.
  - This script does NOT setup any web server.
- 
+ - The overpass dispatcher program should not run as root! To avoid that we
+   create an overpass group and user. The recommended GID/UID for overpass
+   has been assigned by www.SlackBuilds.org and included in their site in the
+   "Recommended UID/GID document" url: www.slackbuilds.org/uid_gid.txt, big 
+   thank you goes to Robby Workman for doing this. You create the group and user
+   with the following commands:
+     # groupadd -g 367 overpass
+     # useradd -u 367 -g 367 -d {DB_ROOT}/overpass overpass
+   where {DB_ROOT} is the root directory for the overpass home directory.
+   Using this GID/UID (367) avoids conflict with software installed from the
+   SlackBuilds.org site, so I highly recommend using this number.
+   
 The goal is to setup overpassAPI server on a local machine, compiling  and
 installing the software is a first step. After installing the package, we
 can move to the next step; populate the data base. By the way overpass uses
