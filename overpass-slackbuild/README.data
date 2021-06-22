@@ -22,7 +22,11 @@ Data source for downloads:
 
 Check this wiki page URL: "https://wiki.openstreetmap.org/wiki/Planet.osm" for
 downloading OSM files. Choose and download your file (country, city or the whole
-planet). 
+planet).
+A great web site for OSM files extract is at the following URL, you may want to
+get your area file from:
+URL:  {  https://osm-internal.download.geofabrik.de/index.html  }.
+
 
 2) Populate the database:
 
