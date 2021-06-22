@@ -1,0 +1,119 @@
+to do: database source, initial -- first draft, not draft but copied from my git!!!
+check:
+https://wiki.openstreetmap.org/wiki/Databases_and_data_access_APIs#Database_Schemas
+
+Overpass uses its own database, for a database to be useful it needs to have
+some data stored / initialed in it. The data used is "Open Street Maps" data,
+the same data used to draw the map. OSM data files tend to be huge, they are
+available in different sizes for different regions ranging from the whole planet
+to cities. For this reason I use data file for the state of Arizona in USA. My
+advice is to choose file for your country or region, if you have the resources
+and disk space for the whole planet and that is what you want, go for it.
+
+OSM data files come in different types, overpass requires the file to initial
+the database to be OSM XML bzip2-compressed - ends with suffix .osm.bz2 usually.
+OSM data files may or may not include historical or personal data; this is known
+as "META" data. I would choose this type of file if available for your area.
+The OSM "osmium command line tool" is used to convert between file types. I 
+have a SlackBuild script for the tool on my repository that you may need:
+https://github.com/waelhammoudeh/osmium-tool_slackbuild
+
+Data source for downloads:
+
+Check this wiki page URL: "https://wiki.openstreetmap.org/wiki/Planet.osm" for
+downloading OSM files. Choose and download your file (country, city or the whole
+planet). 
+
+2) Populate the database:
+
+A) Decision time:
+   At this point you need to decide where to store the database.
+   Store the database on SSD (Solid State Drive) if you have one, or your fast
+   hard drive. you need to make sure you have enough space for the database.
+   The time it takes to populate the database depends on the input file size
+   and your processor / machine speed.
+   
+   Where you store the database is the overpass user home directory we used
+when created the overpass group and user. If you need to make any changes to
+that, now is the time before you initial the database.
+
+[TO BE CONTINUED]
+
+   The input file to initial / populate the database is OSM file. And OSM (Open
+   Street Map) files are of many types. Usually you can tell the type by the
+   file suffix. The OSM command line tool "Osmium" is used to work with files;
+   you can use "osmium" to convert from type to another, get information about
+   a file and many other uses. You can find a Slackware build script for osmium
+   on my repository. The file type required to initial the database is ".osm.bz2"
+   type. Read more about OSM data files at:
+
+     https://wiki.openstreetmap.org/wiki/Databases_and_data_access_APIs
+
+   In short your input file name needs to end with ".osm.bz2". To add to the mix;
+   files may include "meta data" or extra data.
+   A shell script is provided with the software to download and clone database.
+   I have NOT used this script. If you want you can use "download_clone.sh".
+
+   This is what I did; I live in Phoenix, Arizona so I got a file for the state
+   of Arizona with meta data and used that to initial my database.
+   To download your file go to this web site:
+
+        https://osm-internal.download.geofabrik.de/index.html
+
+   and choose your file - for state, country, region or planet.
+   If you choose a file with meta data - not available in ".osm.bz2" type - then
+   you need to convert it with "osmium" to .osm.bz2 type with this command:
+    $ osmium cat yourfile.osm.pbf -o yourfile.osm.bz2
+
+   Before leaving this section, we are going to make our decisions / assumptions
+   as follow:
+     - Store database under /home directory since there is enough disk space,
+       so we make a directory as root with the name of "overpass";
+       # mkdir /home/overpass
+       I will refer to the /home part of the path above as {DB_ROOT}, so place
+       your database directory anywhere you want.
+     - The input file I will use has meta data with the name "infile.osm.bz2"
+
+C) Initial The Data Base:
+   With the above assumptions we initial the data base using "init_osm3s.sh"
+   provided with the software; this script takes three arguments and one
+   command option as follows:
+   1) infile: is the input file; has to be of type .osm.bz2
+   2) data base directory: where to store the data base - destination
+   3) executable directory: this is the bin directory root where overpass is
+      installed - /usr/local/ without the bin entery.
+   4) the meta option: if infile has no meta data, then change to "--meta=no".
+
+   Do the following to initial data base:
+   - As root user change user to overpass with:
+     root@lazyant:~# su overpass <enter>
+
+   - Then your prompt should look like this on your terminal:
+     overpass@lazyant:/root$
+
+     And whoami and its output should look like:
+     overpass@lazyant:/root$ whoami
+     overpass
+
+     Assuming everything is good; change directory to where you placed your
+     "infile.osm.bz2" and initial the data base with:
+
+     overpass@lazyant:/root$ nohup init_osm3s.sh infile.osm.bz2 "{DB_ROOT}/overpass/" "/usr/local/" --meta&
+
+     Replace {DB_ROOT} above with your real path.
+
+     My actual infile.osm.bz2 was "arizona-latest-internal.osm.bz2" for the
+     state of Arizona with file size about 300 MB, on my machine the above
+     command to initial the data base took about 32 minutes, with directory
+     size about about 17 GB. YMMV!
+
+   With those steps so far, you can query your data base on the command line.
+   Using the example file provided with this README; and please replace with
+   good points from your database input file:
+
+     $ osm3s_query --db-dir={DB_ROOT}/overpass < example
+
+   above assumes you are in the directory where the example file is.
+
+Data base updates will not be covered here. See documentation in your
+installation for that, or check online :)

@@ -17,12 +17,20 @@
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # 
-# 
+#  You need to create "overpass" group and user before building overpassAPI.
+#  This is done with the following commands:
+#
+#      # groupadd -g 367 overpass
+#      # useradd -u 367 -g 367 -d /your/database/directory overpass
+#
+#  Replace "/your/database/directory" with your actual database directory; where
+#  you will store your database.
+#
+#
 
 CWD=$(pwd)
-
 PKGNAM=overpass
-VERSION=0.7.56.8
+VERSION=0.7.56.9
 SOURCE_NAME=osm-3s_v
 BUILD=${BUILD:-1}
 TAG=${TAG:-_wh}
@@ -55,13 +63,41 @@ else
   LIBDIRSUFFIX=""
 fi
 
-# unzip blog-doc in $CWD
-tar xvzf $CWD/blog-doc.tar.gz
+set -e
+
+# check for overpass group and user first
+# www.slackbuilds.org, assigned overpass uid/gid are 367/367
+# See http://slackbuilds.org/uid_gid.txt
+
+if ! grep ^overpass: /etc/group 2>&1 > /dev/null; then
+  echo " ERROR: Missing overpass GROUP."
+  echo ""
+  echo "  You must have a overpass group to run this script."
+  echo "    # groupadd -g 367 overpass"
+  echo ""
+   echo " Please see the main \"README\" file, thank you."
+  echo ""
+ exit 1
+elif ! grep ^overpass: /etc/passwd 2>&1 > /dev/null; then
+  echo ""
+  echo " ERROR: Missing overpass user."
+  echo "  You must have an overpass user to run this script."
+  echo "    # useradd -u 367 -g 367 -d /your/database/directory overpass"
+  echo "    # chown overpass:overpass /your/database/directory"
+  echo  ""
+  echo " Please replace "/your/database/directory" with your actual database directory"
+  echo " Please see the main \"README\" file, thank you."
+  echo ""
+  exit 1
+fi
 
 rm -rf $SRC $PKGDEST
 mkdir -p $PKGDEST
+
 cd $TMP
+
 tar xvzf $CWD/${SOURCE_NAME}${VERSION}.tar.gz
+tar xvzf $CWD/blog-doc.tar.gz
 
 cd $SRC
 
@@ -79,7 +115,7 @@ find -L . \
    --enable-lz4 \
    --prefix=$MYPREFIX
 
-make
+make -j$(expr $(nproc) + 1)
 make install DESTDIR=$PKGDEST || exit
 
 # with make install a directory is created in $TMP with the name 
@@ -104,20 +140,25 @@ cp $CWD/logo.png $PKGDEST/$MYPREFIX/html/$PKGNAM/
 # copy the blog and doc, very educational
 mkdir -p $PKGDEST/$MYPREFIX/html/$PKGNAM/blog $PKGDEST/$MYPREFIX/html/$PKGNAM/overpass-doc
 
-cp $CWD/blog-doc/blog/* $PKGDEST/$MYPREFIX/html/$PKGNAM/blog/
-cp -r $CWD/blog-doc/overpass-doc/* $PKGDEST/$MYPREFIX/html/$PKGNAM/overpass-doc/
+cp $TMP/blog-doc/blog/* $PKGDEST/$MYPREFIX/html/$PKGNAM/blog/
+cp -r $TMP/blog-doc/overpass-doc/* $PKGDEST/$MYPREFIX/html/$PKGNAM/overpass-doc/
 
-# remove directory - we still have zipped tar
-rm -rf $CWD/blog-doc
+# install dispatcher start & stop script
+mkdir -p $PKGDEST/etc/rc.d
+cp $CWD/rc.dispatcher.new $PKGDEST/etc/rc.d/.
+chmod 0755 $PKGDEST/etc/rc.d/rc.dispatcher.new
 
 mkdir -p $PKGDEST/install
 cat $CWD/slack-desc > $PKGDEST/install/slack-desc
 
-# Save those package-making files .. may save your ass someday
+# Save those package-making files ..
 mkdir -p $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION
 cp $CWD/LICENSE $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/$PKGNAM.SlackBuild $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/README $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/README.data $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/README.web $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/$PKGNAM.info $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/slack-desc $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 
 cd $PKGDEST

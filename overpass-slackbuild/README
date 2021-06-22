@@ -1,18 +1,22 @@
 OSM OverPass API software
 
-This is the README file for the overpassAPI software slackware build script.
+This is the main "README" file for the overpassAPI SlackBuilds script.
+Instructions are provided in other README files as follows:
+README.data : details about data sources and how to initial and populate
+overpass database.
+README.web : details setting up web server for the web interface.
 
-Open Street Maps overpassAPI is a query language for OSM data.
+Open Street Maps (OSM) overpassAPI is a query language for OSM data.
 (Formerly known as OSM Server Side Scripting, or OSM3S before 2011)
 It acts as a database over the web: the client sends a query to the
 API and gets back the data set that corresponds to the query.
 
-Source url: "https://dev.overpass-api.de/releases/osm-3s_v0.7.56.8.tar.gz"
-Please note that the source on github.com is old.
-     
-Required Packages:
+The "dispatcher" program is part of the overpass package, it is the daemon
+which forwards queries to the correct part of the package. As long as the
+dispatcher is running, your queries to overpass will be answered.
 
- - expat : provided with Slackware current
+Source url: "https://dev.overpass-api.de/releases/osm-3s_v0.7.56.9.tar.gz"
+Please note that the source on github.com is old.
 
 Important Notes:
  - This SlackBuild script compiles the overpassAPI software from source,
@@ -21,30 +25,68 @@ Important Notes:
    "cgi-bin" and "templates".
  - Blog directory along with overpass-doc are added to the package in the
    html directory; for educational purposes. Available on the web online too.
- - This script replaces the "index.html" file in the html directory with
-   that used in version 0.7.55.9.
- - This script does NOT setup any web server.
- - The overpass dispatcher program should not run as root! To avoid that we
-   create an overpass group and user. The recommended GID/UID for overpass
-   has been assigned by www.SlackBuilds.org and included in their site in the
-   "Recommended UID/GID document" url: www.slackbuilds.org/uid_gid.txt, big 
-   thank you goes to Robby Workman for doing this. You create the group and user
-   with the following commands:
-     # groupadd -g 367 overpass
-     # useradd -u 367 -g 367 -d {DB_ROOT}/overpass overpass
-   where {DB_ROOT} is the root directory for the overpass home directory.
-   Using this GID/UID (367) avoids conflict with software installed from the
-   SlackBuilds.org site, so I highly recommend using this number.
-   
+ - This script replaces the source "index.html" file in the html directory with
+   that used in an earlier version 0.7.55.9.
+ - This script does NOT setup any web server, however it makes the process
+   much easier.
+ - Included is a script to start and stop the dispatcher dameon for overpass;
+   dispatcher is started after database setup.
+ 
+Required before building package:
+You need to create "overpass" group and user before building overpassAPI, and
+set ownership on the database directory. Database directory is where you will
+store your database on your system, it will the home directory for overpass user.
+This is done with the following commands:
+
+   # groupadd -g 367 overpass
+   # useradd -u 367 -g 367 -d /your/database/directory overpass
+   # mkdir /your/database/directory
+   # chown overpass:overpass /your/database/directory
+
+Replace "/your/database/directory" with your actual database directory; where
+you will store your database. You do need to create the directory and set its
+ownership.
+Thanks to Robby Workman from SlackBuilds.org for issuing and including the
+above ids in the "Recommended UID/GIDs" document in their site. This avoids
+conflicts with software installed from SlackBuilds.org, so I highly recommend
+you use the above group and user ids. Feel free to use different gid/uid above,
+look in your /etc/group and /etc/passwd files first!!!
+
+The short story:
 The goal is to setup overpassAPI server on a local machine, compiling  and
 installing the software is a first step. After installing the package, we
-can move to the next step; populate the data base. By the way overpass uses
-its own data base engine.
-  
+can move to the next step; populate the data base.
+
+To accomplish our goal follow these steps:
+1) Create user and group as outlined above in "Required before building".
+2) Build the package with SlackBuild script and install it on your machine.
+3) Download open street maps data for your area and initial the database.
+4) Start overpass dispatcher dameon with "rc.dispatcher". You need to set
+database directory and the META varaibles first, make script executable.
+To have dispatcher start and stop on system boot and shutdown add the
+following lines to the following files:
+
+ /etc/rc.d/rc.local
+ ==================
+ # Startup overpass dispatcher
+ if [ -x /etc/rc.d/rc.dispatcher ]; then
+    /etc/rc.d/rc.dispatcher start
+ fi
+
+ /etc/rc.d/rc.local_shutdown
+ ===========================
+ # Stop overpass dispatcher
+ if [ -x /etc/rc.d/rc.dispatcher ]; then
+    /etc/rc.d/rc.dispatcher stop
+ fi
+
+You may need to create the "/etc/rc.d/rc.local_shutdown" if not present in your
+system. The rc.dispatcher script has other options; please see the script file.
+
+5) Setup a web server such as "Apache Web Server" for your overpass server.
+
+The long story is broken into two files mentioned on top of this README, so
+please see "README.data" and "README.web". Thank you very much.
+
 Enjoy :)
 Wael Hammoudeh
-
-   
-   
-  
-

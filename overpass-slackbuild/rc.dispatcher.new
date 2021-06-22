@@ -1,0 +1,120 @@
+#!/bin/bash
+
+# script to start, stop and get status for overpass dispatcher daemon
+# script is part of overpass slackbuild; it assumes installation into
+# /usr/local directory and the creation of overpass user and group as
+# indecated in the main README file included with the slackbuild script
+#
+# To use this script you need to set 2 of the varaibles below:
+# DBDIR : set it to your actual installation database directory.
+# META : if your source data file included meta data, no change is needed.
+# However if your source data file did not include meta data; then you
+# need to unset META by removing # infront of it.
+
+DBDIR=/mnt/sdc5/overpass/DBase
+DSPTCHR=/usr/local/bin/dispatcher
+SOCVER=v0.7.55
+USER=overpass
+META=--meta
+# unset META
+
+if ! grep ^overpass: /etc/passwd 2>&1 > /dev/null; then
+
+    echo "  You must have overpass user and group to run this script."
+    echo "   Please see the main \"README\" file included with build script"
+    exit 1
+fi
+
+# check dispatcher
+if [ ! -x $DSPTCHR ]; then
+
+    echo "  Could not find dispatcher executable file!"
+    exit 2
+fi
+
+# test for database directory - directory can not be empty
+if [ ! -d $DBDIR ]; then
+
+    echo " Could not find database directory"
+    exit 2
+fi
+
+# maybe nested if
+if [ ! "$(ls -A $DBDIR)" ]; then
+
+    echo "  Seems like database directory is empty!"
+    echo "  Please see \"README.data\" file included with build script."
+    exit 2
+fi
+
+case "$1" in
+
+	"start")
+
+	if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
+        echo "dispatcher is already running!"
+        exit 0
+
+    else
+        echo "dispatcher is NOT running"
+        if [ -S ${DBDIR}/osm3s_${SOCVER}_osm_base ]; then
+            echo "Found STALLED overpass socket file, removing."
+            rm -f ${DBDIR}/osm3s_${SOCVER}_osm_base
+        fi
+    fi
+
+    echo "Starting overpass dispatcher ..."
+    sudo -u $USER $DSPTCHR --osm-base --db-dir=${DBDIR}/ ${META} &
+    sleep 1s
+    if (! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
+       echo "Error: dispatcher did not start !!!"
+       exit 1
+    else
+        echo "dispatcher started"
+    fi
+
+	exit 0
+;;
+
+	"stop")
+
+		if (! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
+            echo "Error: dispatcher is not running."
+            exit 2
+        else
+            sudo -u $USER $DSPTCHR --terminate
+            sleep 1
+            if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
+                echo "Error: could not stop dispatcher"
+                exit 2
+            else
+                echo "dispatcher stopped"
+            fi
+        fi
+		exit 0
+;;
+
+	"status")
+
+        if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
+            echo "dispatcher is running"
+        else
+            echo "dispatcher is stopped"
+        fi
+        echo ""
+	   sudo -u $USER $DSPTCHR --status
+	   exit 0
+;;
+
+    *)
+		# something else - show usage
+		echo ""
+		echo "  Error: Unkown command."
+		echo "  Usage: $0 ACTION"
+		echo "  where ACTION is one of: { start, stop or status }"
+		echo ""
+		echo "  Please note they are all lower case letters!"
+		echo ""
+		exit 1
+	;;
+esac
