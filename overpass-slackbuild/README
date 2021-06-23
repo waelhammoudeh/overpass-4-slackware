@@ -35,7 +35,8 @@ Important Notes:
 Required before building package:
 You need to create "overpass" group and user before building overpassAPI, and
 set ownership on the database directory. Database directory is where you will
-store your database on your system, it will the home directory for overpass user.
+store your database on your system, you should have enough free space to
+store your database, it will be the home directory for the overpass user.
 This is done with the following commands:
 
    # groupadd -g 367 overpass

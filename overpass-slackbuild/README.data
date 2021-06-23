@@ -1,6 +1,10 @@
-to do: database source, initial -- first draft, not draft but copied from my git!!!
-check:
-https://wiki.openstreetmap.org/wiki/Databases_and_data_access_APIs#Database_Schemas
+
+This is the "README.data" file for overpass Slackware package; here you learn
+the data file format needed for overpass, what file you need and where to get it.
+Then I talk about where to store your data and the process of database setup
+or initialization. Finally make the database available for your use.
+
+OSM data files formats:
 
 Overpass uses its own database, for a database to be useful it needs to have
 some data stored / initialed in it. The data used is "Open Street Maps" data,
@@ -16,19 +20,49 @@ OSM data files may or may not include historical or personal data; this is known
 as "META" data. I would choose this type of file if available for your area.
 The OSM "osmium command line tool" is used to convert between file types. I 
 have a SlackBuild script for the tool on my repository that you may need:
+
 https://github.com/waelhammoudeh/osmium-tool_slackbuild
+
+With osmium you may download a file with say "PBF" format then convert it to
+bz2 format. For example this was exactly what I did, my source was in "pbf" and
+I had to convert it with the following command:
+
+ $ osmium cat arizona-internal.osh.pbf -o arizona-internal.osh.bz2
+
+note that -o switch specifies output file name and from its suffix "osmium"
+will figure out the format for output. See the man page for osmium. This
+operation can take some time depending on file size, processor and amount
+of memory on the machine. Mine toke more than 10 minutes.
+Another note; some web sites may use slightly different suffix for file formats
+".osh.bz2", the "h" is for historical data here. Just make sure the file format
+is compressed bz2.
 
 Data source for downloads:
 
-Check this wiki page URL: "https://wiki.openstreetmap.org/wiki/Planet.osm" for
-downloading OSM files. Choose and download your file (country, city or the whole
-planet).
+There are a lot of web sites that provide OSM data files (or extracts). Here are
+two good sites to start, you can use any site you like, I would choose one close
+to me for download then will (should be) faster.
+
+Check this wiki page has alot of links to providers URL:
+
+ { https://wiki.openstreetmap.org/wiki/Planet.osm }
+
+Choose and download your file (country, city or the whole planet).
+
 A great web site for OSM files extract is at the following URL, you may want to
 get your area file from:
+
 URL:  {  https://osm-internal.download.geofabrik.de/index.html  }.
 
+Pay attention to the file size you choose, that size is NOT for your database!
+It is obviuoslly related to your final database size. My original download size
+for "arizona-internal.osh.pbf" was about 319 MB, when converted to bz2
+"arizona-internal.osh.bz2" it got bigger to 521 MB and my database after I
+did the initialization to it was 17 GB. So I recommend free space of at least
+30 to 50 GB to be on the safe side for a country or small region. You are going
+to need a lot more disk space for a continent.
 
-2) Populate the database:
+Initial the database:
 
 A) Decision time:
    At this point you need to decide where to store the database.
@@ -42,6 +76,12 @@ when created the overpass group and user. If you need to make any changes to
 that, now is the time before you initial the database.
 
 [TO BE CONTINUED]
+
+TO DO:
+overpass user initials DB ...
+setup rc.dispatcher ...
+thinking about force-stop in rc.dispatcher???
+
 
    The input file to initial / populate the database is OSM file. And OSM (Open
    Street Map) files are of many types. Usually you can tell the type by the
