@@ -142,8 +142,9 @@ C) Initial The Data Base:
      Assuming everything is good; change directory to where you placed your
      "infile.osm.bz2" and initial the data base with:
 
-     overpass@lazyant:/root$ nohup init_osm3s.sh infile.osm.bz2 "{DB_ROOT}/overpass/" "/usr/local/" --meta&
+     overpass@lazyant:/root$ nohup /usr/local/bin/init_osm3s.sh infile.osm.bz2 "{DB_ROOT}/overpass/" "/usr/local/" --meta &
 
+     You need full path for the script: /usr/local/bin/init_osm3s.sh above.
      Replace {DB_ROOT} above with your real path.
 
      My actual infile.osm.bz2 was "arizona-latest-internal.osm.bz2" for the
