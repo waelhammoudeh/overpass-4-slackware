@@ -68,14 +68,14 @@ To have dispatcher start and stop on system boot and shutdown add the
 following lines to the following files:
 
  /etc/rc.d/rc.local
- ==================
+ ============================
  # Startup overpass dispatcher
  if [ -x /etc/rc.d/rc.dispatcher ]; then
     /etc/rc.d/rc.dispatcher start
  fi
 
  /etc/rc.d/rc.local_shutdown
- ===========================
+ ============================
  # Stop overpass dispatcher
  if [ -x /etc/rc.d/rc.dispatcher ]; then
     /etc/rc.d/rc.dispatcher stop
