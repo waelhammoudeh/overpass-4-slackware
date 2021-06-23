@@ -5,18 +5,19 @@
 # /usr/local directory and the creation of overpass user and group as
 # indecated in the main README file included with the slackbuild script
 #
-# To use this script you need to set 2 of the varaibles below:
+# To use this script you need to set one varaible below:
 # DBDIR : set it to your actual installation database directory.
-# META : if your source data file included meta data, no change is needed.
-# However if your source data file did not include meta data; then you
-# need to unset META by removing # infront of it.
+#
 
 DBDIR=/path/to/your/overpass/DBase
 DSPTCHR=/usr/local/bin/dispatcher
 SOCVER=v0.7.55
 USER=overpass
-META=--meta
-# unset META
+unset META
+
+if [ -f ${DBDIR}/nodes_meta.bin ]; then
+    META=--meta
+fi
 
 if ! grep ^overpass: /etc/passwd 2>&1 > /dev/null; then
 
