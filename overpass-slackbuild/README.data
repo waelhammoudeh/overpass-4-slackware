@@ -1,8 +1,28 @@
 
-This is the "README.data" file for overpass Slackware package; here you learn
-the data file format needed for overpass, what file you need and where to get it.
-Then I talk about where to store your data and the process of database setup
-or initialization. Finally make the database available for your use.
+This is the "README.data" file for overpass Slackware package.
+
+IMPOTRANT: This is work in progress, may also have inacurate information.
+
+The "data" is the subject in this file; the data inside the overpass database.
+Here you will find the source; where and what to get for your database, the
+destination for it (where to store), how to initial the database with that data
+and finally how to make it available for use on your machine (setup). The
+data is OpenStreetMap (OSM) data.
+
+Terminology:  meta and attic.
+
+Meta: extra information such as objects versions, timestamps (create, change)
+and the editing user information (ids). Data files with "meta" can have full or
+partial extra information.
+
+Attic: attic data is historical data.
+Since Overpass API v0.7.50, it is possible to also retain previous object versions,
+the so called attic versions, in the database.
+Previous object versions are accessible via [date:...], [diff:...], [adiff:...]
+as well as some filters like (changed:...).
+
+
+Populate DB in 2 different ways: download_clone.sh script and / or  from data file.
 
 OSM data files formats:
 
@@ -16,8 +36,10 @@ and disk space for the whole planet and that is what you want, go for it.
 
 OSM data files come in different types, overpass requires the file to initial
 the database to be OSM XML bzip2-compressed - ends with suffix .osm.bz2 usually.
-OSM data files may or may not include historical or personal data; this is known
-as "META" data. I would choose this type of file if available for your area.
+OSM data files may or may not include obejects version number, editing users ids
+and timestamples; this is known as "META" data. I would choose this type of file
+if available for your area since the presence of meta data enables more functionality
+within overpass queries; using  JSOM to query overpass needs meta data.
 The OSM "osmium command line tool" is used to convert between file types. I 
 have a SlackBuild script for the tool on my repository that you may need:
 
@@ -34,8 +56,7 @@ will figure out the format for output. See the man page for osmium. This
 operation can take some time depending on file size, processor and amount
 of memory on the machine. Mine toke more than 10 minutes.
 Another note; some web sites may use slightly different suffix for file formats
-".osh.bz2", the "h" is for historical data here. Just make sure the file format
-is compressed bz2.
+".osh.bz2".Just make sure the file format is compressed bz2.
 
 Data source for downloads:
 
