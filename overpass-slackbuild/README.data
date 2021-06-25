@@ -12,36 +12,52 @@ data is OpenStreetMap (OSM) data.
 Terminology:  meta and attic.
 
 Meta: extra information such as objects versions, timestamps (create, change)
-and the editing user information (ids). Data files with "meta" can have full or
-partial extra information.
+and the editing user information (ids and other things). Data files with "meta"
+can have full or partial extra information.
 
-Attic: attic data is historical data.
-Since Overpass API v0.7.50, it is possible to also retain previous object versions,
-the so called attic versions, in the database.
-Previous object versions are accessible via [date:...], [diff:...], [adiff:...]
-as well as some filters like (changed:...).
+Attic: attic data is historical data, things change, street names even city name
+can change (Bombay to Mumbai, India), other things may change in the database.
+Quoting from overpassAPI installation: "Since Overpass API v0.7.50, it is possible
+to also retain previous object versions, the so called attic versions, in the
+database. Previous object versions are accessible via [date:...], [diff:...],
+[adiff:...] as well as some filters like (changed:...)." end quote.
 
+Populate (initial) database in 2 different ways:
+The first is to use the "download_clone.sh" script provided with overpassAPI
+source (find it in /usr/local/bin if you install using my SlackBuild script).
+I have not tried this method, I do not mean to bash the script and I do really
+appreciate that it is available. The script is easy way to clone the WHOLE
+database from the server, no partial option. You may choose without attic or
+meta data, but you still get the whole planet data.
+I do not know the acctual size of the database - has to be in the 100s of GBs.
+I do know that I do not have the hard disk space on my machine for it. I also
+do not want to guess how long it will take to download or think of how to ensure
+the integrity of the data. Please see the complete installation page (in the html
+directory of the package) for "download_clone.sh" usage.
+If you have the resources for this and have done it, please let me know, I would
+love to hear from you.
 
-Populate DB in 2 different ways: download_clone.sh script and / or  from data file.
+The second method to initial the database is from data file from OpenStreetMaps.
+This is the method I chose for myself and describe here. You have total control
+of what to include in your database.
 
 OSM data files formats:
 
-Overpass uses its own database, for a database to be useful it needs to have
-some data stored / initialed in it. The data used is "Open Street Maps" data,
-the same data used to draw the map. OSM data files tend to be huge, they are
-available in different sizes for different regions ranging from the whole planet
-to cities. For this reason I use data file for the state of Arizona in USA. My
-advice is to choose file for your country or region, if you have the resources
-and disk space for the whole planet and that is what you want, go for it.
+The data used in overpass database is "Open Street Maps" data, the same data
+used to draw the map. OSM data files tend to be huge, they are available in
+different sizes for different regions ranging from the whole planet, continent,
+countries or even cities. For this reason I use data file for the state of Arizona
+in USA where I live. My advice is to choose file for your country or region,
+if you have the resources disk space for the whole planet and that is what you
+want, go for it.
 
 OSM data files come in different types, overpass requires the file to initial
-the database to be OSM XML bzip2-compressed - ends with suffix .osm.bz2 usually.
-OSM data files may or may not include obejects version number, editing users ids
-and timestamples; this is known as "META" data. I would choose this type of file
-if available for your area since the presence of meta data enables more functionality
-within overpass queries; using  JSOM to query overpass needs meta data.
-The OSM "osmium command line tool" is used to convert between file types. I 
-have a SlackBuild script for the tool on my repository that you may need:
+the database to be OSM XML bzip2-compressed - ends with suffix .osm.bz2.
+Your source file may not be available in this format, do not worry you can
+convert it to this required format.
+The OSM "osmium command line tool" is used to convert between file types among
+other functions on OSM files. I have a SlackBuild script for the tool on my
+repository that you may need:
 
 https://github.com/waelhammoudeh/osmium-tool_slackbuild
 
@@ -54,9 +70,18 @@ I had to convert it with the following command:
 note that -o switch specifies output file name and from its suffix "osmium"
 will figure out the format for output. See the man page for osmium. This
 operation can take some time depending on file size, processor and amount
-of memory on the machine. Mine toke more than 10 minutes.
+of memory on the machine. Mine run for about 10 minutes to finish.
 Another note; some web sites may use slightly different suffix for file formats
 ".osh.bz2".Just make sure the file format is compressed bz2.
+
+OSM data files may or may not include "META" data (see Terminology above). Yes
+you can save disk space without meta data, but your query results will not be
+accurate, I would also argue that the query result is wrong. In short meta data
+can include essential information, so choose a source file with meta data. You
+can query overpass using other programs such as JSOM; which requires meta data.
+
+As for the attic data; you accumulate data as you update your database over the
+time you use it, there is a way to keep old objects while updating database.
 
 Data source for downloads:
 
@@ -80,55 +105,29 @@ It is obviuoslly related to your final database size. My original download size
 for "arizona-internal.osh.pbf" was about 319 MB, when converted to bz2
 "arizona-internal.osh.bz2" it got bigger to 521 MB and my database after I
 did the initialization to it was 17 GB. So I recommend free space of at least
-30 to 50 GB to be on the safe side for a country or small region. You are going
+30 to 50 GB to be on the safe side for a single small country. You are going
 to need a lot more disk space for a continent.
 
-Initial the database:
+Database home - storage:
 
-A) Decision time:
-   At this point you need to decide where to store the database.
-   Store the database on SSD (Solid State Drive) if you have one, or your fast
-   hard drive. you need to make sure you have enough space for the database.
-   The time it takes to populate the database depends on the input file size
-   and your processor / machine speed.
-   
-   Where you store the database is the overpass user home directory we used
+Where you store the database is the overpass user home directory we used
 when created the overpass group and user. If you need to make any changes to
 that, now is the time before you initial the database.
+
+At this point you need to decide where to store the database. Store the database
+on SSD (Solid State Drive) if you have one, or your fast hard drive, the faster
+the drive the less time for the query result since there will be a lot of file I/O.
+You need to make sure you have enough space for the database. I can not till
+you how much since it depends on your area, but I think minimum will be 50 GB.
+The time it takes to populate the database depends on the input file size and
+your processor / machine speed and amount of memory.
+
 
 [TO BE CONTINUED]
 
 TO DO:
 overpass user initials DB ...
 setup rc.dispatcher ...
-thinking about force-stop in rc.dispatcher???
-
-
-   The input file to initial / populate the database is OSM file. And OSM (Open
-   Street Map) files are of many types. Usually you can tell the type by the
-   file suffix. The OSM command line tool "Osmium" is used to work with files;
-   you can use "osmium" to convert from type to another, get information about
-   a file and many other uses. You can find a Slackware build script for osmium
-   on my repository. The file type required to initial the database is ".osm.bz2"
-   type. Read more about OSM data files at:
-
-     https://wiki.openstreetmap.org/wiki/Databases_and_data_access_APIs
-
-   In short your input file name needs to end with ".osm.bz2". To add to the mix;
-   files may include "meta data" or extra data.
-   A shell script is provided with the software to download and clone database.
-   I have NOT used this script. If you want you can use "download_clone.sh".
-
-   This is what I did; I live in Phoenix, Arizona so I got a file for the state
-   of Arizona with meta data and used that to initial my database.
-   To download your file go to this web site:
-
-        https://osm-internal.download.geofabrik.de/index.html
-
-   and choose your file - for state, country, region or planet.
-   If you choose a file with meta data - not available in ".osm.bz2" type - then
-   you need to convert it with "osmium" to .osm.bz2 type with this command:
-    $ osmium cat yourfile.osm.pbf -o yourfile.osm.bz2
 
    Before leaving this section, we are going to make our decisions / assumptions
    as follow:

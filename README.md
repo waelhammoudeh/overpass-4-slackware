@@ -1,6 +1,6 @@
 This is the README file for Overpass-API software from Open Street Maps (OSM)
 installation and web server setup on local machine running Linux Slackware64 
-current operating system.
+current version operating system.
 
 What is OSM Overpass? 
   Quoting from https://wiki.openstreetmap.org/wiki/Overpass_API:
@@ -19,9 +19,17 @@ requirements and easier to setup. Has Its Own Database engine. No need for
 Postgresql or anything else; software requires expat library which is provided
 by Slackware64 current.
 
+Limited Area Database Guide:
+
+Full database (planet) size can be huge, 100s of gigabytes maybe approaching
+one terabyte in disk space. To save disk space there is another way to control
+the size of the database which is limiting the area. OSM data files are available
+for different regions of the world (big and small) ranging from continents to
+individual countries even specific cities. This guide shows this method for the
+database setup - initialization.
+
 This is NOT a tutorial for OverpassAPI. I will just show you how I installed it
 on my system, so you too can have your own local server.
-For more information check out the wiki page quoted above.
 
 There are public servers running around the world. The issue with them; the
 coming and going. They disappear with no warning, having your own avoids the 
@@ -38,15 +46,15 @@ From the "Complete Installation Guide" that comes with the software:
  Without minute diffs and meta data, 100 GB would already suffice."
  
 Myself I think the processor speed is important, do not try to run on 32 bit
-processor! Use solid state drive for the data base storage with at least 100 GB
-space, and 4 GB memory or more.
+processor! Use solid state drive for the database storage with at least 50 GB
+space for small country, and at least 4 GB memory or more.
 
 Installation and setup consist of the following steps:
 
-1) Build / compile the source software using Slack Build script.
-2) Populate the Database using the provided software and data source
-   file you get from OSM server.
-3) Setup Apache web server on your local machine to use OverpassAPI.
+1) Build / compile the source software using my SlackBuild script.
+2) Download OSM data file for your region (maybe country).
+3) Populate (initial) the Database using your OSM region file .
+4) Setup Apache web server on your local machine to use OverpassAPI.
 
 An Example Query:
    Again this is NOT a tutorial for overpass-API. But we will use an example
@@ -97,8 +105,13 @@ An Example Query:
 
 http://overpass-api.de/api/interpreter?data=[out:csv(\"name\";false)];way(33.56090, -111.96920, 33.57510, -111.93470)[highway];out;
 
-
 Installation and Setup Details:
 
-Please continue reading in the README file.
-Wael H. 
+Details are provided in three "README" files found in "overpass-slackbuild"
+directory in this repository as follows:
+
+README : package build and installation.
+README.data : all about OSM data file you need for the database.
+README.web : shows basic setup for Apache web server.
+
+Wael Hammoudeh
