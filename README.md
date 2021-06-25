@@ -31,9 +31,9 @@ database setup - initialization.
 This is NOT a tutorial for OverpassAPI. I will just show you how I installed it
 on my system, so you too can have your own local server.
 
-There are public servers running around the world. The issue with them; the
-coming and going. They disappear with no warning, having your own avoids the 
-unpleasant surprises. There are other reasons to have your own server ...
+There are public servers running overpassAPI around the world. There are a lot
+of issues with using a public server which can be avoided with having ones own
+server.
 
 Hardware Requirements: 
 
