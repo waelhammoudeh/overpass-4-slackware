@@ -110,8 +110,8 @@ Installation and Setup Details:
 Details are provided in three "README" files found in "overpass-slackbuild"
 directory in this repository as follows:
 
- *) README : package build and installation.
- *) README.data : all about OSM data file you need for the database.
- *) README.web : shows basic setup for Apache web server.
+ 1. README : package build and installation.
+ 2. README.data : all about OSM data file you need for the database.
+ 3. README.web : shows basic setup for Apache web server.
 
 Wael Hammoudeh
