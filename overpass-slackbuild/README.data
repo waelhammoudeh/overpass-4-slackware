@@ -39,7 +39,7 @@ love to hear from you.
 
 The second method to initial the database is from data file from OpenStreetMaps.
 The OSM data file can be for planet or smaller areas. They are available for
-regions devided by countries, continents or even smaller areas like cities.
+regions divided by countries, continents or even smaller areas like cities.
 This is the method I chose for myself and describe here. You have total control
 of what to include in your database.
 
