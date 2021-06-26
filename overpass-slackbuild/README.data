@@ -38,18 +38,19 @@ If you have the resources for this and have done it, please let me know, I would
 love to hear from you.
 
 The second method to initial the database is from data file from OpenStreetMaps.
+The OSM data file can be for planet or smaller areas. They are available for
+regions devided by countries, continents or even smaller areas like cities.
 This is the method I chose for myself and describe here. You have total control
 of what to include in your database.
 
 OSM data files formats:
 
 The data used in overpass database is "Open Street Maps" data, the same data
-used to draw the map. OSM data files tend to be huge, they are available in
-different sizes for different regions ranging from the whole planet, continent,
-countries or even cities. For this reason I use data file for the state of Arizona
-in USA where I live. My advice is to choose file for your country or region,
-if you have the resources disk space for the whole planet and that is what you
-want, go for it.
+used to draw the map. OSM data files tend to be huge resulting in big database.
+For this reason I use data file for the state of Arizona in the USA where I live.
+My advice is to choose file for your country or region, if you have the resources
+disk space (maybe one terabyte) for the whole planet and that is what you want,
+get the planet data file and go for it.
 
 OSM data files come in different types, overpass requires the file to initial
 the database to be OSM XML bzip2-compressed - ends with suffix .osm.bz2.
@@ -140,13 +141,27 @@ setup rc.dispatcher ...
 
 C) Initial The Data Base:
    With the above assumptions we initial the data base using "init_osm3s.sh"
+
+   script usage is:
+   init_osm3s.sh infile $DBDIR $EXECDIR [option]
+
+   option is one of:
+   empty - nothing --> database without meta data.
+   --meta --> database with meta data
+   --keep-attic --> database with meta data plus attic
+
+   $ /usr/local/bin/init_osm3s.sh inputfile.bz2 "/home/overpass/" "/usr/local/" --meta &
+
    provided with the software; this script takes three arguments and one
    command option as follows:
    1) infile: is the input file; has to be of type .osm.bz2
    2) data base directory: where to store the data base - destination
    3) executable directory: this is the bin directory root where overpass is
       installed - /usr/local/ without the bin entery.
-   4) the meta option: if infile has no meta data, then change to "--meta=no".
+   4) the meta option: The presence of "--meta" option will result in database
+        with metadata and the absence of the option will result in database
+        without metadata. If option is set to --keep-attic then database will
+        have metadata plus attic data.
 
    Do the following to initial data base:
    - As root user change user to overpass with:

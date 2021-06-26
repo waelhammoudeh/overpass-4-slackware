@@ -65,7 +65,7 @@ To accomplish our goal follow these steps:
 4) Start overpass dispatcher dameon with "rc.dispatcher". You need to set
 database directory first, make sure script is executable.
 To have dispatcher start and stop on system boot and shutdown add the
-following lines to the following files:
+following lines to the following files, (after database setup):
 
  /etc/rc.d/rc.local
  ============================
