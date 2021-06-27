@@ -9,7 +9,7 @@ destination for it (where to store), how to initial the database with that data
 and finally how to make it available for use on your machine (setup). The
 data is OpenStreetMap (OSM) data.
 
-Terminology:  meta and attic.
+Terminology:  meta, attic and change-set.
 
 Meta: extra information such as objects versions, timestamps (create, change)
 and the editing user information (ids and other things). Data files with "meta"
@@ -21,6 +21,14 @@ Quoting from overpassAPI installation: "Since Overpass API v0.7.50, it is possib
 to also retain previous object versions, the so called attic versions, in the
 database. Previous object versions are accessible via [date:...], [diff:...],
 [adiff:...] as well as some filters like (changed:...)." end quote.
+
+Change-set: Objects have tags which might changed or new tag gets added, the
+changes in current release OSM file from the previous release is the change-set.
+Change-sets files are small and can be used to updated previous OSM file and
+databases with OSM data.
+The change-set is between two immediate releases. If your OSM file has three
+releases since you downloaded, you need all three change-sets to update it to
+the current release.
 
 Populate (initial) database in 2 different ways:
 The first is to use the "download_clone.sh" script provided with overpassAPI
@@ -72,7 +80,7 @@ note that -o switch specifies output file name and from its suffix "osmium"
 will figure out the format for output. See the man page for osmium. This
 operation can take some time depending on file size, processor and amount
 of memory on the machine. Mine run for about 10 minutes to finish.
-Another note; some web sites may use slightly different suffix for file formats
+Another note; YOU NEED THE HISTORY FILE TO HAVE ATTIC DATA
 ".osh.bz2".Just make sure the file format is compressed bz2.
 
 OSM data files may or may not include "META" data (see Terminology above). Yes
@@ -108,6 +116,11 @@ for "arizona-internal.osh.pbf" was about 319 MB, when converted to bz2
 did the initialization to it was 17 GB. So I recommend free space of at least
 30 to 50 GB to be on the safe side for a single small country. You are going
 to need a lot more disk space for a continent.
+
+Before you download a file, read the describtion of the file on the web site.
+You need your file to have meta data and history. Also check how often files
+are released. Some sites may offer change-set release and some do not. Is that
+important to you?
 
 Database home - storage:
 

@@ -19,6 +19,11 @@ if [ -f ${DBDIR}/nodes_meta.bin ]; then
     META=--meta
 fi
 
+# keep this if after if [ -f ${DBDIR}/nodes_meta.bin ]; above
+if [ -f ${DBDIR}/nodes_attic.bin ]; then
+    META=--attic
+fi
+
 if ! grep ^overpass: /etc/passwd 2>&1 > /dev/null; then
 
     echo "  You must have overpass user and group to run this script."
