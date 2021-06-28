@@ -210,3 +210,8 @@ C) Initial The Data Base:
 
 Data base updates will not be covered here. See documentation in your
 installation for that, or check online :)
+
+Dispatcher has modes related to meta, no meta and attic .....
+The "dispatcher" program is part of the overpass package, it is the daemon
+which forwards queries to the correct part of the package. As long as the
+dispatcher is running, your queries to overpass will be answered.

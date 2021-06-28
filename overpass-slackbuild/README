@@ -2,18 +2,27 @@ OSM OverPass API software
 
 This is the main "README" file for the overpassAPI SlackBuilds script.
 Instructions are provided in other README files as follows:
-README.data : details about data sources and how to initial and populate
-overpass database.
-README.web : details setting up web server for the web interface.
+
+ *) README.data :
+     Has details about data files needed to initial and populate overpass database.
+
+  *) README.web :
+      Has details for setting up web server for the web interface to overpass.
 
 Open Street Maps (OSM) overpassAPI is a query language for OSM data.
 (Formerly known as OSM Server Side Scripting, or OSM3S before 2011)
 It acts as a database over the web: the client sends a query to the
 API and gets back the data set that corresponds to the query.
 
-The "dispatcher" program is part of the overpass package, it is the daemon
-which forwards queries to the correct part of the package. As long as the
-dispatcher is running, your queries to overpass will be answered.
+Overpass uses its own database. The source code provide programs to initial,
+maintain and query the database, the slackbuild provided here builds this source
+code. Initialing the database is done after installing the package and requires
+an OpenStreetMaps (OSM) data file; the choice of this data file needs care and
+that is what "README.data" file explains. There are two ways to initial the
+database; with planet file for the whole world which needs a lot of hard disk
+space. The second way to initial the database is for limited area or region, this
+way enables us to control required disk space and this way is what this guide
+shows.
 
 Source url: "https://dev.overpass-api.de/releases/osm-3s_v0.7.56.9.tar.gz"
 Please note that the source on github.com is old.
@@ -54,9 +63,11 @@ you use the above group and user ids. Feel free to use different gid/uid above,
 look in your /etc/group and /etc/passwd files first!!!
 
 The short story:
-The goal is to setup overpassAPI server on a local machine, compiling  and
-installing the software is a first step. After installing the package, we
-can move to the next step; populate the data base.
+The goal is to setup overpassAPI server on a local machine with a limited area
+database for a region, compiling  and installing the software is a first step.
+After installing the package, we can move to the next step; get the data to
+populate the database, initial the database and then setup web server for our
+own overpass server.
 
 To accomplish our goal follow these steps:
 1) Create user and group as outlined above in "Required before building".
@@ -64,6 +75,7 @@ To accomplish our goal follow these steps:
 3) Download open street maps data for your area and initial the database.
 4) Start overpass dispatcher dameon with "rc.dispatcher". You need to set
 database directory first, make sure script is executable.
+
 To have dispatcher start and stop on system boot and shutdown add the
 following lines to the following files, (after database setup):
 
