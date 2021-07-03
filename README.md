@@ -110,9 +110,9 @@ An Example Query:
     
     and that line can be fed as data for a public server "http://overpass-api.de/"
     for query. Try to copy the next line into your browser!
-
+```
 http://overpass-api.de/api/interpreter?data=[out:csv(\"name\";false)];way(33.56090, -111.96920, 33.57510, -111.93470)[highway];out;
-
+```
 Installation and Setup Details:
 
 Details are provided in three "README" files found in "overpass-slackbuild"
