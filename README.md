@@ -1,6 +1,16 @@
-This is the README file for Overpass-API software from Open Street Maps (OSM)
-installation and web server setup on local machine running Linux Slackware64 
-current version operating system.
+This repository is a guide for setting up overpassAPI server on a local machine;
+your own server - with limited area database. I use Linux Slackware64, concepts,
+methods and steps mentioned here can be applied to any Linux distribution.
+
+This guide is a work in progress!
+
+OverpassAPI uses its own database, naturally this guide is broken into two
+parts; first software installation and hardware requirements, the second is
+database initialization including information about source data file required
+for this, what to look for in this file, where to get it from and where to place
+your database on your machine. Then the procedure for database initialization
+is explained with its various options. The guide concludes with the web user
+interface setup utilizing Apache Web Server.
 
 What is OSM Overpass? 
   Quoting from https://wiki.openstreetmap.org/wiki/Overpass_API:
@@ -15,18 +25,16 @@ end quote.
 Overpass is a query language with its own rules, I find it very easy to learn.
 To me Overpass is a tool to retrieve OSM data, similar to another OSM tool 
 known as "Nominatim". Overpass is a lot less demanding in terms of hardware
-requirements and easier to setup. Has Its Own Database engine. No need for 
-Postgresql or anything else; software requires expat library which is provided
-by Slackware64 current.
+requirements and easier to setup. Overpass has its own database.
 
-Limited Area Database Guide:
+Limited Area Database Rational:
 
 Full database (planet) size can be huge, 100s of gigabytes maybe approaching
-one terabyte in disk space. To save disk space there is another way to control
-the size of the database which is limiting the area. OSM data files are available
-for different regions of the world (big and small) ranging from continents to
-individual countries even specific cities. This guide shows this method for the
-database setup - initialization.
+one terabyte of disk space - I do not know the actual size. To save disk space
+we limit the area and have database for single country for example. OSM data
+files are available for different regions of the world (big and small) ranging
+from continents to individual countries even cities. This guide shows this method
+for the database initialization / setup.
 
 This is NOT a tutorial for OverpassAPI. I will just show you how I installed it
 on my system, so you too can have your own local server.

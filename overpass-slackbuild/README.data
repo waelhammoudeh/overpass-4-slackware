@@ -94,7 +94,22 @@ time you use it, there is a way to keep old objects while updating database.
 
 Data source for downloads:
 
-There are a lot of web sites that provide OSM data files (or extracts). Here are
+There are a lot of web sites that provide OSM data files (or extracts), they are
+not all the same in terms of organization and ease of use. One web site I found
+and recommand is this one: https://download.geofabrik.de/
+
+Simple UI with continent, regional and country files.
+Map in upper-right corner
+file size listing with full meta and attic data, provide changesets
+osh vs osm : historical (attic) data.
+read technical details page.
+
+
+
+
+
+
+Here are
 two good sites to start, you can use any site you like, I would choose one close
 to me for download then will (should be) faster.
 
@@ -136,6 +151,10 @@ you how much since it depends on your area, but I think minimum will be 50 GB.
 The time it takes to populate the database depends on the input file size and
 your processor / machine speed and amount of memory.
 
+Space required:
+Depends on infile size, what is included in the infile: meta data and attic data.
+same infile can be used to initial DB with and without meta data / attic data.
+infiles for counties varies wildly: Cezch Rep. 19MB vs 4GB for Germany.
 
 [TO BE CONTINUED]
 

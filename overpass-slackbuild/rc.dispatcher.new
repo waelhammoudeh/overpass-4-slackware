@@ -13,15 +13,18 @@ DBDIR=/path/to/your/overpass/DBase
 DSPTCHR=/usr/local/bin/dispatcher
 SOCVER=v0.7.55
 USER=overpass
+DIS_MODE="normal mode"
 unset META
 
 if [ -f ${DBDIR}/nodes_meta.bin ]; then
     META=--meta
+    DIS_MODE="meta data support"
 fi
 
 # keep this if after if [ -f ${DBDIR}/nodes_meta.bin ]; above
 if [ -f ${DBDIR}/nodes_attic.bin ]; then
     META=--attic
+    DIS_MODE="attic data support"
 fi
 
 if ! grep ^overpass: /etc/passwd 2>&1 > /dev/null; then

@@ -20,9 +20,9 @@ code. Initialing the database is done after installing the package and requires
 an OpenStreetMaps (OSM) data file; the choice of this data file needs care and
 that is what "README.data" file explains. There are two ways to initial the
 database; with planet file for the whole world which needs a lot of hard disk
-space. The second way to initial the database is for limited area or region, this
-way enables us to control required disk space and this way is what this guide
-shows.
+space - might be up to one terabyte. The second way to initial the database is
+for limited area or region, this way enables us to control required disk space
+and this way is what this guide shows.
 
 Source url: "https://dev.overpass-api.de/releases/osm-3s_v0.7.56.9.tar.gz"
 Please note that the source on github.com is old.
