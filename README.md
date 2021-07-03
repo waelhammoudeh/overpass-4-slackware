@@ -36,27 +36,10 @@ files are available for different regions of the world (big and small) ranging
 from continents to individual countries even cities. This guide shows this method
 for the database initialization / setup.
 
-This is NOT a tutorial for OverpassAPI. I will just show you how I installed it
-on my system, so you too can have your own local server.
-
 There are public servers running overpassAPI around the world. There are a lot
 of issues with using a public server which can be avoided with having ones own
 server.
-
-Hardware Requirements: 
-
-From the "Complete Installation Guide" that comes with the software:
- "Concerning hardware, I suggest at least 4 GB of RAM. The more RAM is available,
- the better, because caching of disk content in the RAM will significantly speed
- up Overpass API. The processor speed will have little relevance. For the hard 
- disk, it depends on what you want to install. A full planet database with 
- minutely updates should have at least 250 GB of hard disk space at disposal. 
- Without minute diffs and meta data, 100 GB would already suffice."
  
-Myself I think the processor speed is important, do not try to run on 32 bit
-processor! Use solid state drive for the database storage with at least 50 GB
-space for small country, and at least 4 GB memory or more.
-
 Installation and setup consist of the following steps:
 
 1) Build / compile the source software using my SlackBuild script.
@@ -65,9 +48,8 @@ Installation and setup consist of the following steps:
 4) Setup Apache web server on your local machine to use OverpassAPI.
 
 An Example Query:
-   Again this is NOT a tutorial for overpass-API. But we will use an example
-   through this installation to make sure we are on the right tracks. For
-   full language explanation see this link:
+  This is NOT a tutorial for overpass-API, we will use an example query to
+  show overpass usage. For full language explanation see this link:
        "https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL"
    I will use the following script with 3 lines to retrieve a list of street
    names within a bounding box:
@@ -77,7 +59,6 @@ An Example Query:
     2  way(33.56090, -111.96920, 33.57510, -111.93470)[highway];
     
     3  out;
-    
     
    Line 1 with "[out:csv("name";false)];" defines the output type we want "csv"
    and what is included in it "name", the false is an option to csv output here
@@ -118,7 +99,10 @@ Installation and Setup Details:
 Details are provided in three "README" files found in "overpass-slackbuild"
 directory in this repository as follows:
 
- 1. README : package build and installation.
+This guide details are provided in three "README" files found in the directory
+for "overpass-slackbuild" found in this repository as follows:
+
+ 1. README : hardware requirements and software installation.
  2. README.data : all about OSM data file you need for the database.
  3. README.web : shows basic setup for Apache web server.
 

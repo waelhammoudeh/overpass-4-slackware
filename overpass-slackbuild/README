@@ -3,29 +3,27 @@ OSM OverPass API software
 This is the main "README" file for the overpassAPI SlackBuilds script.
 Instructions are provided in other README files as follows:
 
+ *) README - this file: provide hardware requirements and software installation.
+
  *) README.data :
      Has details about data files needed to initial and populate overpass database.
 
   *) README.web :
       Has details for setting up web server for the web interface to overpass.
 
-Open Street Maps (OSM) overpassAPI is a query language for OSM data.
-(Formerly known as OSM Server Side Scripting, or OSM3S before 2011)
-It acts as a database over the web: the client sends a query to the
-API and gets back the data set that corresponds to the query.
-
-Overpass uses its own database. The source code provide programs to initial,
-maintain and query the database, the slackbuild provided here builds this source
-code. Initialing the database is done after installing the package and requires
-an OpenStreetMaps (OSM) data file; the choice of this data file needs care and
-that is what "README.data" file explains. There are two ways to initial the
-database; with planet file for the whole world which needs a lot of hard disk
-space - might be up to one terabyte. The second way to initial the database is
-for limited area or region, this way enables us to control required disk space
-and this way is what this guide shows.
-
 Source url: "https://dev.overpass-api.de/releases/osm-3s_v0.7.56.9.tar.gz"
 Please note that the source on github.com is old.
+
+Hardware Requirements:
+
+From the "Complete Installation Guide" that comes with the software:
+ "Concerning hardware, I suggest at least 4 GB of RAM. The more RAM is available,
+ the better, because caching of disk content in the RAM will significantly speed
+ up Overpass API. The processor speed will have little relevance. For the hard
+ disk, it depends on what you want to install. A full planet database with
+ minutely updates should have at least 250 GB of hard disk space at disposal.
+ Without minute diffs and meta data, 100 GB would already suffice."
+
 
 Important Notes:
  - This SlackBuild script compiles the overpassAPI software from source,
