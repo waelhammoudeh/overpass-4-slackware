@@ -2,7 +2,7 @@ This repository is a guide for setting up overpassAPI server on a local machine;
 your own server - with limited area database. I use Linux Slackware64, concepts,
 methods and steps mentioned here can be applied to any Linux distribution.
 
-This guide is a work in progress!
+##### This guide is a work in progress!
 
 OverpassAPI uses its own database, naturally this guide is broken into two
 parts; first software installation and hardware requirements, the second is
@@ -94,13 +94,10 @@ An Example Query:
 ```
 http://overpass-api.de/api/interpreter?data=[out:csv(\"name\";false)];way(33.56090, -111.96920, 33.57510, -111.93470)[highway];out;
 ```
-Installation and Setup Details:
-
-Details are provided in three "README" files found in "overpass-slackbuild"
-directory in this repository as follows:
+Guide Organization:
 
 This guide details are provided in three "README" files found in the directory
-for "overpass-slackbuild" found in this repository as follows:
+for "overpass-slackbuild" in this repository as follows:
 
  1. README : hardware requirements and software installation.
  2. README.data : all about OSM data file you need for the database.
