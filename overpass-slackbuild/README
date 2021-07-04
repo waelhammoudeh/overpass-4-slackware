@@ -18,7 +18,7 @@ Guide details are provided in README files as follows:
 Source url: "https://dev.overpass-api.de/releases/osm-3s_v0.7.56.9.tar.gz"
 Please note that the source on github.com is old.
 
-####Hardware Requirements:
+Hardware Requirements:
 
 From the "Complete Installation Guide" that comes with the software:
  "Concerning hardware, I suggest at least 4 GB of RAM. The more RAM is available,
@@ -40,7 +40,7 @@ both old, both are made by Dell, have 64 bit processors - not same ones - and
 both have 16 GB memory; here is a partial list from "inxi -F" command output:
 
 first machine:
-```
+
 System:    Host: yafa.local Kernel: 5.12.12 x86_64 bits: 64 Desktop: IceWM 2.3.4 Distro: Slackware 14.2
 Machine:   Type: Desktop System: Dell product: Precision T5600 v: 01 serial: <superuser required>
            Mobo: Dell model: 0Y56T3 v: A00 serial: <superuser required> UEFI: Dell v: A19 date: 06/30/2019
@@ -54,10 +54,9 @@ Drives:    Local Storage: total: 1.75 TiB used: 239.6 GiB (13.4%)
            ID-3: /dev/sdb vendor: Toshiba model: MK1655GSX size: 149.05 GiB
            ID-4: /dev/sdc vendor: Samsung model: SSD 870 EVO 500GB size: 465.76 GiB
            ID-5: /dev/sdg type: USB vendor: SanDisk model: Cruzer Blade size: 14.56 GiB
-```
 
 second machine:
-```
+
 System:    Host: lazyant.local Kernel: 5.10.3 x86_64 bits: 64 Desktop: IceWM 2.0.0 Distro: Slackware 14.2
 Machine:   Type: Desktop System: Dell product: Precision WorkStation 670 v: N/A serial: <superuser required>
            Mobo: Dell model: 0XC837 serial: <superuser required> BIOS: Dell v: A07 date: 03/15/2006
@@ -70,14 +69,13 @@ Drives:    Local Storage: total: 838.39 GiB used: 297.82 GiB (35.5%)
            ID-3: /dev/sdc vendor: A-Data model: SU650 size: 223.57 GiB
            ID-4: /dev/sdd vendor: Western Digital model: WD1600AVBS-63SVA0 size: 149.05 GiB
 
-```
 
 This is my opinion for hardware:
   1- CPU: any 64 bit - no 32 bit.
   2- RAM: 4 GB.
   3- Hard disk: Solid State Drive is better than magnetic with at least 70 GB free space.
 
-####Software Installation:
+Software Installation:
 
 Important Notes:
  - This SlackBuild script compiles the overpassAPI software from source,
