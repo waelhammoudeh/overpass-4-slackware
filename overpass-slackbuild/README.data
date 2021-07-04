@@ -2,10 +2,11 @@
 This is the "README.data" file for overpass Slackware package.
 
 IMPOTRANT: This is work in progress, may also have inacurate information.
+WARNING: Database initialization can be time consuming process.
 
 The "data" is the subject in this file; the data inside the overpass database.
 Here you will find the source; where and what to get for your database, the
-destination for it (where to store), how to initial the database with that data
+destination for it (where to store it), how to initial the database with that data
 and finally how to make it available for use on your machine (setup). The
 data is OpenStreetMap (OSM) data.
 
@@ -41,27 +42,23 @@ I do not know the acctual size of the database - has to be in the 100s of GBs.
 I do know that I do not have the hard disk space on my machine for it. I also
 do not want to guess how long it will take to download or think of how to ensure
 the integrity of the data. Please see the complete installation page (in the html
-directory of the package) for "download_clone.sh" usage.
-If you have the resources for this and have done it, please let me know, I would
-love to hear from you.
+directory of the package) for "download_clone.sh" usage. If you have the hard
+disk space and good (fast) internet connection then this is the way to take.
 
-The second method to initial the database is from data file from OpenStreetMaps.
+The second method to initial the database is from data file from OpenStreetMap.
+We use this method to save hard disk space, I do not have one terabyte free.
 The OSM data file can be for planet or smaller areas. They are available for
 regions divided by countries, continents or even smaller areas like cities.
 This is the method I chose for myself and describe here. You have total control
 of what to include in your database.
+Warning: this process can take a long time.
 
 OSM data files formats:
 
 The data used in overpass database is "Open Street Maps" data, the same data
 used to draw the map. OSM data files tend to be huge resulting in big database.
-For this reason I use data file for the state of Arizona in the USA where I live.
-My advice is to choose file for your country or region, if you have the resources
-disk space (maybe one terabyte) for the whole planet and that is what you want,
-get the planet data file and go for it.
-
 OSM data files come in different types, overpass requires the file to initial
-the database to be OSM XML bzip2-compressed - ends with suffix .osm.bz2.
+the database to be OSM XML bzip2-compressed format - ends with suffix .bz2.
 Your source file may not be available in this format, do not worry you can
 convert it to this required format.
 The OSM "osmium command line tool" is used to convert between file types among
@@ -86,17 +83,19 @@ Another note; YOU NEED THE HISTORY FILE TO HAVE ATTIC DATA
 OSM data files may or may not include "META" data (see Terminology above). Yes
 you can save disk space without meta data, but your query results will not be
 accurate, I would also argue that the query result is wrong. In short meta data
-can include essential information, so choose a source file with meta data. You
-can query overpass using other programs such as JSOM; which requires meta data.
-
-As for the attic data; you accumulate data as you update your database over the
-time you use it, there is a way to keep old objects while updating database.
+can include essential information. You can query overpass using other programs
+such as JSOM; which requires meta data.
+As for the attic data - previous objects and history - those enable more query
+functions, or the lack of them disables those extra functions if you well. We
+do not want to comprmise on this, I may limit the area to save disk space but I
+still want full query functions.
+In short choose a data file with attic (history) and meta data.
 
 Data source for downloads:
 
 There are a lot of web sites that provide OSM data files (or extracts), they are
 not all the same in terms of organization and ease of use. One web site I found
-and recommand is this one: https://download.geofabrik.de/
+and recommand is this one: { https://download.geofabrik.de/ } for those reasons:
 
 Simple UI with continent, regional and country files.
 Map in upper-right corner
@@ -104,38 +103,29 @@ file size listing with full meta and attic data, provide changesets
 osh vs osm : historical (attic) data.
 read technical details page.
 
+Please note that this site has two servers with two sets of files! You need to
+have an account with OpenStreetMap to get to the set with complete data files.
+So please first register with OpenStreetMap and then start with this URL:
 
+        {  https://osm-internal.download.geofabrik.de/index.html  }
 
+for your data file download.
 
-
-
-Here are
-two good sites to start, you can use any site you like, I would choose one close
-to me for download then will (should be) faster.
-
-Check this wiki page has alot of links to providers URL:
+Check this wiki page for info about extracts and data types URL:
 
  { https://wiki.openstreetmap.org/wiki/Planet.osm }
 
-Choose and download your file (country, city or the whole planet).
-
-A great web site for OSM files extract is at the following URL, you may want to
-get your area file from:
-
-URL:  {  https://osm-internal.download.geofabrik.de/index.html  }.
-
 Pay attention to the file size you choose, that size is NOT for your database!
-It is obviuoslly related to your final database size. My original download size
+It is obviously related to your final database size. My original download size
 for "arizona-internal.osh.pbf" was about 319 MB, when converted to bz2
 "arizona-internal.osh.bz2" it got bigger to 521 MB and my database after I
-did the initialization to it was 17 GB. So I recommend free space of at least
-30 to 50 GB to be on the safe side for a single small country. You are going
-to need a lot more disk space for a continent.
+did the initialization to it was 19 GB with meta data and 33 GB with attic data.
 
-Before you download a file, read the describtion of the file on the web site.
+Before you download a file, read the description for the file on the website.
 You need your file to have meta data and history. Also check how often files
 are released. Some sites may offer change-set release and some do not. Is that
 important to you?
+
 
 Database home - storage:
 
@@ -147,14 +137,24 @@ At this point you need to decide where to store the database. Store the database
 on SSD (Solid State Drive) if you have one, or your fast hard drive, the faster
 the drive the less time for the query result since there will be a lot of file I/O.
 You need to make sure you have enough space for the database. I can not till
-you how much since it depends on your area, but I think minimum will be 50 GB.
-The time it takes to populate the database depends on the input file size and
-your processor / machine speed and amount of memory.
+you how much since it depends on your area. Data files vary wildly in size for
+countries and regions, hence it is hard to tell the required disk space.
 
-Space required:
-Depends on infile size, what is included in the infile: meta data and attic data.
-same infile can be used to initial DB with and without meta data / attic data.
-infiles for counties varies wildly: Cezch Rep. 19MB vs 4GB for Germany.
+Here are few numbers I have that may help:
+
+  file name                                 file size      Database size (attic)
+-----------------------------------------------------------------------------
+arizona-internal.osh.bz2        521 MB           33 GB
+us-west-internal.osh.bz2        6266 MB        95 GB
+
+That database size was the final size, during the initial step you need TWICE of
+that size of free disk space!
+Also keep in mind files were originally in .pbf format with 318 MB and 4075 MB
+sizes respectively.
+I recommand at least 70 GB free disk space for small (about 500 MB) data
+file source.
+
+
 
 [TO BE CONTINUED]
 
@@ -217,7 +217,7 @@ C) Initial The Data Base:
      My actual infile.osm.bz2 was "arizona-latest-internal.osm.bz2" for the
      state of Arizona with file size about 300 MB, on my machine the above
      command to initial the data base took about 32 minutes, with directory
-     size about about 17 GB. YMMV!
+     size about about 19 GB. YMMV! (Was 17 GB for source data file from 2 years ago)
 
    With those steps so far, you can query your data base on the command line.
    Using the example file provided with this README; and please replace with
