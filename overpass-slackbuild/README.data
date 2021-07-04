@@ -142,9 +142,9 @@ countries and regions, hence it is hard to tell the required disk space.
 
 Here are few numbers I have that may help:
 
-  file name                                 file size      Database size (attic)
+  file name                    file size      Database size (attic)
 -----------------------------------------------------------------------------
-arizona-internal.osh.bz2        521 MB           33 GB
+arizona-internal.osh.bz2        521 MB         33 GB
 us-west-internal.osh.bz2        6266 MB        95 GB
 
 That database size was the final size, during the initial step you need TWICE of
