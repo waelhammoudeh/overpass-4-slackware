@@ -1,20 +1,24 @@
-OSM OverPass API software
-
 This is the main "README" file for the overpassAPI SlackBuilds script.
-Instructions are provided in other README files as follows:
 
- *) README - this file: provide hardware requirements and software installation.
+Guide details are provided in README files as follows:
+
+ *) README - this file:
+     Provide hardware requirements and software installation.
+     Software provide tools to initial, maintain and query database.
 
  *) README.data :
-     Has details about data files needed to initial and populate overpass database.
+     Has details about data files needed to initial and populate overpass
+     database. How to choose your file and where to get it from. Then how
+     to use it to initial your database.
 
   *) README.web :
-      Has details for setting up web server for the web interface to overpass.
+      Has details for setting up Apache web server for the web user interface
+      to overpass.
 
 Source url: "https://dev.overpass-api.de/releases/osm-3s_v0.7.56.9.tar.gz"
 Please note that the source on github.com is old.
 
-Hardware Requirements:
+####Hardware Requirements:
 
 From the "Complete Installation Guide" that comes with the software:
  "Concerning hardware, I suggest at least 4 GB of RAM. The more RAM is available,
@@ -24,6 +28,56 @@ From the "Complete Installation Guide" that comes with the software:
  minutely updates should have at least 250 GB of hard disk space at disposal.
  Without minute diffs and meta data, 100 GB would already suffice."
 
+Of course the better hardware the faster result, the big difference shows up in
+database initialization and package building when it comes to the cpu, ram and
+hard disk. The query result speed is also important, but when this doubles or
+even triples, we are talking about seconds so instead of 2 second with great
+modern machine verses 4 or 5 seconds with an old machine; that is what the
+processor speed have little relevance above is for. This processor speed will
+make huge difference during database initialization, 30 minutes verses hours!
+It comes down what you can or cannot tolerate. I have two machines they are
+both old, both are made by Dell, have 64 bit processors - not same ones - and
+both have 16 GB memory; here is a partial list from "inxi -F" command output:
+
+first machine:
+```
+System:    Host: yafa.local Kernel: 5.12.12 x86_64 bits: 64 Desktop: IceWM 2.3.4 Distro: Slackware 14.2
+Machine:   Type: Desktop System: Dell product: Precision T5600 v: 01 serial: <superuser required>
+           Mobo: Dell model: 0Y56T3 v: A00 serial: <superuser required> UEFI: Dell v: A19 date: 06/30/2019
+CPU:       Info: 2x Quad Core model: Intel Xeon E5-2643 0 bits: 64 type: MCP SMP cache: L2: 20 MiB
+           Speed: 1197 MHz min/max: 1200/3500 MHz Core speeds (MHz): 1: 1197 2: 1591 3: 1269 4: 1197 5: 1197 6: 1216 7: 1197
+           8: 1606
+
+Drives:    Local Storage: total: 1.75 TiB used: 239.6 GiB (13.4%)
+           ID-1: /dev/nvme0n1 vendor: Samsung model: SSD 970 EVO Plus 1TB size: 931.51 GiB
+           ID-2: /dev/sda vendor: Western Digital model: WD2500AAJS-75M0A0 size: 232.83 GiB
+           ID-3: /dev/sdb vendor: Toshiba model: MK1655GSX size: 149.05 GiB
+           ID-4: /dev/sdc vendor: Samsung model: SSD 870 EVO 500GB size: 465.76 GiB
+           ID-5: /dev/sdg type: USB vendor: SanDisk model: Cruzer Blade size: 14.56 GiB
+```
+
+second machine:
+```
+System:    Host: lazyant.local Kernel: 5.10.3 x86_64 bits: 64 Desktop: IceWM 2.0.0 Distro: Slackware 14.2
+Machine:   Type: Desktop System: Dell product: Precision WorkStation 670 v: N/A serial: <superuser required>
+           Mobo: Dell model: 0XC837 serial: <superuser required> BIOS: Dell v: A07 date: 03/15/2006
+CPU:       Info: 2x Single Core model: Intel Xeon bits: 64 type: SMP L2 cache: 4 MiB
+           Speed: 3192 MHz min/max: N/A Core speeds (MHz): 1: 3192 2: 3192
+
+Drives:    Local Storage: total: 838.39 GiB used: 297.82 GiB (35.5%)
+           ID-1: /dev/sda vendor: Seagate model: ST3300622A size: 279.46 GiB
+           ID-2: /dev/sdb vendor: Western Digital model: WD2000BB-00RDA0 size: 186.31 GiB
+           ID-3: /dev/sdc vendor: A-Data model: SU650 size: 223.57 GiB
+           ID-4: /dev/sdd vendor: Western Digital model: WD1600AVBS-63SVA0 size: 149.05 GiB
+
+```
+
+This is my opinion for hardware:
+  1- CPU: any 64 bit - no 32 bit.
+  2- RAM: 4 GB.
+  3- Hard disk: Solid State Drive is better than magnetic with at least 70 GB free space.
+
+####Software Installation:
 
 Important Notes:
  - This SlackBuild script compiles the overpassAPI software from source,
