@@ -91,27 +91,28 @@ do not want to comprmise on this, I may limit the area to save disk space but I
 still want full query functions.
 In short choose a data file with attic (history) and meta data.
 
-Data source for downloads:
+Internet sites for data files:
 
-There are a lot of web sites that provide OSM data files (or extracts), they are
-not all the same in terms of organization and ease of use. One web site I found
+There are a lot of websites that provide OSM data files (or extracts), they are
+not all the same in terms of organization and ease of use. One website I found
 and recommand is this one: { https://download.geofabrik.de/ } for those reasons:
 
 Simple UI with continent, regional and country files.
 Map in upper-right corner
 file size listing with full meta and attic data, provide changesets
 osh vs osm : historical (attic) data.
-read technical details page.
+(read technical details page on the site).
 
 Please note that this site has two servers with two sets of files! You need to
-have an account with OpenStreetMap to get to the set with complete data files.
-So please first register with OpenStreetMap and then start with this URL:
+have an account with OpenStreetMap to get to the server with the complete
+data files. So please first register with OpenStreetMap and then start with
+this URL:
 
         {  https://osm-internal.download.geofabrik.de/index.html  }
 
-for your data file download.
+to choose your data file for your country or region to download.
 
-Check this wiki page for info about extracts and data types URL:
+Check this wiki page for more info about extracts and data types URL:
 
  { https://wiki.openstreetmap.org/wiki/Planet.osm }
 
@@ -119,25 +120,25 @@ Pay attention to the file size you choose, that size is NOT for your database!
 It is obviously related to your final database size. My original download size
 for "arizona-internal.osh.pbf" was about 319 MB, when converted to bz2
 "arizona-internal.osh.bz2" it got bigger to 521 MB and my database after I
-did the initialization to it was 19 GB with meta data and 33 GB with attic data.
+did the initialization was 19 GB with meta data and 33 GB with attic data.
+Do not rush me! Meta and attic are coming down below :)
 
 Before you download a file, read the description for the file on the website.
 You need your file to have meta data and history. Also check how often files
 are released. Some sites may offer change-set release and some do not. Is that
 important to you?
 
-
 Database home - storage:
 
-Where you store the database is the overpass user home directory we used
-when created the overpass group and user. If you need to make any changes to
-that, now is the time before you initial the database.
+Where you store the database is the overpass user home directory we used when
+we created the overpass group and user. If you need to make any changes to that,
+now is the time before you initial the database.
 
 At this point you need to decide where to store the database. Store the database
 on SSD (Solid State Drive) if you have one, or your fast hard drive, the faster
 the drive the less time for the query result since there will be a lot of file I/O.
-You need to make sure you have enough space for the database. I can not till
-you how much since it depends on your area. Data files vary wildly in size for
+You need to make sure you have enough space for the database. I can not tell
+you how much since it depends on your file and data files vary wildly in size for
 countries and regions, hence it is hard to tell the required disk space.
 
 Here are few numbers I have that may help:
@@ -149,51 +150,99 @@ us-west-internal.osh.bz2        6266 MB        95 GB
 
 That database size was the final size, during the initial step you need TWICE of
 that size of free disk space!
-Also keep in mind files were originally in .pbf format with 318 MB and 4075 MB
-sizes respectively.
+Also keep in mind files in the above table were originally in .pbf format with
+initial sizes of 318 MB and 4075 MB respectively.
 I recommand at least 70 GB free disk space for small (about 500 MB) data
 file source.
 
+Before leaving this section, I am going to make two assumptions as follow:
+
+   1-  Store database under "/home" directory since there is enough disk space,
+        or our full path for database destination is: { /home/overpass }
+   2- The input file I will use has meta and attic data with the name "infile.osh.bz2"
+
+
+Initial The Database:
+
+With the above assumptions we initial the data base using "init_osm3s.sh" script
+which is provided by the overpassAPI, the script is a frontend to the program
+"update_database". If you used my SlackBuild to install overpassAPI then you
+can find both under "/usr/local/bin" directory.
+
+"init_osm3s.sh" usage is as follows:
+
+        init_osm3s.sh inputfile $DBDIR $EXECDIR [option]
+
+the arguments are:
+
+    inputfile: the input file to use, must be in "bz2" format
+    $DBDIR: the database destination directory
+    $EXEDIR: the path to "bin" directory entry where "update_database" can be
+    found.
+
+    option is one of:
+        empty - nothing --> database without meta data.
+        --meta --> database with meta data
+        --keep-attic --> database with meta data plus attic data
+
+There is another option for "--compression-method" which is not documented!
+Nothing is documented really, I have not used this option.
+Also "update_database" takes another option [--map-compression-method=?] I did
+not use this option either.
+
+Now you can see the assumptions I made above, I hope. For us the arguments are:
+
+    inputfile --> "infile.osh.bz2"
+    $DBDIR --> /home/overpass
+    $EXECDIR --> /usr/local/
+    option --> [--meta]  and [--keep-attic]. More about those down.
+
+The same input file can be used with all options - our input file has attic data.
+When the "option" is left empty, you get a basic database with no meta data nor
+attic data. This is the smallest database from that input file - in terms of disk
+space. In my opinion this a crippled database and I would not use this option.
+The [--keep-attic] option will result in full (largest) database from the same
+input file. It will also be the slowest - in terms of query result speed.
+The [--meta] option is in middle of the two - in terms of disk space and query
+speed too.
+
+Please do not try to run anything as root, this applies also to initialling the
+database. This was the whole reason for creating "overpass" user and group.
+
+Do the following to initial data base:
+   - As root user change user to overpass with:
+     root@lazyant:~# su overpass <enter>
+
+   - Then your prompt should look like this on your terminal:
+     overpass@lazyant:/root$
+
+     And whoami and its output should look like:
+     overpass@lazyant:/root$ whoami
+     overpass
+
+     Assuming everything is good; change directory to where you placed your
+     "infile.osm.bz2" and initial the data base with:
+
+     overpass@lazyant:/root$ nohup /usr/local/bin/init_osm3s.sh infile.osm.bz2 "home/overpass/" "/usr/local/" --meta &
+
+Or if you want attic data in your database (change [--meta] to [--keep-attic]) as follows:
+
+    overpass@lazyant:/root$ nohup /usr/local/bin/init_osm3s.sh infile.osm.bz2 "home/overpass/" "/usr/local/" --keep-attic &
+
+This step is time consuming depending on a lot of factors: input file size, processor
+speed, memory, type of hard disk.
 
 
 [TO BE CONTINUED]
 
 TO DO:
-overpass user initials DB ...
+add time info for init_osm3s.sh
 setup rc.dispatcher ...
 
-   Before leaving this section, we are going to make our decisions / assumptions
-   as follow:
-     - Store database under /home directory since there is enough disk space,
-       so we make a directory as root with the name of "overpass";
-       # mkdir /home/overpass
-       I will refer to the /home part of the path above as {DB_ROOT}, so place
-       your database directory anywhere you want.
-     - The input file I will use has meta data with the name "infile.osm.bz2"
 
-C) Initial The Data Base:
-   With the above assumptions we initial the data base using "init_osm3s.sh"
-
-   script usage is:
-   init_osm3s.sh infile $DBDIR $EXECDIR [option]
-
-   option is one of:
-   empty - nothing --> database without meta data.
-   --meta --> database with meta data
-   --keep-attic --> database with meta data plus attic
 
    $ /usr/local/bin/init_osm3s.sh inputfile.bz2 "/home/overpass/" "/usr/local/" --meta &
 
-   provided with the software; this script takes three arguments and one
-   command option as follows:
-   1) infile: is the input file; has to be of type .osm.bz2
-   2) data base directory: where to store the data base - destination
-   3) executable directory: this is the bin directory root where overpass is
-      installed - /usr/local/ without the bin entery.
-   4) the meta option: The presence of "--meta" option will result in database
-        with metadata and the absence of the option will result in database
-        without metadata. If option is set to --keep-attic then database will
-        have metadata plus attic data.
 
    Do the following to initial data base:
    - As root user change user to overpass with:
