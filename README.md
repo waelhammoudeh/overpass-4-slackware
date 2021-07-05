@@ -104,7 +104,7 @@ for "overpass-slackbuild" in this repository as follows:
  3. README.web : shows basic setup for Apache web server.
 
 
-###DISCLAIMER:
+### DISCLAIMER:
 I am NOT an expert on "overpassAPI". Information here may not be accurate, use
 at your own risk. I mention other websites, they all have rules and there are laws
 to abide by, read the rules and follow the law please. Be in the know.
