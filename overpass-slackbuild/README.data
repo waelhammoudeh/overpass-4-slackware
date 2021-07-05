@@ -186,7 +186,7 @@ the arguments are:
         --keep-attic --> database with meta data plus attic data
 
 There is another option for "--compression-method" which is not documented!
-Nothing is documented really, I have not used this option.
+Nothing is documented really. I have not used this option.
 Also "update_database" takes another option [--map-compression-method=?] I did
 not use this option either.
 
@@ -209,7 +209,7 @@ speed too.
 Please do not try to run anything as root, this applies also to initialling the
 database. This was the whole reason for creating "overpass" user and group.
 
-Do the following to initial data base:
+Do the following to initial database as the "overpass" user:
    - As root user change user to overpass with:
      root@lazyant:~# su overpass <enter>
 
@@ -221,22 +221,26 @@ Do the following to initial data base:
      overpass
 
      Assuming everything is good; change directory to where you placed your
-     "infile.osm.bz2" and initial the data base with:
+     "infile.osh.bz2" (else provide path to file) and initial the database with:
 
-     overpass@lazyant:/root$ nohup /usr/local/bin/init_osm3s.sh infile.osm.bz2 "home/overpass/" "/usr/local/" --meta &
+     overpass@lazyant:/root$ nohup /usr/local/bin/init_osm3s.sh infile.osh.bz2 "/home/overpass/" "/usr/local/" --meta &
 
 Or if you want attic data in your database (change [--meta] to [--keep-attic]) as follows:
 
-    overpass@lazyant:/root$ nohup /usr/local/bin/init_osm3s.sh infile.osm.bz2 "home/overpass/" "/usr/local/" --keep-attic &
+    overpass@lazyant:/root$ nohup /usr/local/bin/init_osm3s.sh infile.osh.bz2 "/home/overpass/" "/usr/local/" --keep-attic &
 
 This step is time consuming depending on a lot of factors: input file size, processor
-speed, memory, type of hard disk.
+speed, memory, type of hard disk and the amount of free space on that disk. Maybe
+other factors too.
+
+TO DO: add time info.
+
+
 
 
 [TO BE CONTINUED]
 
 TO DO:
-add time info for init_osm3s.sh
 setup rc.dispatcher ...
 
 
