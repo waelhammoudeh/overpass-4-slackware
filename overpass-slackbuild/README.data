@@ -233,57 +233,69 @@ This step is time consuming depending on a lot of factors: input file size, proc
 speed, memory, type of hard disk and the amount of free space on that disk. Maybe
 other factors too.
 
-TO DO: add time info.
+TO DO: add time info 4 initial
 
+With those steps so far, you can query your database on the command line.
+Using the "example" file provided in the root directory of this repository;
+and please replace with good {bounding box} points for your database:
 
+    $ osm3s_query --db-dir=/home/overpass < example
 
+above assumes you are in the directory where the "example" file is.
 
-[TO BE CONTINUED]
+Starting the "dispatcher" daemon:
 
-TO DO:
-setup rc.dispatcher ...
-
-
-
-   $ /usr/local/bin/init_osm3s.sh inputfile.bz2 "/home/overpass/" "/usr/local/" --meta &
-
-
-   Do the following to initial data base:
-   - As root user change user to overpass with:
-     root@lazyant:~# su overpass <enter>
-
-   - Then your prompt should look like this on your terminal:
-     overpass@lazyant:/root$
-
-     And whoami and its output should look like:
-     overpass@lazyant:/root$ whoami
-     overpass
-
-     Assuming everything is good; change directory to where you placed your
-     "infile.osm.bz2" and initial the data base with:
-
-     overpass@lazyant:/root$ nohup /usr/local/bin/init_osm3s.sh infile.osm.bz2 "{DB_ROOT}/overpass/" "/usr/local/" --meta &
-
-     You need full path for the script: /usr/local/bin/init_osm3s.sh above.
-     Replace {DB_ROOT} above with your real path.
-
-     My actual infile.osm.bz2 was "arizona-latest-internal.osm.bz2" for the
-     state of Arizona with file size about 300 MB, on my machine the above
-     command to initial the data base took about 32 minutes, with directory
-     size about about 19 GB. YMMV! (Was 17 GB for source data file from 2 years ago)
-
-   With those steps so far, you can query your data base on the command line.
-   Using the example file provided with this README; and please replace with
-   good points from your database input file:
-
-     $ osm3s_query --db-dir={DB_ROOT}/overpass < example
-
-   above assumes you are in the directory where the example file is.
-
-Data base updates will not be covered here. See documentation in your
-installation for that, or check online :)
-
-Dispatcher has modes related to meta, no meta and attic .....
 The "dispatcher" program is part of the overpass package, it is the daemon
 which forwards queries to the correct part of the package. As long as the
 dispatcher is running, your queries to overpass will be answered.
+
+The dispatcher program can take a lot of arguments:
+
+Accepted arguments are:
+  --osm-base: Start or talk to the dispatcher for the osm data.
+  --areas: Start or talk to the dispatcher for the areas data.
+  --meta: When starting the osm data dispatcher, also care for meta data.
+  --attic: When starting the osm data dispatcher, also care for meta and museum data.
+  --db-dir=$DB_DIR: The directory where the database resides.
+  --terminate: Stop the adressed dispatcher.
+  --status: Let the adressed dispatcher dump its status into
+        $DB_DIR/osm_base_shadow.status or $DB_DIR/areas_shadow.status
+  --my-status: Let the adressed dispatcher return everything known about this client token
+  --show-dir: Returns $DB_DIR
+  --purge=pid: Let the adressed dispatcher forget everything known about that pid.
+  --query_token: Returns the pid of a running query for the same client IP.
+  --space=number: Set the memory limit for the total of all running processes to this value in bytes.
+  --time=number: Set the time unit  limit for the total of all running processes to this value in bytes.
+  --rate-limit=number: Set the maximum allowed number of concurrent accesses from a single IP.
+
+The important arguments for us now are: [--osm-base,  --meta, --attic and --db-dir].
+ --osm-base: talk to / watch database.
+ --meta | --attic: must match initialed database option.
+ --db-dir: our database directory.
+
+In my SlackBuild script directory, I provide "rc.dispatcher" script to start
+the dispatcher. When you install your package, you will find a new file with
+the name "rc.dispatcher.new" in your "/etc/rc.d/", the install script sets the
+file to be executable - if it is not then you need to make it executable.
+
+There are two things you need to do to the file (yes, as the root user):
+1) rename it to "rc.dispatcher" (drop the .new extension)
+2) edit the file to set your actual database directory.
+
+Then you can start, stop and get status as follows:
+
+    # /etc/rc.d/rc.dispatcher start
+    # /etc/rc.d/rc.dispatcher stop
+    # /etc/rc.d/rc.dispatcher status
+
+With dispatcher running, you can run the "example" query without providing the
+database directory argument as follow:
+
+    $ osm3s_query < example
+
+To have dispatcher start and stop on system boot and shutdown see the main
+"README" file in this directory.
+
+This "README.data" file is usable now. IT IS STILL WORK IN PROGRESS!
+
+W. H.
