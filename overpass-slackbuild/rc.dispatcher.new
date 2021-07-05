@@ -50,7 +50,7 @@ fi
 
 # always show database directory in use
 echo ""
-echo "DataBase directory is set to: ${DBDIR}"
+echo "Database directory is set to: ${DBDIR}"
 echo ""
 
 # maybe nested if
