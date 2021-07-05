@@ -1,7 +1,7 @@
 
 This is the "README.data" file for overpass Slackware package.
 
-IMPORTANT: This is work in progress, may also have inaccurate information.
+IMPORTANT: This is a work in progress, may also have inaccurate information.
 WARNING: Database initialization can be time consuming process.
 
 The "data" is the subject in this file; the data inside the overpass database.
@@ -35,7 +35,7 @@ Populate (initial) database in 2 different ways:
 The first is to use the "download_clone.sh" script provided with overpassAPI
 source (find it in /usr/local/bin if you install using my SlackBuild script).
 I have not tried this method, I do not mean to bash the script and I do really
-appreciate that it is available. The script is easy way to clone the WHOLE
+appreciate that it is available. The script is an easy way to clone the WHOLE
 database from the server, no partial option. You may choose without attic or
 meta data, but you still get the whole planet data.
 I do not know the actual size of the database - has to be in the 100s of GBs.
@@ -137,7 +137,7 @@ now is the time before you initial the database.
 At this point you need to decide where to store the database. Store the database
 on SSD (Solid State Drive) if you have one, or your fast hard drive, the faster
 the drive the less time for the query result since there will be a lot of file I/O.
-You need to make sure you have enough space for the database. I can not tell
+You need to make sure you have enough space for the database. I cannot tell
 you how much since it depends on your file and data files vary wildly in size for
 countries and regions, hence it is hard to tell the required disk space.
 
@@ -158,7 +158,7 @@ file source.
 Before leaving this section, I am going to make two assumptions as follow:
 
    1-  Store database under "/home" directory since there is enough disk space,
-        or our full path for database destination is: { /home/overpass }
+        or our full path to database destination is: { /home/overpass }
    2- The input file I will use has meta and attic data with the name "infile.osh.bz2"
 
 
@@ -186,9 +186,9 @@ the arguments are:
         --keep-attic --> database with meta data plus attic data
 
 There is another option for "--compression-method" which is not documented!
-Nothing is documented really. I have not used this option.
+I have not used this option.
 Also "update_database" takes another option [--map-compression-method=?] I did
-not use this option either.
+not use this option either. Nothing is documented really (about "update_database").
 
 Now you can see the assumptions I made above, I hope. For us the arguments are:
 
@@ -212,7 +212,6 @@ database. This was the whole reason for creating "overpass" user and group.
 Do the following to initial database as the "overpass" user:
    - As root user change user to overpass with:
      root@lazyant:~# su overpass <enter>
-
    - Then your prompt should look like this on your terminal:
      overpass@lazyant:/root$
 
@@ -258,7 +257,7 @@ Accepted arguments are:
   --attic: When starting the osm data dispatcher, also care for meta and museum data.
   --db-dir=$DB_DIR: The directory where the database resides.
   --terminate: Stop the adressed dispatcher.
-  --status: Let the adressed dispatcher dump its status into
+  --status: Let the addressed dispatcher dump its status into
         $DB_DIR/osm_base_shadow.status or $DB_DIR/areas_shadow.status
   --my-status: Let the adressed dispatcher return everything known about this client token
   --show-dir: Returns $DB_DIR
@@ -296,6 +295,9 @@ database directory argument as follow:
 To have dispatcher start and stop on system boot and shutdown see the main
 "README" file in this directory.
 
-This "README.data" file is usable now. IT IS STILL WORK IN PROGRESS!
+This "README.data" file is usable now. IT IS STILL A WORK IN PROGRESS!
+
+Aside note: you may set a password for your "overpass" user; then as your
+normal user you can use "su" to change user to "overpass".
 
 W. H.
