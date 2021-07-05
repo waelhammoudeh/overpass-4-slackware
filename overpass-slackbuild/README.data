@@ -1,7 +1,7 @@
 
 This is the "README.data" file for overpass Slackware package.
 
-IMPOTRANT: This is work in progress, may also have inacurate information.
+IMPORTANT: This is work in progress, may also have inaccurate information.
 WARNING: Database initialization can be time consuming process.
 
 The "data" is the subject in this file; the data inside the overpass database.
@@ -38,7 +38,7 @@ I have not tried this method, I do not mean to bash the script and I do really
 appreciate that it is available. The script is easy way to clone the WHOLE
 database from the server, no partial option. You may choose without attic or
 meta data, but you still get the whole planet data.
-I do not know the acctual size of the database - has to be in the 100s of GBs.
+I do not know the actual size of the database - has to be in the 100s of GBs.
 I do know that I do not have the hard disk space on my machine for it. I also
 do not want to guess how long it will take to download or think of how to ensure
 the integrity of the data. Please see the complete installation page (in the html
@@ -87,7 +87,7 @@ can include essential information. You can query overpass using other programs
 such as JSOM; which requires meta data.
 As for the attic data - previous objects and history - those enable more query
 functions, or the lack of them disables those extra functions if you well. We
-do not want to comprmise on this, I may limit the area to save disk space but I
+do not want to compromise on this, I may limit the area to save disk space but I
 still want full query functions.
 In short choose a data file with attic (history) and meta data.
 
@@ -95,7 +95,7 @@ Internet sites for data files:
 
 There are a lot of websites that provide OSM data files (or extracts), they are
 not all the same in terms of organization and ease of use. One website I found
-and recommand is this one: { https://download.geofabrik.de/ } for those reasons:
+and recommend is this one: { https://download.geofabrik.de/ } for those reasons:
 
 Simple UI with continent, regional and country files.
 Map in upper-right corner
@@ -152,7 +152,7 @@ That database size was the final size, during the initial step you need TWICE of
 that size of free disk space!
 Also keep in mind files in the above table were originally in .pbf format with
 initial sizes of 318 MB and 4075 MB respectively.
-I recommand at least 70 GB free disk space for small (about 500 MB) data
+I recommend at least 70 GB free disk space for small (about 500 MB) data
 file source.
 
 Before leaving this section, I am going to make two assumptions as follow:
@@ -206,7 +206,7 @@ input file. It will also be the slowest - in terms of query result speed.
 The [--meta] option is in middle of the two - in terms of disk space and query
 speed too.
 
-Please do not try to run anything as root, this applies also to initialling the
+Please do not try to run anything as root, this applies also to initialing the
 database. This was the whole reason for creating "overpass" user and group.
 
 Do the following to initial database as the "overpass" user:
