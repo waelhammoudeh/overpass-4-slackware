@@ -12,6 +12,10 @@ your database on your machine. Then the procedure for database initialization
 is explained with its various options. The guide concludes with the web user
 interface setup utilizing Apache Web Server.
 
+This repository has two directories; the first is "overpass-slackbuild" where
+find the build script for Slackware package. The second directory is the "Guide"
+where you find files explaining overpass and all needed information.
+
 What is OSM Overpass? 
   Quoting from https://wiki.openstreetmap.org/wiki/Overpass_API:
     
@@ -97,11 +101,16 @@ http://overpass-api.de/api/interpreter?data=[out:csv(\"name\";false)];way(33.560
 Guide Organization:
 
 This guide details are provided in three "README" files found in the directory
-for "overpass-slackbuild" in this repository as follows:
+"Guide" in this repository as follows:
 
  1. README : hardware requirements and software installation.
  2. README.data : all about OSM data file you need for the database.
- 3. README.web : shows basic setup for Apache web server.
+ 3. README.web : shows basic setup for Apache web server on local machine.
+
+Upgrade:
+
+ If upgrading from earlier overpass version, just make sure to stop "dispatcher"
+before you do the upgrade.
 
 
 ### DISCLAIMER:

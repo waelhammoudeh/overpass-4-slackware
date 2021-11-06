@@ -33,7 +33,7 @@ TODO: web server setup. .... still TODO copied from my git
 
     The file to modify is: /etc/httpd/httpd.conf, use a text editor, emacs or
     kate or whatever text editor you like. It is in sections, there is a full
-    example configuration file in the repository directory "httpd.conf", it is
+    example configuration file in this Guide directory "httpd.conf.example", it is
     usable, but use at your own risk. Few points about this example configuration
     file are as follow:
 

@@ -2,7 +2,7 @@
    names within Phoenix, Arizona. Replace the points in the bounding
    box below with good points within your installed database. */
    
-// the above was multilines comment - this a one line comment.
+// the above was multilines comment - this is a one line comment.
    
 
 [out:csv("name";false)];

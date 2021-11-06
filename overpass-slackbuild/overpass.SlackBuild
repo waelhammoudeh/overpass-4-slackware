@@ -30,7 +30,7 @@
 
 CWD=$(pwd)
 PKGNAM=overpass
-VERSION=0.7.56.9
+VERSION=0.7.57.1
 SOURCE_NAME=osm-3s_v
 BUILD=${BUILD:-1}
 TAG=${TAG:-_wh}
@@ -129,7 +129,7 @@ fi
 mkdir -p $PKGDEST/$MYPREFIX/html/$PKGNAM
 cp html/* $PKGDEST/$MYPREFIX/html/$PKGNAM/
 
-# use the index.html file from version 0.7.55.9 - provides link to blog!
+# use the index.html file from version 0.7.55.9 - provides link to blog and has "Query & Convert Form"
 # rename original first
 mv $PKGDEST/$MYPREFIX/html/$PKGNAM/index.html $PKGDEST/$MYPREFIX/html/$PKGNAM/index.html-$VERSION
 cp $CWD/index.html_v0.7.55.9 $PKGDEST/$MYPREFIX/html/$PKGNAM/index.html
@@ -155,11 +155,18 @@ cat $CWD/slack-desc > $PKGDEST/install/slack-desc
 mkdir -p $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION
 cp $CWD/LICENSE $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/$PKGNAM.SlackBuild $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/README $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/README.data $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/README.web $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/$PKGNAM.info $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/rc.dispatcher.new $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/rc.local $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/rc.local_shutdown $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/index.html_v0.7.55.9 $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/blog-doc.tar.gz $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/slack-desc $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+
+cd $CWD
+if [ -d ../Guide ]; then
+    cp -r ../Guide $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+fi
 
 cd $PKGDEST
 /sbin/makepkg -l y -c n $TMP/$PKGNAM-$VERSION-$ARCH-$BUILD$TAG.tgz
