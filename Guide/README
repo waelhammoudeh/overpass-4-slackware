@@ -15,9 +15,6 @@ Guide details are provided in README files as follows:
       Has details for setting up Apache web server for the web user interface
       to overpass.
 
-Source url: "https://dev.overpass-api.de/releases/osm-3s_v0.7.56.9.tar.gz"
-Please note that the source on github.com is old.
-
 Hardware Requirements:
 
 From the "Complete Installation Guide" that comes with the software:
