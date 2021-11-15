@@ -1,0 +1,6 @@
+TODO List (server setup):
+
+        * Update the database with "diff" data files... cron job weekly - maybe?
+        * Deal with log files. Logrotate - log file size, cron job?
+
+Note: help is more than welcome.
