@@ -11,7 +11,7 @@
 
 DBDIR=/path/to/your/overpass/DBase
 DSPTCHR=/usr/local/bin/dispatcher
-SOCVER=v0.7.57
+VERSION=v0.7.57
 USER=overpass
 DIS_MODE="normal mode"
 unset META
@@ -34,7 +34,7 @@ if ! grep ^overpass: /etc/passwd 2>&1 > /dev/null; then
     exit 1
 fi
 
-# check dispatcher
+# check dispatcher executable
 if [ ! -x $DSPTCHR ]; then
 
     echo "  Could not find dispatcher executable file!"
@@ -70,19 +70,29 @@ case "$1" in
         exit 0
 
     else
-        if [ -S ${DBDIR}/osm3s_${SOCVER}_osm_base ]; then
-            echo "Found STALLED overpass socket file, removing."
-            rm -f ${DBDIR}/osm3s_${SOCVER}_osm_base
+        if [ -S ${DBDIR}/osm3s_${VERSION}_osm_base ]; then
+            echo "Found STALLED overpass BASE socket file, removing."
+            rm -f ${DBDIR}/osm3s_${VERSION}_osm_base
         fi
+
+        if [ -S ${DBDIR}/osm3s_${VERSION}_areas ]; then
+            echo "Found STALLED overpass AREAS socket file, removing."
+            rm -f ${DBDIR}/osm3s_${VERSION}_areas
+        fi
+
     fi
 
     echo "Starting overpass dispatcher with ${DIS_MODE} ..."
-    sudo -u $USER $DSPTCHR --osm-base --db-dir=${DBDIR}/ ${META} &
+    sudo -u $USER $DSPTCHR --osm-base --db-dir=${DBDIR} ${META} &
     sleep 1s
     if (! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
        echo "Error: dispatcher did not start !!!"
        exit 1
     else
+        # only start areas dispatcher if base started successfully AND we have areas data
+        if [ -f ${DBDIR}/areas.bin ]; then
+            sudo -u $USER $DSPTCHR --areas --db-dir=${DBDIR} &
+        fi
         echo "dispatcher started"
     fi
 
@@ -95,8 +105,12 @@ case "$1" in
             echo "Error: dispatcher is not running."
             exit 2
         else
-            sudo -u $USER $DSPTCHR --terminate
+            sudo -u $USER $DSPTCHR --osm-base --terminate
+            if [ -f ${DBDIR}/areas.bin ]; then
+                sudo -u $USER $DSPTCHR --areas --terminate
+            fi
             sleep 1
+
             if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
                 echo "Error: could not stop dispatcher"
                 exit 2
