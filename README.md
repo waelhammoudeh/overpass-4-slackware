@@ -4,6 +4,20 @@ methods and steps mentioned here can be applied to any Linux distribution.
 
 ##### This guide is a work in progress!
 
+Mistake and Correction: April 9th, 2022
+
+I had given wrong instrucation to initial overpass database with full history or
+"attic" data by using converted OSM data file with history from pbf (portable
+binary format) to bz2 compressed file format using "osmium" command line tool.
+Note that the conversion itself was not wrong, however that conversion step
+produced a file WITHOUT history data. That file can not be used to initial
+overpass with attic data since it has no attic or history data.
+I also just found out that initialing overpass database from extract or limited
+area with full history is problematic. There is a lot more about this in the
+"README.data" file, please see that file and accept my apology.
+
+End "Mistake and Correction" note added 4/9/2022 W.H.
+
 OverpassAPI uses its own database, naturally this guide is broken into two
 parts; first software installation and hardware requirements, the second is
 database initialization including information about source data file required
@@ -12,9 +26,10 @@ your database on your machine. Then the procedure for database initialization
 is explained with its various options. The guide concludes with the web user
 interface setup utilizing Apache Web Server.
 
-This repository has two directories; the first is "overpass-slackbuild" where
-find the build script for Slackware package. The second directory is the "Guide"
-where you find files explaining overpass and all needed information.
+This repository has two directories; the first is "overpass-slackbuild" where I
+placed the build script for Slackware package. The second directory is the "Guide"
+where you will find instruction files for overpass setup and other essential
+information.
 
 What is OSM Overpass? 
   Quoting from https://wiki.openstreetmap.org/wiki/Overpass_API:

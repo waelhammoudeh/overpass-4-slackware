@@ -31,6 +31,45 @@ The change-set is between two immediate releases. If your OSM file has three
 releases since you downloaded, you need all three change-sets to update it to
 the current release.
 
+Hope to add to terminology; the following came from the manual page for
+osmium-file-formats: (if you installed my slackware osmium tool package, on a
+command line do:
+$ man osmium-file-formats
+to get the full page)
+
+START QUET:
+OSMIUM-FILE-FORMATS(5)       OSMIUM-FILE-FORMATS(5)
+
+NAME
+       osmium-file-formats - OSM file formats known to Osmium
+
+FILE TYPES
+       OSM uses three types of files for its main data:
+
+       Data files
+              These  are  the  most  common files.  They contain the OSM data from a specific point in time.
+              This can either be a planet file containing all OSM data or some kind of extract.  At most one
+              version of every object (node, way, or relation) is contained in this file.  Deleted objects are not
+              in this file.  The usual suffix used is .osm.
+
+       History files
+              These  files  contain  not  only the current version of an object, but their history, too.  So for
+              any object (node, way, or relation) there can be zero or more versions in this file.  Deleted
+              objects can also be in this file.  The usual suffix used is .osm or .osh.  Because sometimes the
+              same suffix  is used as for normal data files (.osm) and because there is no clear indicator in
+              the header, it is not always clear what type of file you have in front of you.
+
+       Change files
+              Sometimes called diff files or replication diffs these files contain the changes between one state
+              of the OSM database and another  state. Change files can contains several versions of an object
+              and also deleted objects.  The usual suffix used is .osc.
+
+       All these files have in common that they contain OSM objects (nodes, ways, and relations).  History files
+       and change files can contain several versions of the same object and also deleted objects, data files can’t.
+
+END QUET.
+
+
 Populate (initial) database in 2 different ways:
 The first is to use the "download_clone.sh" script provided with overpassAPI
 source (find it in /usr/local/bin if you install using my SlackBuild script).
@@ -73,18 +112,21 @@ I had to convert it with the following command:
 
  $ osmium cat arizona-internal.osh.pbf -o arizona-internal.osh.bz2
 
-note that -o switch specifies output file name and from its suffix "osmium"
-will figure out the format for output. See the man page for osmium. This
-operation can take some time depending on file size, processor and amount
-of memory on the machine. Mine run for about 10 minutes to finish.
-Another note; YOU NEED THE HISTORY FILE TO HAVE ATTIC DATA
-".osh.bz2".Just make sure the file format is compressed bz2.
+THE MISTAKE : the above command as written drops history information from the
+output file. That file still can be used to initial overpass database but WITHOUT
+full history.
+To get information about OSM data file use osmium fileinfo with --extended/-e
+command line option as:
+
+ $ osmium fileinfo -e /path/to/file/arizona-internal.osh.bz2
+
+Added on April 9th/2022.
 
 OSM data files may or may not include "META" data (see Terminology above). Yes
 you can save disk space without meta data, but your query results will not be
 accurate, I would also argue that the query result is wrong. In short meta data
 can include essential information. You can query overpass using other programs
-such as JSOM; which requires meta data.
+such as JSOM; which requires meta data. I could not get this to work using extract.
 As for the attic data - previous objects and history - those enable more query
 functions, or the lack of them disables those extra functions if you well. We
 do not want to compromise on this, I may limit the area to save disk space but I
@@ -224,15 +266,38 @@ Do the following to initial database as the "overpass" user:
 
      overpass@lazyant:/root$ nohup /usr/local/bin/init_osm3s.sh infile.osh.bz2 "/home/overpass/" "/usr/local/" --meta &
 
-Or if you want attic data in your database (change [--meta] to [--keep-attic]) as follows:
+CORRECTION:
 
+The above command to initial database with "--meta" option is perfect and correct.
+It produces usable database WITHOUT history.
+
+The two lines below are totally WRONG.
+
+Or if you want attic data in your database (change [--meta] to [--keep-attic]) as follows:
     overpass@lazyant:/root$ nohup /usr/local/bin/init_osm3s.sh infile.osh.bz2 "/home/overpass/" "/usr/local/" --keep-attic &
+
+The produced database is still usable! But it also does not have history because
+the input file "infile.osh.bz2" has no history data.
+
+If you need overpass with history, one need to initial the database from change
+format file (.osc). This method is experimental.
+We can convert our initially downloaded file from (.pbf) format to (.osc) format
+with osmium then use that to initial overpass database with as follows:
+
+$ osmium cat infile.osh.pbf --output -  --output-format .osc | update_database --db-dir=/path/to/database/ --keep-attic --flush-size=8 > myinitial.log &
+
+ where: infile.osh.pbf is the input file for osmium cat
+              --output - (option output followed by dash) directs output to STDOUT or terminal
+              --output-format .osc convert (write) the output in (.osc) file format.
+ and then STDOUT is piped to "update_database" overpass program (command) called
+ by init_osm3s.sh script.
+Finally "> myinitial.log &" is to redirect output to a log file in the background.
+
+  If you use this method keep in mind it is experimental.
 
 This step is time consuming depending on a lot of factors: input file size, processor
 speed, memory, type of hard disk and the amount of free space on that disk. Maybe
 other factors too.
-
-TO DO: add time info 4 initial
 
 With those steps so far, you can query your database on the command line.
 Using the "example" file provided in the root directory of this repository;
