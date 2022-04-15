@@ -73,7 +73,7 @@ requirements and easier to setup. Overpass has its own database.
 
 OSM data files are huge, limited area OSM data file makes disk space manageable.
 Having ones own server removes any usage limits public server may impose.
-You still free to have mutiple databases when working with mutiple areas.
+You are still free to have multiple databases when working with multiple areas.
 
 #### Installation and setup:
 
