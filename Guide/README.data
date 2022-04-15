@@ -12,8 +12,8 @@ data is OpenStreetMap (OSM) data.
 
 Terminology:  meta, attic and change-set.
 
-Meta: extra information such as objects versions, timestamps (create, change)
-and the editing user information (ids and other things). Data files with "meta"
+Meta: extra information such as objects versions, timestamps; create or change times,
+and the editing user information (user id and name). OSM data files with "meta"
 can have full or partial extra information.
 
 Attic: attic data is historical data, things change, street names even city name
@@ -22,20 +22,26 @@ Quoting from overpassAPI installation: "Since Overpass API v0.7.50, it is possib
 to also retain previous object versions, the so called attic versions, in the
 database. Previous object versions are accessible via [date:...], [diff:...],
 [adiff:...] as well as some filters like (changed:...)." end quote.
+It is important to note here that initialing overpass database with attic data from
+an extract or limited area file is problematic and not supported. An expermintal
+approach is shown below.
 
-Change-set: Objects have tags which might changed or new tag gets added, the
-changes in current release OSM file from the previous release is the change-set.
-Change-sets files are small and can be used to updated previous OSM file and
-databases with OSM data.
-The change-set is between two immediate releases. If your OSM file has three
-releases since you downloaded, you need all three change-sets to update it to
-the current release.
+Change-set: Objects have tags which can change in values, deleted or new tags get
+added to the object. Changes in current release OSM file from the previous release
+is the change-set. Change can be over time too, an object state can change over a
+period of time - say one day - an object gets a new tag added or another tag gets
+new value (changed); this is how (.osc) OSM Change files are produced.
+OSM Change files are small and can be used to updated previous OSM file and
+databases that uses them.
 
+When working with anything - the right tool makes a world of deference. I have
+a slackware package repository here on github for "osmium tools", if you do not
+have already installed, please install it. Osmium tools have many commands, one
+of them is showing information about OSM file.
 Hope to add to terminology; the following came from the manual page for
-osmium-file-formats: (if you installed my slackware osmium tool package, on a
-command line do:
-$ man osmium-file-formats
-to get the full page)
+osmium-file-formats, get the full page on a command line with:
+
+  $ man osmium-file-formats
 
 START QUET:
 OSMIUM-FILE-FORMATS(5)       OSMIUM-FILE-FORMATS(5)

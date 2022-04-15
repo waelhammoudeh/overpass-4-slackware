@@ -4,7 +4,7 @@ methods and steps mentioned here can be applied to any Linux distribution.
 
 ##### This guide is a work in progress!
 
-Mistake and Correction: April 9th, 2022
+#### Correction:
 
 I had given wrong instrucation to initial overpass database with full history or
 "attic" data by using converted OSM data file with history from pbf (portable
@@ -12,61 +12,81 @@ binary format) to bz2 compressed file format using "osmium" command line tool.
 Note that the conversion itself was not wrong, however that conversion step
 produced a file WITHOUT history data. That file can not be used to initial
 overpass with attic data since it has no attic or history data.
-I also just found out that initialing overpass database from extract or limited
-area with full history is problematic. There is a lot more about this in the
-"README.data" file, please see that file and accept my apology.
+Initialing overpass database from extract or limited area file with FULL history
+is problematic because it limits some queries usage to command line only, no web
+interface. There is a lot more about this in the "README.data" file, please see
+that file and accept my apology.
+End correction note, added 4/9/2022 W.H.
 
-End "Mistake and Correction" note added 4/9/2022 W.H.
+#### Prerequisite and caveat:
 
-OverpassAPI uses its own database, naturally this guide is broken into two
-parts; first software installation and hardware requirements, the second is
-database initialization including information about source data file required
-for this, what to look for in this file, where to get it from and where to place
-your database on your machine. Then the procedure for database initialization
-is explained with its various options. The guide concludes with the web user
-interface setup utilizing Apache Web Server.
+There are some requirements to install and learn overpass, the most important
+thing is time and patience in addition to the followings:
+
+  * Hardware demands for memory at least 4 GB, fast hard disk - Solid State Drive
+     or NVME - with disk space at least 50 GB for a small one country area and 64
+     bit multicore processor.
+  * Basic knoweldge of Unix / Linux commands, not afraid to use the terminal.
+  * Software tool to operate on OSM data files, I recommand Osmium Command
+     Line Tools - I have a SlackBuild script next to this repository. You may use
+     other tools.
+  * Caveat to keep in mind that I am NOT an overpass expert neither very smart.
+
+#### Organization:
 
 This repository has two directories; the first is "overpass-slackbuild" where I
 placed the build script for Slackware package. The second directory is the "Guide"
 where you will find instruction files for overpass setup and other essential
 information.
 
+Guide details are provided in README files as follows:
+
+* README - main README file:
+   Provide hardware requirements and software installation.
+   Software provide tools to initial, maintain and query database.
+
+ * README.data :
+   Has details about data files needed to initial and populate overpass
+   database. How to choose your file and where to get it from. Then how
+   to use it to initial your database.
+
+  * README.web :
+    Has details for setting up Apache web server for the web user interface
+    to overpass.
+
+
 What is OSM Overpass? 
   Quoting from https://wiki.openstreetmap.org/wiki/Overpass_API:
-    
-    "The Overpass API (formerly known as OSM Server Side Scripting, or OSM3S
+```
+    The Overpass API (formerly known as OSM Server Side Scripting, or OSM3S
     before 2011) is a read-only API that serves up custom selected parts of 
     the OSM map data. It acts as a database over the web: the client sends a 
-    query to the API and gets back the data set that corresponds to the query."
-
-end quote.
+    query to the API and gets back the data set that corresponds to the query.
+```
 
 Overpass is a query language with its own rules, I find it very easy to learn.
 To me Overpass is a tool to retrieve OSM data, similar to another OSM tool 
 known as "Nominatim". Overpass is a lot less demanding in terms of hardware
 requirements and easier to setup. Overpass has its own database.
 
-Limited Area Database Rational:
+#### Limited Area Database Rational:
 
-Full database (planet) size can be huge, 100s of gigabytes maybe approaching
-one terabyte of disk space - I do not know the actual size. To save disk space
-we limit the area and have database for single country for example. OSM data
-files are available for different regions of the world (big and small) ranging
-from continents to individual countries even cities. This guide shows this method
-for the database initialization / setup.
+OSM data files are huge, limited area OSM data file makes disk space manageable.
+Having ones own server removes any usage limits public server may impose.
+You still free to have mutiple databases when working with mutiple areas.
 
-There are public servers running overpassAPI around the world. There are a lot
-of issues with using a public server which can be avoided with having ones own
-server.
- 
-Installation and setup consist of the following steps:
+#### Installation and setup:
+
+See the README.* files in the Guide directory for the long story, The short story
+consist of the following steps:
 
 1) Build / compile the source software using my SlackBuild script.
 2) Download OSM data file for your region (maybe country).
 3) Populate (initial) the Database using your OSM region file .
 4) Setup Apache web server on your local machine to use OverpassAPI.
 
-An Example Query:
+###### An Example Query:
+
   This is NOT a tutorial for overpass-API, we will use an example query to
   show overpass usage. For full language explanation see this link:
        "https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL"
@@ -113,20 +133,6 @@ An Example Query:
 ```
 http://overpass-api.de/api/interpreter?data=[out:csv(\"name\";false)];way(33.56090, -111.96920, 33.57510, -111.93470)[highway];out;
 ```
-Guide Organization:
-
-This guide details are provided in three "README" files found in the directory
-"Guide" in this repository as follows:
-
- 1. README : hardware requirements and software installation.
- 2. README.data : all about OSM data file you need for the database.
- 3. README.web : shows basic setup for Apache web server on local machine.
-
-Upgrade:
-
- If upgrading from earlier overpass version, just make sure to stop "dispatcher"
-before you do the upgrade.
-
 
 ### DISCLAIMER:
 I am NOT an expert on "overpassAPI". Information here may not be accurate, use

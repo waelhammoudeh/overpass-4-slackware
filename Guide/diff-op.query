@@ -1,0 +1,13 @@
+/* This is an example of overpass API query for finding street
+   names within Phoenix, Arizona. Replace the points in the bounding
+   box below with good points within your installed database. */
+/* st.lukes hospital area bbox
+ *   33.4499735,-112.0502257,33.4567945,-112.0358062
+ * */
+
+// the above was multilines comment - this is a one line comment.
+   
+
+[out:csv("name";false)];
+way(33.6601031,-111.9268227,33.6722114,-111.8893576)[highway];
+out;
