@@ -87,18 +87,18 @@ FILE TYPES
 ---                                                                         ---
 
 More about this to come[^note]
-[^note]**File size:**
+[^note]: **File size:**
 * Depends on the area, city smaller than country.
 * (.pbf) file always smaller then (.osm) file.
 * Files with history (attic) always bigger than latest with meta.
 
-[^note]**Internet Sources:**
+[^note]: **Internet Sources:**
  - http://download.openstreetmap.fr/extracts/
  - https://download.geofabrik.de/
  - https://download.bbbike.org/osm/
 many other sites.
 
-[^note]**File storage:**
+[^note]: **File storage:**
 * Keep the file used to inital DB - may need it again.
 * Hard to tell what the database size will be, but it is going to always grow larger.
 * Database initialed with attic data will be the largest size, then meta and no meta is smallest.
