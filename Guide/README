@@ -6,6 +6,9 @@ Guide details are provided in README files as follows:
      Provide hardware requirements and software installation.
      Software provide tools to initial, maintain and query database.
 
+ *) README-DATA.md:
+     Essential information about OSM data files.
+
  *) README.data :
      Has details about data files needed to initial and populate overpass
      database. How to choose your file and where to get it from. Then how
@@ -70,43 +73,6 @@ This is my opinion for hardware:
   1- CPU: any 64 bit - no 32 bit.
   2- RAM: 4 GB.
   3- Hard disk: Solid State Drive is better than magnetic with at least 70 GB free space.
-
-TODO:
-timing to initial DB on both machines. (if you look here then look close)
-
-overpass@yafa:~/sources$ time nohup init_osm3s.sh arizona-internal.osh.bz2 "/mnt/sdc5/overpass/DBase/" "/usr/local/" --meta &
-[1] 7415
-overpass@yafa:~/sources$ nohup: ignoring input and appending output to 'nohup.out'
-
-real	26m12.414s
-user	25m35.774s
-sys	0m48.209s
-
-[1]+  Done                    time nohup init_osm3s.sh arizona-internal.osh.bz2 "/mnt/sdc5/overpass/DBase/" "/usr/local/" --meta
-
-below was with attic data, same infile same machine but --meta VS --keep-attic option. DB size 19GB vs 33GB
-overpass@yafa:~$ fg %-
-time nohup /usr/local/bin/init_osm3s.sh sources/arizona-internal.osh.bz2 atticDB/ /usr/local/ --keep-attic
-
-real	52m37.622s
-user	47m27.858s
-sys	4m15.761s
-
-===============================================================================
-second machine with --keep-attic option, database destination is on magnetic HD.
-
-overpass@lazyant:/mnt/sdb1$ time nohup /usr/local/bin/init_osm3s.sh /home/wael/Downloads/arizona-internal.osh.bz2 /mnt/sdb1/DBop/ /usr/local/ --keep-attic &
-[1] 13098
-overpass@lazyant:/mnt/sdb1$ nohup: ignoring input and appending output to '/home/overpass/nohup.out'
-
-real	136m24.990s
-user	100m45.755s
-sys	20m59.857s
-
-[1]+  Done                    time nohup /usr/local/bin/init_osm3s.sh /home/wael/Downloads/arizona-internal.osh.bz2 /mnt/sdb1/DBop/ /usr/local/ --keep-attic
-
-TODO: format and explain above output.
-
 
 Software Installation:
 

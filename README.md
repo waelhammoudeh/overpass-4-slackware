@@ -40,10 +40,15 @@ where you will find instruction files for overpass setup and other essential
 information.
 
 Guide details are provided in README files as follows:
+GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION
 
 * README - main README file:
    Provide hardware requirements and software installation.
-   Software provide tools to initial, maintain and query database.
+   Instruction to build ovepassAPI slackware package.
+   Package provides tools to initial, maintain and query database.
+
+* README-DATA.md:
+   Essential information about OSM data files.
 
  * README.data :
    Has details about data files needed to initial and populate overpass
@@ -101,11 +106,12 @@ consist of the following steps:
     
    Line 1 with "[out:csv("name";false)];" defines the output type we want "csv"
    and what is included in it "name", the false is an option to csv output here
-   meaning do not include a separator character.
+   meaning do not include the column header "name".
    
    Line 2 with "way(33.56090, -111.96920, 33.57510, -111.93470)[highway];" tells
-   the API software to look for a node that "way" within this bounding box that
-   has a tag named "highway" and this highway tag is set to true.
+   the API software to look for an element that is "way" within this bounding box that
+   has a tag named "highway" and we do not care about the value of this tag. In another
+   word there has to be a tag with the name "highway".
    Bounding box is defined with floating point numbers (south,west,north,east),
    another way to think of this bounding box is (point A, point B) such as:
    
