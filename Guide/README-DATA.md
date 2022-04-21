@@ -9,23 +9,25 @@ about OSM data files - books are written about the subject, what they are made o
 You get to meet Osmium! And finally the internet sources where to get your data file are mentioned.
 
 OpenStreetMap(OSM) data basic element is made of three types:
-    - nodes (defining points in space),
-    - ways (defining linear features and area boundaries), and
-    - relations (which are sometimes used to explain how other elements work together).
+ - nodes (defining points in space),
+ - ways (defining linear features and area boundaries), and
+ - relations (which are sometimes used to explain how other elements work together).
 
 Each element is defined using TAGS; a tag is a pair of NAME and VALUE, and each element has an ID number.
-The very basic element point (node) will have at least two tags, logtitude and latitude plus an ID number.
+The very basic element point (that is a node) will have at least two tags, longtitude and latitude plus an ID number.
 Usually elements have a lot more than those tags.
 
 ### Terminology
-**Meta, Attic and ChangeSet:**
+Meta, Attic and ChangeSet:
 
-Meta: extra information such as objects versions, timestamps; create or change times,
+**Meta:**
+extra information such as objects versions, timestamps; create or change times,
 and the editing user information (user id and name) are all considered meta information or meta for short.
 OSM data files with "meta" can have full or partial meta information, sometimes part or all meta information
 is intentionally removed. For example; user information like name, user id are removed for privacey reasons and laws.
 
-Attic: An attic in a house is where one keeps his / her old junk. Attic data is historical data,
+**Attic:**
+An attic in a house is where one keeps his / her old junk. Attic data is historical data,
 things change, street names even city name can change (Bombay to Mumbai, India), other things
 may change in the database, element version number.
 Quoting from overpassAPI installation:
@@ -39,7 +41,8 @@ It is important to note here that initialing overpass database with attic (histo
 an extract (limited area) file is not supported. An expermintal approach is shown in this guide
 where queries mentioned above are only available on the command line using "osm3s_query" program.
 
-ChangeSet: Objects have tags which can change in values, deleted or new tags get
+**ChangeSet:**
+Objects have tags which can change in values, deleted or new tags get
 added to the object. Changes in current release OSM file from the previous release
 is the ChangeSet. Change can be over time too, an object state can change over a
 period of time - say one day - an object gets a new tag added or another tag gets
@@ -47,6 +50,7 @@ new value (changed); this is how (.osc) OSM Change files are produced.
 OSM Change files are small and can be used to updated previous OSM file and
 databases that uses them. Change file will include instruction to add, remove or change elements or their tags.
 
+### OSM File Format:
 The data is shipped in files, OSM data files come in multiple formats and sizes. There are many tools (programs) that work with OSM data files.
 Two standout as must know; [Osmosis (Java)](https://wiki.openstreetmap.org/wiki/Osmosis) and [Osmium (C++)](https://wiki.openstreetmap.org/wiki/Osmium) they both basicly have the
 same functionality. I have a slackware package repository here on github for ["osmium tools"](https://github.com/waelhammoudeh/osmium-tool_slackbuild), if you need it.
@@ -97,7 +101,7 @@ FILE TYPES
  - http://download.openstreetmap.fr/extracts/
  - https://download.geofabrik.de/
  - https://download.bbbike.org/osm/
-many other sites.
+ - and many other local sites.
 
 **File storage:**
 [^3].
