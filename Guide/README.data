@@ -10,6 +10,14 @@ destination for it (where to store it), how to initial the database with that da
 and finally how to make it available for use on your machine (setup). The
 data is OpenStreetMap (OSM) data.
 
+OpenStreetMap(OSM) data element is made of three types:
+    - nodes (defining points in space),
+    - ways (defining linear features and area boundaries), and
+    - relations (which are sometimes used to explain how other elements work together).
+
+Each element is defined using TAGS; a tag is a pair of NAME and VALUE, and each element
+has an ID number.
+
 Terminology:  meta, attic and change-set.
 
 Meta: extra information such as objects versions, timestamps; create or change times,
