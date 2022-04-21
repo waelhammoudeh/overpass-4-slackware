@@ -44,6 +44,7 @@ if [[ -z $2 ]]; then
 fi
 
 $OSMIUM cat $INFILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
-                                                                                         --version=$VERSION $META \
-                                                                                         --flush-size=$FLUSH_SIZE \
-                                                                                         --compression-method=$COMPRESSION
+                                            --version=$VERSION $META \
+                                            --flush-size=$FLUSH_SIZE \
+                                            --compression-method=$COMPRESSION
+
