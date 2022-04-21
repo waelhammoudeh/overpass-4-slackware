@@ -9,6 +9,9 @@ Guide details are provided in README files as follows:
  *) README-DATA.md:
      Essential information about OSM data files.
 
+ *) README-SETUP.md
+     Database initialization, dispatcher starting ...
+
  *) README.data :
      Has details about data files needed to initial and populate overpass
      database. How to choose your file and where to get it from. Then how
