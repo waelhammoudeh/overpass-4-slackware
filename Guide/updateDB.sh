@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# script NOT final
+
 INFILE=$1
 VERSION=$2
 
@@ -13,7 +15,7 @@ OSMIUM=$EXEC_DIR/osmium
 # where to initial overpass database
 # set to your "overpass" home directory
 
-DB_DIR=/mnt/nvme4/op-attic
+DB_DIR=/path/to/database/directory
 
 # option to use - recommended is "--meta"
 
@@ -41,4 +43,7 @@ if [[ -z $2 ]]; then
     exit 1
 fi
 
-$OSMIUM cat $INFILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR --version=$VERSION $META --flush-size=$FLUSH_SIZE --compression-method=$COMPRESSION
+$OSMIUM cat $INFILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
+                                                                                         --version=$VERSION $META \
+                                                                                         --flush-size=$FLUSH_SIZE \
+                                                                                         --compression-method=$COMPRESSION
