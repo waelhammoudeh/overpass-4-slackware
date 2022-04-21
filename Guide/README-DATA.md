@@ -87,9 +87,9 @@ FILE TYPES
 ---                                                                         ---
 
 **File size:**
-*Depends on the area, city smaller than country.
-*(.pbf) file always smaller then (.osm) file.
-*Files with history (attic) always bigger than latest with meta.
+* Depends on the area, city smaller than country.
+* (.pbf) file always smaller then (.osm) file.
+* Files with history (attic) always bigger than latest with meta.
 
 **Internet Sources:**
  - http://download.openstreetmap.fr/extracts/
