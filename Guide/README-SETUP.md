@@ -151,10 +151,18 @@ overpass hat on; be the "overpass" user.
 
 If you are new to overpass then **osm3s_query** program is your friend, get to know it.
 
-### Databaset with FULL HISTORY (attic):
+### Database with FULL HISTORY (attic):
 
-Not a whole lot to say, but IT IS STILL on the TODO list!
+**Using Full History extracts to initial overpass database is not supported and discouraged**
 
+This approach is highly experimental, the produced database can **only** be queried via the
+command line, no web interface with this database is available. In addition your log file
+"transactions.log" **grows very rapidly**. I discourage this use. You use "osm3s_query" program
+with "--quiet" switch or redirect stderr using your shell to query database in a terminal.
+
+To initial the database, your source input file must have "attic" or historical data, the "updateDB.sh"
+script used above can be used with setting "META" to "--keep-attic", just uncomment that line.
+There is no known way to control logging to "transactions.log", it will be hard to maintain that file.
 
 ### Starting the "dispatcher" daemon:
 
@@ -203,6 +211,7 @@ the name "rc.dispatcher.new" in your "/etc/rc.d/", the install script sets the
 file to be executable - if it is not then you need to make it executable.
 
 **Note: "rc.dispatcher" script was modified on April 22/2022**
+**Please rebuild and upgrade your overpass package**
 
 There are two things you need to do to the file (yes, as the root user):
 1) rename it to "rc.dispatcher" (drop the .new extension)
