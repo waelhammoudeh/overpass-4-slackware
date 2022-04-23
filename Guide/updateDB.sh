@@ -73,8 +73,9 @@ if [[ -z $VERSION ]]; then
     exit 1
 fi
 
-# $OSMIUM cat $INFILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
-gunzip <$INFILE | $UPDATE_EXEC --db-dir=$DB_DIR \
+# gunzip <$INFILE | $UPDATE_EXEC --db-dir=$DB_DIR \
+
+$OSMIUM cat $INFILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
                                             --version=$VERSION \
                                             $META \
                                             --flush-size=$FLUSH_SIZE \
