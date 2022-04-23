@@ -163,7 +163,7 @@ which forwards queries to the correct part of the package. As long as the
 dispatcher is running, your queries to overpass will be answered.
 
 The dispatcher program can take a lot of arguments:
-
+```
 Accepted arguments are:
   --osm-base: Start or talk to the dispatcher for the osm data.
   --areas: Start or talk to the dispatcher for the areas data.
@@ -180,7 +180,7 @@ Accepted arguments are:
   --space=number: Set the memory limit for the total of all running processes to this value in bytes.
   --time=number: Set the time unit  limit for the total of all running processes to this value in bytes.
   --rate-limit=number: Set the maximum allowed number of concurrent accesses from a single IP.
-
+```
 The important arguments for us now are: ( --osm-base,  --meta, --attic and --db-dir ).
  * --osm-base: start basic or main dispatcher.
  * --areas: start areas dispatcher.
@@ -209,10 +209,11 @@ There are two things you need to do to the file (yes, as the root user):
 2) edit the file to set your actual database directory.
 
 Then you can start, stop and get status as follows:
-
-- # /etc/rc.d/rc.dispatcher start
-- # /etc/rc.d/rc.dispatcher stop
-- # /etc/rc.d/rc.dispatcher status
+```
+ # /etc/rc.d/rc.dispatcher start
+ # /etc/rc.d/rc.dispatcher stop
+ # /etc/rc.d/rc.dispatcher status
+```
 
 With dispatcher running, you can run the "example" query without providing the
 database directory argument as follow:
