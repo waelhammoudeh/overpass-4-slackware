@@ -307,6 +307,28 @@ this should result in a sorted list of names for areas in your database.
 
 ### Database Update:
 
+In the OSM File Format section of this Guide, "Change File" were mentioned, they have (.osc) extention.
+Change Files are used to update OSM data. I use Geofabrik website to get my extracts for them
+providing the daily "Change Files" for those extracts. Those files include changes in the area extract
+in the last 24 hours only, when updating with them, your OSM data is updated up to that time.
+This makes updating data a lot easier, which makes life easier, easier is better, thank you very much Geofabrik.
+
+If you do not use Geofabrik for your extracts, this may not help you much and you need to look
+somewhere else to update your database. You may apply the same concept in your own scripts.
+
+You will be wearing three "hats" here, your own mortal self, overpass and root users ... you will dance!
+
+#### Retrieve Change Files:
+
+This is what [my "getdiff"](https://github.com/waelhammoudeh/getdiff) program does, please clone the repository and compile the program with make.
+The repository has full instruction to use the program. I place my program in "/usr/local/bin" directory. You download your Change Files as your normal user.
+Use the example configuration file provided and fill those settings:
+ - SOURCE
+ - DIRECTORY
+ - NEWER_FILE
+
+If you use Geofabrik internal server, please fill "USER" setting too, we will provide password when we call the program.
+
 * Updates are for files from Geofabrik only.
 * Requires my "getdiff" program plus osmium.
 
