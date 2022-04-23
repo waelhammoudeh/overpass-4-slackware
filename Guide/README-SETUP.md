@@ -307,7 +307,7 @@ this should result in a sorted list of names for areas in your database.
 
 ### Database Update:
 
-In the OSM File Format section of this Guide, "Change File" were mentioned, they have (.osc) extention.
+In the OSM File Format section of this Guide, "Change File" were mentioned, they have (.osc) extension.
 Change Files are used to update OSM data. I use Geofabrik website to get my extracts for them
 providing the daily "Change Files" for those extracts. Those files include changes in the area extract
 in the last 24 hours only, when updating with them, your OSM data is updated up to that time.
