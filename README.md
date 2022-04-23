@@ -1,22 +1,22 @@
 This repository is a guide for setting up overpassAPI server on a local machine;
-your own server - with limited area database. I use Linux Slackware64, concepts,
-methods and steps mentioned here can be applied to any Linux distribution.
+your own server - with limited area database. I use Linux Slackware64, included
+in this repository is a SlackBuild script to make a Slackware Package for the
+overpassAPI software, concepts, methods and steps mentioned here can be applied
+to any Linux distribution.
 
 ##### This guide is a work in progress!
 
 #### Correction:
 
 I had given wrong instrucation to initial overpass database with full history or
-"attic" data by using converted OSM data file with history from pbf (portable
-binary format) to bz2 compressed file format using "osmium" command line tool.
-Note that the conversion itself was not wrong, however that conversion step
-produced a file WITHOUT history data. That file can not be used to initial
-overpass with attic data since it has no attic or history data.
-Initialing overpass database from extract or limited area file with FULL history
-is problematic because it limits some queries usage to command line only, no web
-interface. There is a lot more about this in the "README.data" file, please see
-that file and accept my apology.
-End correction note, added 4/9/2022 W.H.
+"attic" data in prevoius version of this guide. The wrong instrucations have been
+removed since, please accept my apology.
+
+#### Warning:
+
+Running overpass database instance initialed from extract for limited area file with
+**FULL HISTORY (attic)** is not supported. There is an expermintal approach mentioned
+in the file README-SETUP.md in this guide.
 
 #### Prerequisite and caveat:
 
@@ -39,16 +39,19 @@ placed the build script for Slackware package. The second directory is the "Guid
 where you will find instruction files for overpass setup and other essential
 information.
 
-Guide details are provided in README files as follows:
+Guide details are provided in README files in the "Guide" directory as follows:
+
 GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION
 
-* README - main README file:
+* README:
    Provide hardware requirements and software installation.
    Instruction to build ovepassAPI slackware package.
-   Package provides tools to initial, maintain and query database.
 
 * README-DATA.md:
    Essential information about OSM data files.
+
+* README-SETUP.md
+   Database initialization, area creation, starting the dispatcher ...
 
  * README.data :
    Has details about data files needed to initial and populate overpass

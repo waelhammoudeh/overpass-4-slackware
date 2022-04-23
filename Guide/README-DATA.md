@@ -39,7 +39,8 @@ attic versions, in the database. Previous object versions are accessible via [da
 ```
 It is important to note here that initialing overpass database with attic (historical) data from
 an extract (limited area) file is not supported. An expermintal approach is shown in this guide
-where queries mentioned above are only available on the command line using "osm3s_query" program.
+where queries mentioned above are only available on the command line using "osm3s_query"
+program, and maintaining the "transactions.log" is problematic since it grows very rapidly.
 
 **ChangeSet:**
 Objects have tags which can change in values, deleted or new tags get

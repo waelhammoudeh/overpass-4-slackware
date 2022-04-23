@@ -17,131 +17,138 @@ DIS_MODE="normal mode"
 unset META
 
 if [ -f ${DBDIR}/nodes_meta.bin ]; then
-    META=--meta
-    DIS_MODE="meta data support"
+   META=--meta
+   DIS_MODE="meta data support"
 fi
 
 # keep this if after if [ -f ${DBDIR}/nodes_meta.bin ]; above
 if [ -f ${DBDIR}/nodes_attic.bin ]; then
-    META=--attic
-    DIS_MODE="attic data support"
+   META=--attic
+   DIS_MODE="attic data support"
 fi
 
 if ! grep ^overpass: /etc/passwd 2>&1 > /dev/null; then
-
-    echo "  You must have overpass user and group to run this script."
-    echo "   Please see the main \"README\" file included with build script"
-    exit 1
+   echo "$0:"
+   echo "  You must have overpass user and group to run this script."
+   echo "   Please see the main \"README\" file included with build script"
+   exit 1
 fi
 
 # check dispatcher executable
 if [ ! -x $DSPTCHR ]; then
-
-    echo "  Could not find dispatcher executable file!"
-    exit 2
+   echo " Could not find dispatcher executable file!"
+   exit 2
 fi
 
 # test for database directory - directory can not be empty
 if [ ! -d $DBDIR ]; then
-
-    echo " Could not find database directory"
-    exit 2
+   echo " Could not find database directory"
+   exit 2
 fi
 
 # always show database directory in use
 echo ""
-echo "Database directory is set to: ${DBDIR}"
+echo "$0: Database directory is set to: ${DBDIR}"
 echo ""
 
 # maybe nested if
 if [ ! "$(ls -A $DBDIR)" ]; then
-
-    echo "  Seems like database directory is empty!"
-    echo "  Please see \"README.data\" file included with build script."
-    exit 2
+   echo "  Seems like database directory is empty!"
+   echo "  Please see \"README-SETUP.md\" file included in the Guide directory."
+   exit 2
 fi
 
 case "$1" in
 
-	"start")
+   "start")
 
-	if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
-        echo "dispatcher is already running! with ${DIS_MODE}"
-        exit 0
+   if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
+      echo " dispatcher is already running! with ${DIS_MODE}"
+      exit 0
 
-    else
-        if [ -S ${DBDIR}/osm3s_${VERSION}_osm_base ]; then
-            echo "Found STALLED overpass BASE socket file, removing."
-            rm -f ${DBDIR}/osm3s_${VERSION}_osm_base
-        fi
+   else
+      # I hope not to add "force-stop" case with this!
+      if [ -S ${DBDIR}/osm3s_${VERSION}_osm_base ]; then
+         echo " Found STALLED overpass BASE socket file, removing."
+         rm -f ${DBDIR}/osm3s_${VERSION}_osm_base
+      fi
+      if [ -S /dev/shm/osm3s_${VERSION}_osm_base ]; then
+         echo " Found STALLED overpass BASE socket file, removing."
+         rm -f /dev/shm/osm3s_${VERSION}_osm_base
+      fi
 
-        if [ -S ${DBDIR}/osm3s_${VERSION}_areas ]; then
-            echo "Found STALLED overpass AREAS socket file, removing."
-            rm -f ${DBDIR}/osm3s_${VERSION}_areas
-        fi
+      if [ -S ${DBDIR}/osm3s_${VERSION}_areas ]; then
+         echo " Found STALLED overpass AREAS socket file, removing."
+         rm -f ${DBDIR}/osm3s_${VERSION}_areas
+      fi
+      if [ -S /dev/shm/osm3s_${VERSION}_areas ]; then
+         echo " Found STALLED overpass AREAS socket file, removing."
+         rm -f /dev/shm/osm3s_${VERSION}_areas
+      fi
+   fi
 
-    fi
+   # start base dispatcher
+   echo " Starting overpass dispatcher with ${DIS_MODE} ..."
+   sudo -u $USER $DSPTCHR --osm-base --db-dir=${DBDIR} ${META} &
+   sleep 1
 
-    echo "Starting overpass dispatcher with ${DIS_MODE} ..."
-    sudo -u $USER $DSPTCHR --osm-base --db-dir=${DBDIR} ${META} &
-    sleep 1s
+   if (! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
+      echo " Error: dispatcher did not start !!!"
+      exit 1
+   else
+      # only start areas dispatcher if base started successfully
+      sudo -u $USER $DSPTCHR --areas --db-dir=${DBDIR} &
+      echo " overpass dispatcher started"
+   fi
+   exit 0
+;;
+
+   "stop")
+
     if (! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
-       echo "Error: dispatcher did not start !!!"
-       exit 1
+       echo " Error: dispatcher is not running."
+       exit 2
     else
-        # only start areas dispatcher if base started successfully AND we have areas data
-        if [ -f ${DBDIR}/areas.bin ]; then
-            sudo -u $USER $DSPTCHR --areas --db-dir=${DBDIR} &
-        fi
-        echo "dispatcher started"
+       # stop base dispatcher
+       sudo -u $USER $DSPTCHR --osm-base --terminate
+
+       if [ -S ${DBDIR}/osm3s_${VERSION}_areas ]; then
+          # stop area dispatcher
+          sudo -u $USER $DSPTCHR --areas --terminate
+       fi
+          sleep 1
+
+       if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
+          echo " Error: could not stop dispatcher"
+          exit 2
+       else
+          echo " dispatcher stopped"
+       fi
     fi
-
-	exit 0
+    exit 0
 ;;
 
-	"stop")
+   "status")
 
-		if (! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
-            echo "Error: dispatcher is not running."
-            exit 2
-        else
-            sudo -u $USER $DSPTCHR --osm-base --terminate
-            if [ -f ${DBDIR}/areas.bin ]; then
-                sudo -u $USER $DSPTCHR --areas --terminate
-            fi
-            sleep 1
-
-            if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
-                echo "Error: could not stop dispatcher"
-                exit 2
-            else
-                echo "dispatcher stopped"
-            fi
-        fi
-		exit 0
+      if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
+         echo " dispatcher is running with ${DIS_MODE}"
+         echo ""
+         sudo -u $USER $DSPTCHR --status
+      else
+         echo " dispatcher is stopped. Not running!"
+      fi
+      exit 0
 ;;
 
-	"status")
-
-        if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
-            echo "dispatcher is running with ${DIS_MODE}"
-            echo ""
-	       sudo -u $USER $DSPTCHR --status
-        else
-            echo "dispatcher is stopped. Not running!"
-        fi
-	   exit 0
+   *)
+      # something else - show usage
+      echo ""
+      echo " $0: Error: Unkown command."
+      echo "  Usage: $0 ACTION"
+      echo "  where ACTION is one of: { start | stop | status }"
+      echo ""
+      echo "  Please note they are all lower case letters!"
+      echo ""
+      exit 1
 ;;
-
-    *)
-		# something else - show usage
-		echo ""
-		echo "  Error: Unkown command."
-		echo "  Usage: $0 ACTION"
-		echo "  where ACTION is one of: { start, stop or status }"
-		echo ""
-		echo "  Please note they are all lower case letters!"
-		echo ""
-		exit 1
-	;;
 esac

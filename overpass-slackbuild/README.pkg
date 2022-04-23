@@ -15,5 +15,24 @@ Please also note the space between that directory path and "overpass" user name
 on the second command line above.
 
 Database needs to be created or initialed before you can use overpass; this procedure
-is explained in the "Guide" directory. See the "Guide" also for the usage of the
-provided scripts.
+is explained in the "Guide" directory.
+
+To have dispatcher start and stop on system boot and system shutdown add the
+following lines to the following files, (after database setup):
+
+ /etc/rc.d/rc.local
+ ============================
+ # Startup overpass dispatcher
+ if [ -x /etc/rc.d/rc.dispatcher ]; then
+    /etc/rc.d/rc.dispatcher start
+ fi
+
+ /etc/rc.d/rc.local_shutdown
+ ============================
+ # Stop overpass dispatcher
+ if [ -x /etc/rc.d/rc.dispatcher ]; then
+    /etc/rc.d/rc.dispatcher stop
+ fi
+
+You may need to create the "/etc/rc.d/rc.local_shutdown" if not present in your
+system. The rc.dispatcher script has other options; please see the script file.
