@@ -151,6 +151,11 @@ overpass hat on; be the "overpass" user.
 
 If you are new to overpass then **osm3s_query** program is your friend, get to know it.
 
+### Databaset with FULL HISTORY (attic):
+
+Not a whole lot to say, but IT IS STILL on the TODO list!
+
+
 ### Starting the "dispatcher" daemon:
 
 The "dispatcher" program is part of the overpass package, it is the daemon
