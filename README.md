@@ -44,7 +44,7 @@ Guide details are provided in README files in the "Guide" directory as follows:
 GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION
 
 * README:
-   Provide hardware requirements and software installation.
+     Provide hardware requirements and software installation.
    Instruction to build ovepassAPI slackware package.
 
 * README-DATA.md:
@@ -52,11 +52,6 @@ GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION
 
 * README-SETUP.md
      Database initialization, area creation, starting the dispatcher ...
-
- * README.data : **REMOVED**
-     Has details about data files needed to initial and populate overpass
-   database. How to choose your file and where to get it from. Then how
-   to use it to initial your database.
 
   * README.web :
       Has details for setting up Apache web server for the web user interface
