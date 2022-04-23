@@ -53,9 +53,9 @@ GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION
 * README-SETUP.md
      Database initialization, area creation, starting the dispatcher ...
 
-  * README.web :
-      Has details for setting up Apache web server for the web user interface
-    to overpass.
+* README.web :
+     Has details for setting up Apache web server for the web user interface
+   to overpass.
 
 
 What is OSM Overpass? 
