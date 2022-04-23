@@ -48,18 +48,18 @@ GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION
    Instruction to build ovepassAPI slackware package.
 
 * README-DATA.md:
-   Essential information about OSM data files.
+     Essential information about OSM data files.
 
 * README-SETUP.md
-   Database initialization, area creation, starting the dispatcher ...
+     Database initialization, area creation, starting the dispatcher ...
 
- * README.data :
-   Has details about data files needed to initial and populate overpass
+ * README.data : **REMOVED**
+     Has details about data files needed to initial and populate overpass
    database. How to choose your file and where to get it from. Then how
    to use it to initial your database.
 
   * README.web :
-    Has details for setting up Apache web server for the web user interface
+      Has details for setting up Apache web server for the web user interface
     to overpass.
 
 
