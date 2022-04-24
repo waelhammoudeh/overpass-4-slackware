@@ -1,9 +1,11 @@
 #!/bin/bash
 
-# updateDB.sh : script to initial overpass database; takes THREE arguments
+# initial_op_db.sh : script to initial overpass database; takes THREE arguments
 # $1 : inputfile where file is any OSM data file supported by "osmium" programs
 # $2 : version number string, use last date from input file. Can not be empty.
 # $3 : DB_DIR destination database directory.
+#
+# Scripts requires "osmium" to be installed.
 
 INFILE=$1
 VERSION=$2
@@ -19,13 +21,14 @@ OSMIUM=$EXEC_DIR/osmium
 # option to use - recommended is "--meta"
 META=--meta
 
-# experimental option for limited area extract - has issues
+# experimental option for limited area extract - WARNING has multiple issues.
 # META=--keep-attic
 
 # accepted values are one of [ no| gz | lz4 ]
 COMPRESSION=no
 
-# the amount of RAM to use, with 16 GB ram I set this to 8
+# controls amount of RAM usage by "update_database" program.
+# with 16 GB ram I set this to 4 - still seems high
 FLUSH_SIZE=4
 
 set -e
@@ -73,7 +76,7 @@ if [[ -z $VERSION ]]; then
     exit 1
 fi
 
-# gunzip <$INFILE | $UPDATE_EXEC --db-dir=$DB_DIR \
+# osmconvert : is an alternative to osmium
 
 $OSMIUM cat $INFILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
                                             --version=$VERSION \
@@ -81,5 +84,7 @@ $OSMIUM cat $INFILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
                                             --flush-size=$FLUSH_SIZE \
                                             --compression-method=$COMPRESSION \
                                             --map-compression-method=$COMPRESSION 2>&1 >/dev/null
+
+# TODO: copy "rules" directory to new database??
 
 exit 0

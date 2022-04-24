@@ -64,7 +64,9 @@ And "whoami" command and its output should look like:
 
 Do not run anything as "root" unless it is only doable by "root".
 
-### UpdateDB.sh Script:
+### initial_op_db.sh Script:
+
+Note old "updateDB.sh script" has been replaced with "initial_op_db.sh" script.
 
 OverpassAPI provides two script to initial the database found in "/usr/local/bin" directory .
 The first is the "download_clone.sh" script which is for cloning planet database from
@@ -72,7 +74,7 @@ a live overpass server. Here we talk about **region** setup, this script is of n
 for us here.
 
 The second script is "init_osm3s.sh" script. This script calls "update_database" program
-found also in the overpass package executable "bin" directory. My "updateDB.sh" script
+found also in the overpass package executable "bin" directory. My "initial_op_db.sh" script
 found with this "Guide" is a rewrite of this script and I use it to initial overpass database.
 To use this script you may need to adjust some variables! And you **must install** osmium
 tools in your system [from my repository](https://github.com/waelhammoudeh/osmium-tool_slackbuild).
@@ -86,14 +88,14 @@ Usage: update_database [--db-dir=DIR] [--version=VER] [--meta|--keep-attic] [--f
 The program "update_database" reads its input from STDINPUT (the terminal) expecting
 uncommpressed XML text format.
 The "--flush-size" controls the amount of memory the progam uses. I set that to 8 with
-my 16GB ram in my machine.
+my 16GB ram in my machine, set this to 4 or 2 if you have less than 16 GB of memory.
 The "--compression-method" and "--map-compression-method" are to compress the produced
 database in separate parts?! This may yield samller database but there will always be compression
 and decompression! I set compression to "no", feel free to change this.
 
-To use "updateDB.sh" script:
+To use "initial_op_db.sh" script:
 
- * Make sure that the script is executable: (chmod +x {path}/updateDB.sh).
+ * Make sure that the script is executable: (chmod +x {path}/initial_op_db.sh).
  * You may want to use lower / higher number for "flush-size". Use 4 if your ram < 16 GB.
 
 The script assumes that you installed my overpassAPI using my SlackBuild script and
@@ -116,18 +118,18 @@ meta data (all meta) and **no** attic. The following were the exact steps I did:
   - created a new directory "source" under database directory, (/mnt/nvme4/op-meta).
   - moved to source directory (cd source).
   - copied my input file "arizona-latest-internal-2022-04-08.osm.pbf" to source directory.
-  - I had added the date to name in my "Downloads" directory - renamed it.
-  - copied "updateDB.sh" script to source directory.
+  - I had added the date to the file name in my "Downloads" directory - renamed it.
+  - copied "initial_op_db.sh" script to source directory.
   - from source directory issued command to initial overpass database with:
 ```
- overpass@yafa:/mnt/nvme4/op-meta/source$ time nohup ./updateDB.sh arizona-latest-internal-2022-04-08.osm.pbf 2022-04-08 /mnt/nvme4/op-meta &
+ overpass@yafa:/mnt/nvme4/op-meta/source$ time nohup ./initial_op_db.sh arizona-latest-internal-2022-04-08.osm.pbf 2022-04-08 /mnt/nvme4/op-meta &
 ```
 This took about 21 minutes with time output shown below:
 ```
 real	20m53.554s
 user	20m55.571s
 sys	0m51.003s
-[1]+  Done       time nohup ./updateDB.sh arizona-latest-internal-2022-04-08.osm.pbf 2022-04-08 /mnt/nvme4/op-meta
+[1]+  Done       time nohup ./initial_op_db.sh arizona-latest-internal-2022-04-08.osm.pbf 2022-04-08 /mnt/nvme4/op-meta
 ```
 
 You may need to reboot your machine after this step! "update_database" uses a lot of memory.
@@ -158,9 +160,11 @@ If you are new to overpass then **osm3s_query** program is your friend, get to k
 This approach is highly experimental, the produced database can **only** be queried via the
 command line, no web interface with this database is available. In addition your log file
 "transactions.log" **grows very rapidly**. I discourage this use. You use "osm3s_query" program
-with "--quiet" switch or redirect stderr using your shell to query database in a terminal.
+with "--quiet" switch or redirect stderr using your shell to query database in a terminal. In addition
+to those short comings it also **NOT** possible to update the database using my "update_op_db.sh" script
+mentioned below.
 
-To initial the database, your source input file must have "attic" or historical data, the "updateDB.sh"
+To initial the database, your source input file must have "attic" or historical data, the "initial_op_db.sh"
 script used above can be used with setting "META" to "--keep-attic", just uncomment that line.
 There is no known way to control logging to "transactions.log", it will be hard to maintain that file.
 
@@ -332,7 +336,16 @@ If you use Geofabrik internal server, please fill "USER" setting too, we will pr
 * Updates are for files from Geofabrik only.
 * Requires my "getdiff" program plus osmium.
 
+#### update_op_db.sh script:
 
+The "update_op_db.sh" bash script is to update the overpass database. It is very much ready to work for you.
+You DO need to get EVERY single thing right for a successful outcome. Feel free to try anything.
+
+In my TODO list is to write "update_op_db.sh" usage. Then add cron job to automate retrieving
+"Change Files" and updating with "update_op_db.sh".
+
+One thing to keep in mind, you start your "update" from "Change File" that has data DATED JUST AFTER
+what is in your region file. Doing this DO NOT leave a gap between dates either.
 
 
 [^1]:  More about this below.
