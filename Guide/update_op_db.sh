@@ -5,13 +5,15 @@
 # Timestamp in log file uses local time.
 # WARNING: This script will NOT work to update database with "--keep-attic" switch
 #
-# script reads a text file with a list of newer retieved Change Files and their (.state.txt) files
+# script reads a text file with a list of newer retieved Change Files (differ files) and their
+# (.state.txt) files.
 # The file with the list is produced by my "getdiff" program.
-# The file name and path is set with either "--new" command line option or "NEWER_FILE"
-# configuration file setting. The file setting must match between this script and "gediff".
-# The file setting in this script is in the "NEWER_FILES" variable.
+# The file name and path is set for the "getdiff" program with either "--new"
+# command line option or "NEWER_FILE" configuration file setting.
+# This script sets this file in variable "NEWER_FILES" below. The two settings must
+# refer to the same file.
 
-# NEWER_FILES sample: sorted list, files in pairs
+# NEWER_FILES sample: sorted list, files are in pairs
 # 302.osc.gz
 # 302.state.txt
 # 303.osc.gz
@@ -29,6 +31,9 @@ fi
 # input for script is NEWER_FILES, we also need to know where to find differ files
 NEWER_FILES=/home/wael/Downloads/getdiff/newerFiles.txt
 DIFF_DIR=/home/wael/Downloads/getdiff/diff
+DB_DIR=/mnt/nvme4/op2-meta
+
+# change three variables above to your actual paths
 
 OP_USER=overpass
 EXEC_DIR=/usr/local/bin
@@ -36,7 +41,6 @@ DISP_CTRL_SCRIPT=/etc/rc.d/rc.dispatcher
 UPDATER=$EXEC_DIR/update_database
 QRY_EXEC=$EXEC_DIR/osm3s_query
 
-DB_DIR=/mnt/nvme4/op2-meta
 META=--meta
 FLUSH_SIZE=4
 COMPRESSION=no
@@ -104,7 +108,7 @@ if [[ ! -s $DB_DIR/rules/areas.osm3s ]]; then
    exit 1
 fi
 
-# read NEWER_FILES placing each line in array element
+# read NEWER_FILES placing each line in an array element
 while IFS= read -r line
 do
 {
@@ -130,7 +134,7 @@ if [[ $rem -ne 0 ]]; then
 fi
 
 # check that change file matches the very next state file
-# just checking ALL files - it is ALL or NOTHING
+# just checking ALL files - it is ALL or NOTHING deal
 i=0
 j=0
 

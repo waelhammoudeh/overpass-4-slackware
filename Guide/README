@@ -10,12 +10,7 @@ Guide details are provided in README files as follows:
      Essential information about OSM data files.
 
  *) README-SETUP.md
-     Database initialization, dispatcher starting ...
-
- *) README.data : removed now.
-     Has details about data files needed to initial and populate overpass
-     database. How to choose your file and where to get it from. Then how
-     to use it to initial your database.
+     Database initialization, start daemon dispatcher, maintain updated database.
 
   *) README.web :
       Has details for setting up Apache web server for the web user interface
@@ -150,8 +145,9 @@ system. The rc.dispatcher script has other options; please see the script file.
 
 5) Setup a web server such as "Apache Web Server" for your overpass server.
 
-The long story is broken into two files mentioned on top of this README, so
-please see "README.data" and "README.web". Thank you very much.
+The long story is broken into files mentioned on top of this README, so
+please see "README-DATA.md", "README-SETUP.md" and "README.web".
+Thank you very much.
 
 Enjoy :)
 Wael Hammoudeh
