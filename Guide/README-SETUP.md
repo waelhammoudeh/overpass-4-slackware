@@ -85,9 +85,9 @@ Unkown argument: -h
 Usage: update_database [--db-dir=DIR] [--version=VER] [--meta|--keep-attic] [--flush_size=FLUSH_SIZE] [--compression-method=(no|gz|lz4)] [--map-compression-method=(no|gz|lz4)]
 ```
 
-The program "update_database" reads its input from STDINPUT (the terminal) expecting
+The program "update_database" reads its input from standard input (the terminal) expecting
 uncommpressed XML text format.
-The "--flush-size" controls the amount of memory the progam uses. I set that to 8 with
+The "--flush-size" controls the amount of memory the progam uses. I set this to 8 with
 my 16GB ram in my machine, set this to 4 or 2 if you have less than 16 GB of memory.
 The "--compression-method" and "--map-compression-method" are to compress the produced
 database in separate parts?! This may yield samller database but there will always be compression
@@ -161,7 +161,7 @@ This approach is highly experimental, the produced database can **only** be quer
 command line, no web interface with this database is available. In addition your log file
 "transactions.log" **grows very rapidly**. I discourage this use. You use "osm3s_query" program
 with "--quiet" switch or redirect stderr using your shell to query database in a terminal. In addition
-to those short comings it also **NOT** possible to update the database using my "update_op_db.sh" script
+to those short comings it is also **NOT** possible to update the database using my "update_op_db.sh" script
 mentioned below.
 
 To initial the database, your source input file must have "attic" or historical data, the "initial_op_db.sh"
@@ -193,7 +193,7 @@ Accepted arguments are:
   --time=number: Set the time unit  limit for the total of all running processes to this value in bytes.
   --rate-limit=number: Set the maximum allowed number of concurrent accesses from a single IP.
 ```
-The important arguments for us now are: ( --osm-base,  --meta, --attic and --db-dir ).
+The important arguments for us now are: ( --osm-base,  --areas, --meta, --attic and --db-dir ).
  * --osm-base: start basic or main dispatcher.
  * --areas: start areas dispatcher.
  * --meta | --attic: must match initialed database option.
@@ -213,9 +213,6 @@ In my SlackBuild script directory, I provide "rc.dispatcher" script to start
 the dispatcher. When you install your package, you will find a new file with
 the name "rc.dispatcher.new" in your "/etc/rc.d/", the install script sets the
 file to be executable - if it is not then you need to make it executable.
-
-**Note: "rc.dispatcher" script was modified on April 22/2022**
-**Please rebuild and upgrade your overpass package**
 
 There are two things you need to do to the file (yes, as the root user):
 1) rename it to "rc.dispatcher" (drop the .new extension)
@@ -270,7 +267,7 @@ overpass@yafa:/root$ cp -pR /usr/local/rules/ /mnt/nvme4/op-meta/
 replace my destination "/mnt/nvme4/op-meta/" above with your real database directory.
 
 Another dispatcher instance has to be running with "--areas" switch in addition to the
-"--base" instance, you can start that with:
+"--osm-base" instance, you can start that with:
 
 ```
 overpass@yafa:/root$ /usr/local/bin/dispatcher --areas --db-dir=/path/to/overpass/ &
@@ -320,11 +317,13 @@ This makes updating data a lot easier, which makes life easier, easier is better
 If you do not use Geofabrik for your extracts, this may not help you much and you need to look
 somewhere else to update your database. You may apply the same concept in your own scripts.
 
-You will be wearing three "hats" here, your own mortal self, overpass and root users ... you will dance!
+You will be wearing three "hats" here, your own mortal self, "overpass" and "root" users ... you will dance!
 
 #### Retrieve Change Files:
 
-This is what [my "getdiff"](https://github.com/waelhammoudeh/getdiff) program does, please clone the repository and compile the program with make.
+* My "getdiff" program retrieves "Change Files" from Geofabrik public or internal servers.
+
+Find [my "getdiff"](https://github.com/waelhammoudeh/getdiff) program and please clone the repository and compile the program with make.
 The repository has full instruction to use the program. I place my program in "/usr/local/bin" directory. You download your Change Files as your normal user.
 Use the example configuration file provided and fill those settings:
  - SOURCE
@@ -333,10 +332,9 @@ Use the example configuration file provided and fill those settings:
 
 If you use Geofabrik internal server, please fill "USER" setting too, we will provide password when we call the program.
 
-* Updates are for files from Geofabrik only.
-* Requires my "getdiff" program plus osmium.
-
 #### update_op_db.sh script:
+
+* "update_op_db.sh" script uses "gunzip" program and DOES NOT use osmium - still needed to use "initial_op_db.sh".
 
 The "update_op_db.sh" bash script is to update the overpass database. It is very much ready to work for you.
 You DO need to get EVERY single thing right for a successful outcome. Feel free to try anything.

@@ -10,7 +10,9 @@ Guide details are provided in README files as follows:
      Essential information about OSM data files.
 
  *) README-SETUP.md
-     Database initialization, start daemon dispatcher, maintain updated database.
+     Setting up the data in such a way to make it ready for use, including database
+     initialization, start the daemon dispatcher, area creation, then maintaining and
+     keeping data updated. Finally automation of this process.
 
   *) README.web :
       Has details for setting up Apache web server for the web user interface
