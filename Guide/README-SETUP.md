@@ -345,5 +345,9 @@ In my TODO list is to write "update_op_db.sh" usage. Then add cron job to automa
 One thing to keep in mind, you start your "update" from "Change File" that has data DATED JUST AFTER
 what is in your region file. Doing this DO NOT leave a gap between dates either.
 
+The script "cron4op.sh" is a driver script that calls "getdiff" to download change files, then calls the
+"update_op_db.sh" when new change files are downloaded to update overpass database. The script
+is intended to be called as a cron job, can be scheduled to run as needed.
+
 
 [^1]:  More about this below.

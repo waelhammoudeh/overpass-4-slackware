@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# script to update overpass database from Geofabrik Change Files (.osc)
+# script to daily update overpass database from Geofabrik Change Files (.osc)
+# Script applies DAILY Change Files update to database.
 #
 # Timestamp in log file uses local time.
 # WARNING: This script will NOT work to update database with "--keep-attic" switch
@@ -84,7 +85,9 @@ if [[ ! -x $QRY_EXEC ]]; then
     exit 1
 fi
 
-# dispatcher needs to be running
+# dispatcher needs to be running to get database directory {INUSE_DIR}
+# we could read script to get {INUSE_DIR} - so we should only stop it if
+# running, then for areas start it up.????? FIXME
 if (! pgrep -f $EXEC_DIR/dispatcher  2>&1 > /dev/null) ; then
    echo " Error: dispatcher is not running !!!"
    echo "$(date '+%F %T'): Error dispatcher is not running " >>$LOGFILE
