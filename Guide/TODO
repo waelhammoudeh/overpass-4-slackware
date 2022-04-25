@@ -5,6 +5,10 @@ TODO List:
         * automate with cron
         * Log files.
         * Logrotate - log file size or date for cron job?
+        * ONE CONFIGURATION FILE to be read by ALL:
+           "getdiff", "initial_op_db.sh", "update_op_db.sh" and "cron4op.sh"
+        * Log files in one place.
+        * Multi databases?
 
 Note: help is more than welcome.
 STILL HELP IS MORE THAN WELCOME
