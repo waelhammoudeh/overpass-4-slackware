@@ -51,7 +51,15 @@ GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION
      Essential information about OSM data files.
 
 * README-SETUP.md
-     Database initialization, area creation, starting the dispatcher ...
+
+     - Disk storage
+     - Database initialization
+     - Software setup to query and control database
+     - Areas creation.
+     - Automating updates using my "getdiff" program
+     - Scripts to utilize cron and logrotate for maintenance and updates.
+
+     This will need another README no kidding.
 
 * README.web :
      Has details for setting up Apache web server for the web user interface

@@ -8,6 +8,7 @@ TODO List:
         * ONE CONFIGURATION FILE to be read by ALL:
            "getdiff", "initial_op_db.sh", "update_op_db.sh" and "cron4op.sh"
         * Log files in one place.
+        * Data files; what to do with source data files? maintain!!!
         * Multi databases?
 
 Note: help is more than welcome.

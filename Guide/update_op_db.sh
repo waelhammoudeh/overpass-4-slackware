@@ -50,12 +50,13 @@ COMPRESSION=no
 LOGFILE=/var/log/overpass/update_op_db.log
 
 echo "$(date '+%F %T'): update_op_db.sh started ..." >>$LOGFILE
+echo "$(date '+%F %T'): database directory is: $DB_DIR" >>$LOGFILE
 
 # initial an empty array
 declare -a newFilesArray=()
 
 if [[ ! -s $NEWER_FILES ]]; then
-   echo "$0: NEWER_FILES not found or empty"
+   echo "$0: NEWER_FILES not found or empty - nothing to do."
    echo "$(date '+%F %T'): No newer files to update. Done." >>$LOGFILE
    exit 0
 fi
