@@ -1,21 +1,24 @@
 This repository is a guide for setting up overpassAPI server on a local machine;
 your own server - with limited area database. I use Linux Slackware64, included
-in this repository is a SlackBuild script to make a Slackware Package for the
-overpassAPI software, concepts, methods and steps mentioned here can be applied
-to any Linux distribution.
+in this repository is a SlackBuild script to build a Slackware package for the
+overpassAPI software, how to use my ["getdiff"](https://github.com/waelhammoudeh/getdiff)
+program to retrieve and update overpass databases with "Change Files" from Geofabrik servers,
+scripts to initial and automate database updates and maintenance via cron and logrotate utilities,
+(logrotate implementation is yet to come).
+Concepts, methods and steps mentioned here can be applied to any Linux distribution not just Slackware.
 
 ##### This guide is a work in progress!
 
 #### Correction:
 
-I had given wrong instrucation to initial overpass database with full history or
-"attic" data in prevoius version of this guide. The wrong instrucations have been
+I had given wrong instruction to initial overpass database with full history or
+"attic" data in previous version of this guide. The wrong instructions have been
 removed since, please accept my apology.
 
 #### Warning:
 
 Running overpass database instance initialed from extract for limited area file with
-**FULL HISTORY (attic)** is not supported. There is an expermintal approach mentioned
+**FULL HISTORY (attic)** is not supported. There is an experimental approach mentioned
 in the file README-SETUP.md in this guide.
 
 #### Prerequisite and caveat:
@@ -25,9 +28,9 @@ thing is time and patience in addition to the followings:
 
   * Hardware demands for memory at least 4 GB, fast hard disk - Solid State Drive
      or NVME - with disk space at least 50 GB for a small one country area and 64
-     bit multicore processor.
-  * Basic knoweldge of Unix / Linux commands, not afraid to use the terminal.
-  * Software tool to operate on OSM data files, I recommand Osmium Command
+     bit multi core processor.
+  * Basic knowledge of Unix / Linux commands, not afraid to use the terminal.
+  * Software tool to operate on OSM data files, I recommend Osmium Command
      Line Tools - I have a SlackBuild script next to this repository. You may use
      other tools.
   * Caveat to keep in mind that I am NOT an overpass expert neither very smart.
@@ -45,7 +48,7 @@ GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION
 
 * README:
      Provide hardware requirements and software installation.
-   Instruction to build ovepassAPI slackware package.
+   Instruction to build ovepassAPI Slackware package.
 
 * README-DATA.md:
      Essential information about OSM data files.

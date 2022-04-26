@@ -339,13 +339,13 @@ If you use Geofabrik internal server, please fill "USER" setting too, we will pr
 The "update_op_db.sh" bash script is to update the overpass database. It is very much ready to work for you.
 You DO need to get EVERY single thing right for a successful outcome. Feel free to try anything.
 
-In my TODO list is to write "update_op_db.sh" usage. Then add cron job to automate retrieving
-"Change Files" and updating with "update_op_db.sh".
+In my TODO list is to write "update_op_db.sh" usage.
 
-One thing to keep in mind, you start your "update" from "Change File" that has data DATED JUST AFTER
-what is in your region file. Doing this DO NOT leave a gap between dates either.
+One thing to keep in mind, you start your "update" from the "Change File" generated the day AFTER
+the last day in your database, you add NEWER data to your current data. Doing this DO NOT leave
+a gap between dates either.
 
-The script "cron4op.sh" is a driver script that calls "getdiff" to download change files, then calls the
+The script "cron4op.sh" is a driver script that calls "getdiff" to download "Change Files", then calls the
 "update_op_db.sh" when new change files are downloaded to update overpass database. The script
 is intended to be called as a cron job, can be scheduled to run as needed.
 
