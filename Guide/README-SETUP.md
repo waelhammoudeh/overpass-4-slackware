@@ -3,7 +3,9 @@ This is the "README-SETUP.md" file for overpass Slackware package.
 IMPORTANT: This is a work in progress, may also have inaccurate information.
 
 Overpass "SETUP" is database initialization and starting daemon "dispatcher" such
-that queries can be done on the local machine.
+that queries can be done on the local machine. Areas creation is explained. Database
+update with program to download required Change Files and shell scripts to automate
+the process are discussed. Hope you enjoy the ride.
 
 ### Local Storage:
 
