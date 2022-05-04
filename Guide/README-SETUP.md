@@ -379,16 +379,16 @@ your region Change Files as your normal user in one of two ways:
 
 * If you are using Geofabrik **PUBLIC** server:
 ```
-      $ getdiff -c path/to/your/getdif.conf
+      $ getdiff -c path/to/your/getdiff.conf
 ```
 
 * If you are using Geofabrik **INTERNAL** server:
 ```
-     $ getdiff -c path/to/your/getdif.conf -p xxxxxxxx
+     $ getdiff -c path/to/your/getdiff.conf -p xxxxxxxx
 ```
 replace the "xxxxxxxx" above with your password for your ( openstreetmap.org ) account.
 
-This should download your region (.osc) Change File AND their (.state.txt) files placing them
+This should download your region (.osc) Change Files AND their (.state.txt) files placing them
 in your "DIRECTORY" setting under "diff" directory entry.
 
 If it does not work as expected, please double check your settings espacially the URL for SOURCE.
@@ -414,7 +414,11 @@ Note that "update_op_db.sh" script uses "gunzip" program and DOES NOT use osmium
 and used by "initial_op_db.sh".
 
 Edit the script with your settings and copy or move it to "/usr/local/bin/" directory, the script needs
-to be executable: 'chmod +x initial_op_db.sh' if not already set. This script is to be executed as "root".
+to be executable:
+```
+chmod +x initial_op_db.sh
+```
+if not already set. This script is to be executed as "root".
 
 With filled settings, you can now update your overpass database using the downloaded (.osc)
 Change Files by running "update_op_db.sh" script as root. This script produces a LOG file in:
@@ -451,11 +455,12 @@ then you can copy / paste the entry as above, or enter your own entry for exact 
 Hint: $ man crontab will give you examples for entries.
 
 TODO: add example entries; lazy!
-Crontab entry : every 24 hours at LEAST -> on boot
-Crontab entry : every 24 hours at exact time -> machine runs 24 / 7
-Crontab entry : every WEEK -> 24 / 7 machine
-Crontab entry : add to /etc/cron.daily OR /etc/cron.weekly -> add SCRIPT to DIRECTORY
 
-TODO: Logrotate!
+ - Crontab entry : every 24 hours at LEAST -> on boot
+ - Crontab entry : every 24 hours at exact time -> machine runs 24 / 7
+ - Crontab entry : every WEEK -> 24 / 7 machine
+ - Crontab entry : add to /etc/cron.daily OR /etc/cron.weekly -> add SCRIPT to DIRECTORY
+
+TODO: Logrotate. Still?!
 
 [^1]:  More about this below.
