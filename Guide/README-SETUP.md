@@ -359,7 +359,7 @@ The program is written in C language, download, compile and place the executable
 "/usr/local/bin/" directory because that is where a script down below expects to find it.
 (only root can write to this directory - so be root).
 
-The repository includes an example configuration file: "getdif.conf.example" in its root directory,
+The repository includes an example configuration file: "getdiff.conf.example" in its root directory,
 edit the file with your settings and save it without the "example" extension please.
 
 Fill the following settings:
@@ -375,16 +375,16 @@ To set "BEGIN", using your browser navigate to your "SOURCE" URL, there you will
 a (.state.txt) file, find (.state.txt) file with date just AFTER the date in your region file used to initial database above.
 
 With all settings filled in configuration file - we need to make sure all okay now. Run "getdiff" to download
-your region Change Files as you normal user in one of two ways:
+your region Change Files as your normal user in one of two ways:
 
 * If you are using Geofabrik **PUBLIC** server:
 ```
-      $ getdif -c path/to/your/getdif.conf
+      $ getdiff -c path/to/your/getdif.conf
 ```
 
 * If you are using Geofabrik **INTERNAL** server:
 ```
-     $ getdif -c path/to/your/getdif.conf -p xxxxxxxx
+     $ getdiff -c path/to/your/getdif.conf -p xxxxxxxx
 ```
 replace the "xxxxxxxx" above with your password for your ( openstreetmap.org ) account.
 
