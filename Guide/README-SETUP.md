@@ -306,48 +306,156 @@ The "area" filter can be used now, a simple overpass query is provided to test f
 ```
 this should result in a sorted list of names for areas in your database.
 
+### Backup, Clone, Source:
+
+* Keep your source files
+* Clone DB from time to time with : osm3s_query --clone=$TARGET_DIR
+* Clone does NOT copy areas files - make areas again.
+
+TODO: adapt "download_clone.sh" from machine to machine in home office network or SON (small office network).
+
 ### Database Update:
 
-In the OSM File Format section of this Guide, "Change File" were mentioned, they have (.osc) extension.
-Change Files are used to update OSM data. I use Geofabrik website to get my extracts for them
-providing the daily "Change Files" for those extracts. Those files include changes in the area extract
-in the last 24 hours only, when updating with them, your OSM data is updated up to that time.
-This makes updating data a lot easier, which makes life easier, easier is better, thank you very much Geofabrik.
+OSM data changes by the minute - literally. Recall Change Files were mentioned in README-DATA.md
+section "OSM File Format", they have (.osc) file extension and they include changes within a time period.
+The overpassAPI provides two ways to keep databases updated with "Change Files"
 
+The first method uses "update_from_directory" program and used with a live server; meaning the
+"dispatcher" has to be running, database can still be queried during the update process. This is the
+method used in the script "apply_osc_to_db.sh" shipped with the API source, you can look at the
+script found in the executable "usr/local/bin" directory.
+
+The second method uses "update_database" program and used with a stopped server; meaning the
+"dispatcher" can not be running. The developer words about this method:
+```
+(As a side note, this also works for applying OSC files onto an existing database. Thus you can
+make daily updates by applying these diffs with a cronjob. This method takes fewer disk loads
+than minute updates, and the data is still pretty timely.)
+```
+This is the method I will use here to keep overpass database updated. The server will be stopped
+for a period of one to three minutes during the update; since mine is for personal use, I do not
+announce this down time, if yours is on an intranet network - used by others - you should announce
+this 1 to 3 minutes down time.
+
+The update process is broken into two steps; retrieve Change Files and apply them to database. The
+first is done using my "getdiff" program, the second is done with my "update_op_db.sh" script.
+
+I use Geofabrik website to get my extracts for them providing **daily "Change Files"** for those
+extracts. Those files include changes in the area extract in the last 24 hours only, when updating
+with them, your OSM data is updated up to that time. This makes updating data a lot easier, which
+makes life easier, easier is better, thank you very much Geofabrik.
 If you do not use Geofabrik for your extracts, this may not help you much and you need to look
 somewhere else to update your database. You may apply the same concept in your own scripts.
 
-You will be wearing three "hats" here, your own mortal self, "overpass" and "root" users ... you will dance!
+You will be wearing three "hats" here, your own normal self, "overpass" and "root" users ... you will dance!
 
 #### Retrieve Change Files:
 
-* My "getdiff" program retrieves "Change Files" from Geofabrik public or internal servers.
+My "getdiff" program retrieves "Change Files" from Geofabrik **public or internal servers.**
 
-Find [my "getdiff"](https://github.com/waelhammoudeh/getdiff) program and please clone the repository and compile the program with make.
-The repository has full instruction to use the program. I place my program in "/usr/local/bin" directory. You download your Change Files as your normal user.
-Use the example configuration file provided and fill those settings:
- - SOURCE
- - DIRECTORY
- - NEWER_FILE
+Find ["getdiff" source here](https://github.com/waelhammoudeh/getdiff), the repository has full instructions for compiling and usage.
+
+The program is written in C language, download, compile and place the executable "getdiff" in
+"/usr/local/bin/" directory because that is where a script down below expects to find it.
+(only root can write to this directory - so be root).
+
+The repository includes an example configuration file: "getdif.conf.example" in its root directory,
+edit the file with your settings and save it without the "example" extension please.
+
+Fill the following settings:
+
+  - SOURCE
+  - BEGIN
+  - DIRECTORY
+  - NEWER_FILE
 
 If you use Geofabrik internal server, please fill "USER" setting too, we will provide password when we call the program.
 
+To set "BEGIN", using your browser navigate to your "SOURCE" URL, there you will find (.osc) change files and each has
+a (.state.txt) file, find (.state.txt) file with date just AFTER the date in your region file used to initial database above.
+
+With all settings filled in configuration file - we need to make sure all okay now. Run "getdiff" to download
+your region Change Files as you normal user in one of two ways:
+
+* If you are using Geofabrik **PUBLIC** server:
+```
+      $ getdif -c path/to/your/getdif.conf
+```
+
+* If you are using Geofabrik **INTERNAL** server:
+```
+     $ getdif -c path/to/your/getdif.conf -p xxxxxxxx
+```
+replace the "xxxxxxxx" above with your password for your ( openstreetmap.org ) account.
+
+This should download your region (.osc) Change File AND their (.state.txt) files placing them
+in your "DIRECTORY" setting under "diff" directory entry.
+
+If it does not work as expected, please double check your settings espacially the URL for SOURCE.
+
+Note that everything above is done as your normal user; expect copy / move "getdiff" to "/usr/local/bin/".
+
 #### update_op_db.sh script:
 
-* "update_op_db.sh" script uses "gunzip" program and DOES NOT use osmium - still needed to use "initial_op_db.sh".
+The "update_op_db.sh" bash script is to update the overpass database. The script uses "update_database"
+program provided by overpassAPI as mentioned above. You need to change the THREE settings marked
+in the script to match your real paths. Those settings are:
 
-The "update_op_db.sh" bash script is to update the overpass database. It is very much ready to work for you.
-You DO need to get EVERY single thing right for a successful outcome. Feel free to try anything.
+ * NEWER_FILES : file produced by "getdiff" program
+    NEWER_FILES={ must match "getdiff" NEWER_FILE configuration setting }
 
-In my TODO list is to write "update_op_db.sh" usage.
+ * DIFF_DIR : where to find differ files
+    DIFF_DIR= { getdiff work directory + "diff" entry }
 
-One thing to keep in mind, you start your "update" from the "Change File" generated the day AFTER
-the last day in your database, you add NEWER data to your current data. Doing this DO NOT leave
-a gap between dates either.
+ * DB_DIR : overpass database directory
+    DB_DIR={ overpass database directory }
+
+Note that "update_op_db.sh" script uses "gunzip" program and DOES NOT use osmium - osmium is still needed
+and used by "initial_op_db.sh".
+
+Edit the script with your settings and copy or move it to "/usr/local/bin/" directory, the script needs
+to be executable: 'chmod +x initial_op_db.sh' if not already set. This script is to be executed as "root".
+
+With filled settings, you can now update your overpass database using the downloaded (.osc)
+Change Files by running "update_op_db.sh" script as root. This script produces a LOG file in:
+/var/log/overpass/update_op_db.log. Check the log and your database, hopefully everything
+worked without any error.
+
+#### Automate the Process:
 
 The script "cron4op.sh" is a driver script that calls "getdiff" to download "Change Files", then calls the
 "update_op_db.sh" when new change files are downloaded to update overpass database. The script
 is intended to be called as a cron job, can be scheduled to run as needed.
 
+ * newfiles={ NEWER_FILES : file produced by "getdiff" program}
+ * LOCAL_USER={ your normal user name on your local machine }
+ * CONFIGURE={ Name and path to "getdiff" configuration file }
+ * PSWD={ openstreetmap.org password; if Geofabrik internal server is in use }
+
+Please fill the above settings in the script and place it as usual in "/usr/local/bin/" directory.
+
+You need to edit the "root" cron table to add an entry to run the script above, I chose this entry:
+```
+@daily ID=opUpdate /usr/local/bin/cron4op.sh 1> /dev/null
+```
+because my machine does not run 24 / 7. The above entry will run the script once every day.
+If the machine was down for more than 24 hours, the script will run on boot.
+If your machine runs 24 / 7, you may want an entry with exact time.
+
+To edit cron table as "root":
+```
+ # crontab -e
+```
+then you can copy / paste the entry as above, or enter your own entry for exact time.
+
+Hint: $ man crontab will give you examples for entries.
+
+TODO: add example entries; lazy!
+Crontab entry : every 24 hours at LEAST -> on boot
+Crontab entry : every 24 hours at exact time -> machine runs 24 / 7
+Crontab entry : every WEEK -> 24 / 7 machine
+Crontab entry : add to /etc/cron.daily OR /etc/cron.weekly -> add SCRIPT to DIRECTORY
+
+TODO: Logrotate!
 
 [^1]:  More about this below.

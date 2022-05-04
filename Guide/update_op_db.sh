@@ -29,13 +29,16 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-# input for script is NEWER_FILES, we also need to know where to find differ files
+# NEWER_FILES : file produced by "getdiff" program
+# DIFF_DIR : where to find differ files
+# DB_DIR : overpass database directory
 NEWER_FILES=/home/wael/Downloads/getdiff/newerFiles.txt
 DIFF_DIR=/home/wael/Downloads/getdiff/diff
 DB_DIR=/mnt/nvme4/op2-meta
 
-# change three variables above to your actual paths
+# change the THREE variables above to your actual paths
 
+# settings below assume overpass.SlackBuild installed package - change ONLY if NOT true.
 OP_USER=overpass
 EXEC_DIR=/usr/local/bin
 DISP_CTRL_SCRIPT=/etc/rc.d/rc.dispatcher
@@ -46,7 +49,7 @@ META=--meta
 FLUSH_SIZE=4
 COMPRESSION=no
 
-# log progress of updates: WHERE ???? TODO
+# log progress of updates: WHERE ??
 LOGFILE=/var/log/overpass/update_op_db.log
 
 echo "$(date '+%F %T'): update_op_db.sh started ..." >>$LOGFILE

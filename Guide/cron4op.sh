@@ -19,12 +19,13 @@
 # @daily ID=opUpdate /usr/local/bin/cron4op.sh 1> /dev/null
 
 # "newerFiles.txt" produced by "getdiff", found in getdiff work directory.
+# Same as NEWER_FILES in "update_op_db.sh" and "NEWER_FILE" in getdiff.conf
 newfiles=/path/to/getdiff/newerFiles.txt
 
-# user name on your local machine
+# your normal user name on your local machine
 LOCAL_USER=wael
 
-# "getdiff" configuration file.
+# Name and path to "getdiff" configuration file.
 CONFIGURE=/home/wael/getdiff.conf
 
 # password for OpenStreetMap.org user - assumes "USER" is set in "getdiff.conf" file.
