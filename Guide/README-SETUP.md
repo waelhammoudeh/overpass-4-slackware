@@ -133,6 +133,7 @@ My "initial_op_db.sh" script found with this "Guide" is a rewrite of this script
 to overcome issues mentioned above. To use this script you may need to adjust some variables!
 And also you **must install** osmium-tools in your system [from my osmium repository](https://github.com/waelhammoudeh/osmium-tool_slackbuild).
 
+update_database usage or accepted arguments:
 ```
 wael@yafa:~$ update_database -h
 Unkown argument: -h
@@ -140,7 +141,7 @@ Usage: update_database [--db-dir=DIR] [--version=VER] [--meta|--keep-attic] [--f
 ```
 
 The program "update_database" reads its input from standard input (the terminal) expecting
-uncommpressed XML text format.
+uncompressed XML text format.
 The "--flush-size" controls the amount of memory the progam uses. I set this to 8 with
 my 16GB ram in my machine, set this to 4 or 2 if you have less than 16 GB of memory.
 The "--compression-method" and "--map-compression-method" are to compress the produced
@@ -272,7 +273,7 @@ the dispatcher. When you install your package, you will find a new file with
 the name "rc.dispatcher.new" in your "/etc/rc.d/" this script is almost ready to be used.
 
 To use "rc.dispatcher.new" script rename it without the "new" extension and make sure
-it is executable - it should at install time.
+it is executable - it should be at install time.
 
 This script has been rewritten, it only calls "op_ctl.sh" script now. The "root" user can use
 it to start, stop and get status as follows:
@@ -324,7 +325,7 @@ op_ctl.sh start
 To generate "areas" in database developer provided "rules_loop.sh" script is used. The script
 needed changes to run. I have replaced this script with "op_area_update.sh" script, you just
 run the script with no argument as the overpass user. The script originally had an infinite loop
-that runs for ever as shown below:
+that runs forever as shown below:
 
 ```
 while [[ true ]]; do
