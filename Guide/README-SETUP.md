@@ -566,7 +566,7 @@ I remove Change Files daily that are older than 7 days, to do that a new cron en
 @daily ID=removeCF find /path/to/your/diff -mtime +7 -type f -delete
 ```
 
-The ID=removeCF is needed by Dillon Cron like mentioned in update database above, replace
+The ID=removeCF is needed by Dillon Cron as mentioned in update database above, replace
 /path/to/your/diff path string with your real path.
 
 #### Log Files And Rotation:
