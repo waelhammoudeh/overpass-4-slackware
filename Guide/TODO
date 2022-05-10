@@ -1,15 +1,10 @@
 TODO List:
 
-        * Full history howto. Limited usage & may not work :(-
-        * Update database with "diff" data files...
-        * automate with cron
-        * Log files.
-        * Logrotate - log file size or date for cron job?
-        * ONE CONFIGURATION FILE to be read by ALL:
-           "getdiff", "initial_op_db.sh", "update_op_db.sh" and "cron4op.sh"
-        * Log files in one place.
+        * Setup apache to serve database files for "downloas_clone.sh" to work.
         * Data files; what to do with source data files? maintain!!!
         * Multi databases?
 
+
+Shorter list ... but still things to do.
 Note: help is more than welcome.
 STILL HELP IS MORE THAN WELCOME

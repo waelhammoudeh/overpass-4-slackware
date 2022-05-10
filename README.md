@@ -1,11 +1,11 @@
 This repository is a guide for setting up overpassAPI server on a local machine;
 your own server - with limited area database. I use Linux Slackware64, included
 in this repository is a SlackBuild script to build a Slackware package for the
-overpassAPI software, how to use my ["getdiff"](https://github.com/waelhammoudeh/getdiff)
-program to retrieve and update overpass databases with "Change Files" from Geofabrik servers,
-scripts to initial and automate database updates and maintenance via cron and logrotate utilities,
-(logrotate implementation is yet to come).
-Concepts, methods and steps mentioned here can be applied to any Linux distribution not just Slackware.
+overpassAPI software, scripts to initial and update overpass database, program to
+retrieve "Change Files" from Geofabrik servers for the updates: ["getdiff"](https://github.com/waelhammoudeh/getdiff).
+How to utilize cron and logrotate utilities to automate updates and maintenance of the database.
+
+Concepts and methods mentioned here can be applied to any Linux distribution not just Slackware.
 
 ##### This guide is a work in progress!
 
@@ -55,7 +55,7 @@ GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION
 
 * README-SETUP.md
 
-     - Disk storage
+     - Disk storage and file system structure
      - Database initialization
      - Software setup to query and control database
      - Areas creation.

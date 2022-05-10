@@ -1,4 +1,4 @@
-This is the "README.pkg" file for overpassAPI SlackBuild package building script.
+This is the "README.PKG" file for overpassAPI SlackBuild package building script.
 
 Before building overpass software package you need "overpass" user and group.
 This can be done with the following commands:
@@ -14,11 +14,24 @@ That is the directory where you plan to initial the database in.
 Please also note the space between that directory path and "overpass" user name
 on the second command line above.
 
-Database needs to be created or initialed before you can use overpass; this procedure
-is explained in the "Guide" directory.
+This build script installs the following helper scripts into /usr/local/bin/ directory:
+ * op_ctl.sh
+ * rc.dispatcher.new
+ * initial_op_db.sh
+ * op_update_area.sh
 
-To have dispatcher start and stop on system boot and system shutdown add the
-following lines to the following files, (after database setup):
+Database needs to be created (initialed) before you can use overpass; this procedure
+is explained in the "Guide" directory. Included is "initial_op_db.sh" script to ease the
+procedure.
+
+Included with this build script is "op_ctl.sh" which gets installed in /usr/local/bin/
+directory. Set DB_DIR variable in the script to your actual database directory.
+
+To have dispatcher daemon start and stop on system boot and system shutdown:
+First set "DB_DIR" in "op_ctl.sh" script to your actual database directory as mentioned
+above, second rename the file /etc/rc.d/rc.dispatcher.new to /etc/rc.d/rc.dispatcher by
+dropping the ".new" extension and make sure its executable 'chmod +x /etc/rc.d/rc.dispatcher'
+then add the following lines to the following files, (after database setup of course):
 
  /etc/rc.d/rc.local
  ============================

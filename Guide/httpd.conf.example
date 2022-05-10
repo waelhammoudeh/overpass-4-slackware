@@ -153,9 +153,9 @@
         ScriptAlias /api/ /usr/local/cgi-bin/
     
         LogLevel debug
-        ErrorLog "/var/log/httpd/error_log-localhost"
-        CustomLog "/var/log/httpd/access_log-localhost" common
-        ScriptLog "/var/log/httpd/cgi_log-localhost"
+        ErrorLog "/var/log/httpd/localhost_error_log"
+        CustomLog "/var/log/httpd/localhost_access_log" common
+        ScriptLog "/var/log/httpd/localhost_cgi_log"
     
     <Directory "/usr/local/cgi-bin/">
    

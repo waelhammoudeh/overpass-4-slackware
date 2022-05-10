@@ -37,7 +37,7 @@ if [[ $EUID -ne $OP_USR_ID ]]; then
     exit 1
 fi
 
-# DB_DIR : overpass database directory
+# DB_DIR : set to real overpass database directory
 DB_DIR=/path/to/database
 
 # GETDIFF_WD: getdiff Work Directory
@@ -272,16 +272,7 @@ sleep 2
 # update areas - we apply ALL changeFile(s) then use ONE area update call
 echo "$(date '+%F %T'): updating overpass areas" >>$LOGFILE
 
-# $QRY_EXEC --progress --rules < $DB_DIR/rules/areas.osm3s 2>&1 >/dev/null
-
-# this is an experiment, database is not compromised -
-# assumes rules directory path: /usr/local/rules/
-
-for ((i=1;i<=10;i++)); do
-{
-   ionice -c 2 -n 7 nice -n 19 $EXEC_DIR/osm3s_query --progress --rules < /usr/local/rules/areas.osm3s 2>&1 >/dev/null
-   sleep 3
-}; done
+$QRY_EXEC --progress --rules < $DB_DIR/rules/areas.osm3s 2>&1 >/dev/null
 
 echo "$(date '+%F %T'): done areas update" >>$LOGFILE
 

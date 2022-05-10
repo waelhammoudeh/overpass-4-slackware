@@ -146,10 +146,22 @@ mkdir -p $PKGDEST/$MYPREFIX/html/$PKGNAM/blog $PKGDEST/$MYPREFIX/html/$PKGNAM/ov
 cp $TMP/blog-doc/blog/* $PKGDEST/$MYPREFIX/html/$PKGNAM/blog/
 cp -r $TMP/blog-doc/overpass-doc/* $PKGDEST/$MYPREFIX/html/$PKGNAM/overpass-doc/
 
-# install dispatcher start & stop script
+# install rc.dispatcher start & stop script
 mkdir -p $PKGDEST/etc/rc.d
 cp $CWD/rc.dispatcher.new $PKGDEST/etc/rc.d/.
-chmod 0755 $PKGDEST/etc/rc.d/rc.dispatcher.new
+chmod 755 $PKGDEST/etc/rc.d/rc.dispatcher.new
+
+# include op_ctl.sh script; rc.dispatcher will not work without
+cp $CWD/op_ctl.sh $PKGDEST/$MYPREFIX/bin/
+chmod 755 $PKGDEST/$MYPREFIX/bin/op_ctl.sh
+
+# include initial_op_db.sh script, this needs osmium installed!
+cp $CWD/initial_op_db.sh $PKGDEST/$MYPREFIX/bin/
+chmod 755 $PKGDEST/$MYPREFIX/bin/initial_op_db.sh
+
+# include op_area_update.sh
+cp $CWD/op_area_update.sh $PKGDEST/$MYPREFIX/bin/
+chmod 755 $PKGDEST/$MYPREFIX/bin/op_area_update.sh
 
 mkdir -p $PKGDEST/install
 cat $CWD/slack-desc > $PKGDEST/install/slack-desc
@@ -166,6 +178,7 @@ cp $CWD/index.html_v0.7.55.9 $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/blog-doc.tar.gz $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/slack-desc $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 
+# include or do not include the Guide?
 cd $CWD
 if [ -d ../Guide ]; then
     cp -r ../Guide $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/

@@ -18,6 +18,7 @@
 # crontab entry to run script for daily updates:
 # @daily ID=opUpdate /usr/local/bin/cron4op.sh 1> /dev/null
 
+# DB_DIR=/path/to/database
 DB_DIR=/path/to/database
 GETDIFF_WD=$DB_DIR/getdiff
 
