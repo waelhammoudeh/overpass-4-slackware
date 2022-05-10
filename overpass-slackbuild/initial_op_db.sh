@@ -18,7 +18,8 @@ EXEC_DIR=/usr/local/bin
 UPDATE_EXEC=$EXEC_DIR/update_database
 OSMIUM=$EXEC_DIR/osmium
 
-CTRL_SCRIPT=$EXEC_DIR/op_ctl.sh
+# set database path ... not always?!
+# CTRL_SCRIPT=$EXEC_DIR/op_ctl.sh
 
 # option to use - recommended is "--meta"
 META=--meta
@@ -90,13 +91,10 @@ $OSMIUM cat $INFILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
                                             --map-compression-method=$COMPRESSION 2>&1 >/dev/null
 
 # copy "rules" directory to new database?!
-cp -pR /usr/local/rules $DB_DIR
+# told everyone to do it on their own!
+# cp -pR /usr/local/rules $DB_DIR
 
-
-
-
-# set DB_DIR path in /usr/local/bin/op_ctl.sh script
-# sed -i "s|VIRTUAL_ENV=.*|VIRTUAL_ENV=\"$VENVPATH\"|g" venv/bin/activate
-sed -i "s|DB_DIR=/path/to/your/overpass/DBase|DB_DIR=\"$DB_DIR\"|" $EXEC_DIR/op_ctl.sh
+# I still think this a better idea than set_DB_DIR_path.sh script,,,, but comment it out for now
+# sed -i "s|DB_DIR=/path/to/your/overpass/DBase|DB_DIR=\"$DB_DIR\"|" $EXEC_DIR/op_ctl.sh
 
 exit 0
