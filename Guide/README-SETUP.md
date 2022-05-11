@@ -96,13 +96,16 @@ Replace DB_DIR with your database directory.
 
 Most scripts and some files included in this guide use **DB_DIR** which is the real path
 to your database directory. This has to be manually set to the real path. To ease this process
-I have included yet another script that does that for you and created a new directory with
-all scripts and files in it. The "scripts-DB_DIR" directory has "set_DB_DIR_path.sh" script.
-Run "set_DB_DIR_path.sh" script with your real path as an argument and all files in that
-directory will have "DB_DIR" variable set. If the scripts you want to change are not in your
-current directory, you can pass that directory as second argument to "set_DB_DIR_path.sh".
-Please note that doing this does NOT guarantee anything, you still should make sure that
-the real path is set.
+I have included yet another script that does that for you.
+
+Run "set_DB_DIR_path.sh" script with your real path as an argument and all files in the
+current working directory will have "DB_DIR" variable set. If the scripts you want to change
+are not in your current directory, you can pass that directory as second argument to the
+"set_DB_DIR_path.sh" script. Please note that doing this does NOT guarantee anything,
+you still need to make sure that the real path is set.
+
+I have removed duplicat scripts! There is only one copy of each. Feel free to place scripts
+in one directory and run "set_DB_DIR_path.sh" there.
 
 ### Initial Overpass Database:
 
@@ -563,10 +566,10 @@ find /path/to/diff -mtime +7 -type f -delete
 I remove Change Files daily that are older than 7 days, to do that a new cron entry is added to
 "root" crontab as root of course, the following entry does that:
 ```
-@daily ID=removeCF find /path/to/your/diff -mtime +7 -type f -delete
+@daily ID=rm_OSM_osc find /path/to/your/diff -mtime +7 -type f -delete
 ```
 
-The ID=removeCF is needed by Dillon Cron as mentioned in update database above, replace
+The ID=rm_OSM_osc is needed by Dillon Cron as mentioned in update database above, replace
 /path/to/your/diff path string with your real path.
 
 #### Log Files And Rotation:
@@ -619,7 +622,7 @@ by ' # crontab -l', that said; to ensure that your logs get rotated add the foll
 to the "root" cron table:
 
 ```
-@daily ID=op_Rotate  /usr/sbin/logrotate /etc/logrotate.d/op_logrotate
+@daily ID=op_logrotate  /usr/sbin/logrotate /etc/logrotate.d/op_logrotate
 ```
 
 #### Area Update Again:

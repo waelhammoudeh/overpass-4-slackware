@@ -89,21 +89,16 @@ case "$1" in
 
    else
       # I hope not to add "force-stop" case with this!
+      # /dev/shm/osm3s_${VERSION}_* are NOT socket files
       if [ -S ${DB_DIR}/osm3s_${VERSION}_osm_base ]; then
          echo " Found STALLED overpass BASE socket file, removing."
          rm -f ${DB_DIR}/osm3s_${VERSION}_osm_base
-      fi
-      if [ -S /dev/shm/osm3s_${VERSION}_osm_base ]; then
-         echo " Found STALLED overpass BASE socket file, removing."
          rm -f /dev/shm/osm3s_${VERSION}_osm_base
       fi
 
       if [ -S ${DB_DIR}/osm3s_${VERSION}_areas ]; then
          echo " Found STALLED overpass AREAS socket file, removing."
          rm -f ${DB_DIR}/osm3s_${VERSION}_areas
-      fi
-      if [ -S /dev/shm/osm3s_${VERSION}_areas ]; then
-         echo " Found STALLED overpass AREAS socket file, removing."
          rm -f /dev/shm/osm3s_${VERSION}_areas
       fi
    fi

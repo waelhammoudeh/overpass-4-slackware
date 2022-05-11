@@ -24,13 +24,18 @@ EXEC_DIR=/usr/local/bin
 RULES_DIR=/usr/local/rules
 LOG_FILE=$DB_DIR/logs/op_update_area.log
 
+IMAX=100
+
+echo "`date '+%F %T'`: Area update started. Loop COUNT is set to: $IMAX" >>$LOG_FILE
 
 # while [[ true ]]; do
-for ((i=1;i<=100;i++)); do
+for ((i=1;i<=$IMAX;i++)); do
 {
-  echo "`date '+%F %T'`: update started" >>$LOG_FILE
+  echo "`date '+%F %T'`: update started: iteration number <$i>" >>$LOG_FILE
   #  ./osm3s_query --progress --rules <$DB_DIR/rules/areas.osm3s
   ionice -c 2 -n 7 nice -n 19 $EXEC_DIR/osm3s_query --progress --rules <$RULES_DIR/areas.osm3s
-  echo "`date '+%F %T'`: update finished" >>$LOG_FILE
+  echo "`date '+%F %T'`: update finished: iteration number <$i>" >>$LOG_FILE
   sleep 3
 }; done
+
+echo "`date '+%F %T'`: Done Area Update Loop For: < $IMAX > Iterations" >>$LOG_FILE

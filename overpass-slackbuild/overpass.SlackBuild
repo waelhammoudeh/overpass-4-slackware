@@ -146,6 +146,11 @@ mkdir -p $PKGDEST/$MYPREFIX/html/$PKGNAM/blog $PKGDEST/$MYPREFIX/html/$PKGNAM/ov
 cp $TMP/blog-doc/blog/* $PKGDEST/$MYPREFIX/html/$PKGNAM/blog/
 cp -r $TMP/blog-doc/overpass-doc/* $PKGDEST/$MYPREFIX/html/$PKGNAM/overpass-doc/
 
+# include op_ctl.sh script; provides: start, stop and status functions
+# rc.dispatcher calls op_ctl.sh script.
+cp $CWD/op_ctl.sh $PKGDEST/$MYPREFIX/bin/
+chmod 755 $PKGDEST/$MYPREFIX/bin/op_ctl.sh
+
 # install rc.dispatcher start & stop script
 mkdir -p $PKGDEST/etc/rc.d
 cp $CWD/rc.dispatcher.new $PKGDEST/etc/rc.d/.
@@ -156,12 +161,13 @@ cp $CWD/op_ctl.sh $PKGDEST/$MYPREFIX/bin/
 chmod 755 $PKGDEST/$MYPREFIX/bin/op_ctl.sh
 
 # include initial_op_db.sh script, this needs osmium installed!
+# more efficient than source - I think.
 cp $CWD/initial_op_db.sh $PKGDEST/$MYPREFIX/bin/
 chmod 755 $PKGDEST/$MYPREFIX/bin/initial_op_db.sh
 
-# include op_area_update.sh
-cp $CWD/op_area_update.sh $PKGDEST/$MYPREFIX/bin/
-chmod 755 $PKGDEST/$MYPREFIX/bin/op_area_update.sh
+# op_area_update.sh :: Removed from package; included in the Guide
+# cp $CWD/op_area_update.sh $PKGDEST/$MYPREFIX/bin/
+# chmod 755 $PKGDEST/$MYPREFIX/bin/op_area_update.sh
 
 mkdir -p $PKGDEST/install
 cat $CWD/slack-desc > $PKGDEST/install/slack-desc
@@ -171,12 +177,16 @@ mkdir -p $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION
 cp $CWD/LICENSE $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/$PKGNAM.SlackBuild $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/$PKGNAM.info $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/rc.dispatcher.new $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/rc.local $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/rc.local_shutdown $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/index.html_v0.7.55.9 $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/blog-doc.tar.gz $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/slack-desc $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+
+# save scripts added by Wael
+cp $CWD/initial_op_db.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/op_ctl.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/rc.dispatcher.new $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/rc.local $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/rc.local_shutdown $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 
 # include or do not include the Guide?
 cd $CWD
