@@ -517,7 +517,7 @@ just a file. Use "man crontab" for information of how to do that.
 
 We dowloaded Change Files and updated our database as the "overpass" user, so "getdiff" progam
 and "update_op_db.sh" are to be scheduled to run by the "overpass" user. In Slackware all users have
-their own "crontab" entries file. Crontab is to edited as the overpass user.
+their own "crontab" entries file. Crontab is to be edited as the "overpass" user.
 
 Your dowload and updates do not need to be done at the same time, you can download files **daily**
 as they are available from Geofabrik and do **weekly** updates with "update_op_db.sh" script. To do
@@ -551,8 +551,13 @@ file - wherever your password is - to be readable only by "overpass" user. This 
 
 The same script used to initial area data is also used to keep it updated that script is the
 "op_area_update.sh". The script has a loop counter set to 100 iteration for area creation,
-I set this counter to 50 and run the script once a week. Keep in mind area data is being
-updated daily with "update_op_db.sh" using very small loop counter. Use the following
+I set this counter to 50 and run the script once a week. Note that you may increase your
+IMAX loop counter larger than 100 during areas data initialization, do NOT set it lower in
+that step.
+
+To update areas data weekly edit "op_area_update.sh" and set IMAX to 50 or half IMAX
+value used to initial areas data. Keep in mind area data is being updated daily with
+database update script "update_op_db.sh" using very small loop counter. Use the following
 crontab entry - as "overpass" user - to update area data once a week:
 
 @weekly ID=opAreaUpdate /usr/local/bin/op_area_update.sh 1> /dev/null
@@ -592,7 +597,7 @@ overpass@yafa:/mnt/nvme4/op2-meta/logs$ ln -s /mnt/nvme4/op2-meta/getdiff/getdif
 note the periods in the end, again replace my paths with your real paths. By doing this we have
 access to all log files from one directory.
 
-Logrotate daemon is used to rotate log files and and it comes comes configured in Slackware.
+Logrotate program is used to rotate log files and and it comes comes configured in Slackware.
 Fix the database path in the file below - use "set_DB_DIR_path.sh" if you like - and place the file
 as root user into your /etc/logrotate.d/ directory. This will rotate files depending on their sizes.
 
