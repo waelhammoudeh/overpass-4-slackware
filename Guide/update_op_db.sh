@@ -220,6 +220,7 @@ fi
 
 # log stopped dispatcher
 echo "$(date '+%F %T'): stopped dispactcher daemon" >>$LOGFILE
+echo "stopped dispactcher daemon"
 
 i=0
 j=0
@@ -237,6 +238,7 @@ do
     VERSION=`cat $stateFile | grep timestamp | cut -d 'T' -f -1 | cut -d '=' -f 2`
 
     echo "$(date '+%F %T'): applying update from Change File: <$changeFile> Dated: <$VERSION>" >>$LOGFILE
+    echo " applying update from Change File: <$changeFile> Dated: <$VERSION>"
 
     # Usage: update_database [--db-dir=DIR] [--version=VER] [--meta|--keep-attic] [--flush_size=FLUSH_SIZE] [--compression-method=(no|gz|lz4)] [--map-compression-method=(no|gz|lz4)]
 
@@ -254,6 +256,7 @@ do
     fi
 
     echo "$(date '+%F %T'): done update from file $changeFile" >>$LOGFILE
+    echo "done update from file $changeFile"
 
     # wait 2 seconds to update next changeFile
     sleep 2
@@ -266,19 +269,23 @@ done
 $OP_CTL start 2>&1 >/dev/null
 
 echo "$(date '+%F %T'): started dispactcher daemon again" >>$LOGFILE
+echo "started dispactcher daemon again"
 
 # make sure dispatcher started
 sleep 2
 
-iCount=10
+# update areas data - we apply ALL changeFile(s) then use ONE area update call
 
-# this is an experiment, database is not compromised -
+# this is an experiment, database is not compromised.
 # assumes rules directory path: /usr/local/rules
-
-# update areas - we apply ALL changeFile(s) then use ONE area update call
-echo "$(date '+%F %T'): updating overpass areas" >>$LOGFILE
+# set iCount to a lot smaller number compared to IMAX in "op_area_update.sh" script
+# DO NOT SET LESS THAN TEN
+# do NOT set < 10
 
 iCount=10
+
+echo "$(date '+%F %T'): @@@@ updating overpass areas: With Loop Counter = $iCount" >>$LOGFILE
+echo " @@@@ updating overpass areas: With Loop Counter = $iCount"
 
 for ((i=1; i<=$iCount; i++)); do
 {
@@ -286,7 +293,8 @@ for ((i=1; i<=$iCount; i++)); do
    sleep 3
 }; done
 
-echo "$(date '+%F %T'): done areas update; Loop Counter: $iCount" >>$LOGFILE
+echo "$(date '+%F %T'): @@@@ Done areas update; Loop Counter: $iCount" >>$LOGFILE
+echo " @@@@ Done areas update; Loop Counter: $iCount"
 
 # we MUST empty or remove this file. "getdiff" program recreates a new file
 mv $NEWER_FILES $NEWER_FILES.old
@@ -294,5 +302,6 @@ mv $NEWER_FILES $NEWER_FILES.old
 echo "$(date '+%F %T'): Moved $NEWER_FILES TO: $NEWER_FILES.old" >>$LOGFILE
 
 echo "$(date '+%F %T'): ---------------------------------------- DONE --------------------------------------" >>$LOGFILE
+echo "$0: All Done."
 
 exit 0
