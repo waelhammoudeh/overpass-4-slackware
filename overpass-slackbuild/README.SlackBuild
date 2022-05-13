@@ -1,4 +1,4 @@
-This is the "README.PKG" file for overpassAPI SlackBuild package building script.
+This is the "README.SlackBuild" file for overpassAPI SlackBuild script.
 
 Before building overpass software package you need "overpass" user and group.
 This can be done with the following commands:
@@ -15,24 +15,27 @@ Please also note the space between that directory path and "overpass" user name
 on the second command line above.
 
 This build script installs the following helper scripts into /usr/local/bin/ directory:
+
+ * initial_op_db.sh
  * op_ctl.sh
  * rc.dispatcher.new
- * initial_op_db.sh
 
 Database needs to be created (initialed) before you can use overpass; this
-procedure is explained in the "Guide" directory. Included is "initial_op_db.sh"
-script to ease the procedure.
+procedure is explained in the "Guide" directory. The "initial_op_db.sh" script
+initials overpass database from any OSM data file format supported by 'Osmium'.
 
-The script "op_ctl.sh" included with this build script is to control the dispatcher
-daemon, it provides start, stop and status functions. Do NOT run as "root". To
-use the script set DB_DIR variable to your actual database directory. The script
-is installed into /usr/local/bin/ directory.
+The script "op_ctl.sh" - overpass control - is to control the dispatcher daemon,
+it provides start, stop and status functions. Do NOT run as "root". To use the
+script set DB_DIR variable to your actual database directory.
 
-To have dispatcher daemon start and stop on system boot and system shutdown:
-First set "DB_DIR" in "op_ctl.sh" script to your actual database directory as mentioned
-above, second rename the file /etc/rc.d/rc.dispatcher.new to /etc/rc.d/rc.dispatcher by
-dropping the ".new" extension and make sure its executable 'chmod +x /etc/rc.d/rc.dispatcher'
-then add the following lines to the following files, (after database setup of course):
+The "rc.dispatcher.new" script is meant to be called by Slackware System Initial
+and Shutdown scripts. The "rc.dispatcher" script calls "op_ctl.sh" script above,
+so please set DB_DIR variable in "op_ctl.sh" first as mentioned above. The
+"rc.dispatcher.new" script is installed in "/etc/rc.d/" system directory.
+
+To have dispatcher daemon start and stop on system boot and system shutdown
+rename the script to "rc.dispatcher" (drop .new extension) and make sure that it
+is executable then add the following lines to the following files:
 
  /etc/rc.d/rc.local
  ============================
@@ -51,5 +54,7 @@ then add the following lines to the following files, (after database setup of co
 You may need to create the "/etc/rc.d/rc.local_shutdown" if not present in your
 system.
 
-JFYI: Above "rc.local" and "rc.local_shutdown" are called by Slackware initial
-and shutdown scripts.
+If upgrading running overpass, stop dispatcher before 'upgradepkg' step and
+do not forget to rename your new dispatcher after the upgrade with:
+  # mv /etc/rc.d/rc.dispatcher.new /etc/rc.d/rc.dispatcher
+

@@ -18,14 +18,51 @@
 # along with Overpass_API. If not, see <https://www.gnu.org/licenses/>.
 
 # this script is a rewrite of overpass script "rules_loop.sh" with new name: op_update_area.sh
+#
 
+# only overpass user can run this
+# this is a WRONG way to check user, we must look in passwd & goup files
+OP_USR_ID=367
+
+# set to your actual database directory
 DB_DIR=/path/to/database
-EXEC_DIR=/usr/local/bin
-RULES_DIR=/usr/local/rules
-LOG_FILE=$DB_DIR/logs/op_update_area.log
 
+VERSION=v0.7.57
+EXEC_DIR=/usr/local/bin
+DSPTCHR=$EXEC_DIR/dispatcher
+RULES_DIR=/usr/local/rules
+LOG_FILE=$DB_DIR/logs/op_area_update.log
+
+
+if [[ $EUID -ne $OP_USR_ID ]]; then
+    echo "$0: ERROR Not overpass user! You must run this script as the \"overpass\" user."
+    echo ""
+    echo " This script is part of the Guide for \"overpassAPI\" installation and setup on"
+    echo "Linux Slackware system. The Guide repository can be found here:"
+    echo "https://github.com/waelhammoudeh/overpass-4-slackware"
+    echo ""
+
+    exit 1
+fi
+
+# dispatcher must be running with --areas option
+if ( ! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
+    echo "Error: dispatcher is NOT running!"
+    echo "Areas dispatcher must be running to update areas. Exiting."
+    exit 1
+fi
+
+if [ ! -S ${DB_DIR}/osm3s_${VERSION}_areas ]; then
+    echo "Error: Areas dispatcher is not running. Exiting"
+    exit 1
+fi
+
+#
+# IMAX is to control loop iteration counter - change & check query results
+#
 IMAX=100
 
+echo "Area update started. Loop COUNT is set to: $IMAX"
 echo "`date '+%F %T'`: Area update started. Loop COUNT is set to: $IMAX" >>$LOG_FILE
 
 # while [[ true ]]; do
@@ -38,4 +75,5 @@ for ((i=1;i<=$IMAX;i++)); do
   sleep 3
 }; done
 
-echo "`date '+%F %T'`: Done Area Update Loop For: < $IMAX > Iterations" >>$LOG_FILE
+echo "Area Update Done After < $IMAX > Iterations"
+echo "`date '+%F %T'`: *** Area Update Done After < $IMAX > Iterations ***" >>$LOG_FILE

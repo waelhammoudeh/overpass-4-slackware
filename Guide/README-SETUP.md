@@ -1,11 +1,9 @@
-This is the "README-SETUP.md" file for overpass Slackware package.
+This is the "README-SETUP.md" file for Overpass Guide.
 
-IMPORTANT: This is a work in progress, may also have inaccurate information.
-
-Overpass "SETUP" is database initialization and starting daemon "dispatcher" such
-that queries can be done on the local machine. Areas creation is explained. Database
-update with program to download required Change Files and shell scripts to automate
-the process are discussed. Hope you enjoy the ride.
+In this file I explain overpass database initialization, overpass dispatcher daemon
+role and how to start it, overpass areas creation is explained. After setup we move
+to keeping the database updated with latest available OSM data. Finally we get to
+automating the database updates and up keep. Hope you enjoy the ride.
 
 ### Local Storage:
 
@@ -92,10 +90,23 @@ $ cp -pR /usr/local/rules/ DB_DIR/
 ```
 Replace DB_DIR with your database directory.
 
-### DB_DIR Scripts Variable:
+### Scripts and DB_DIR Variable:
 
-Most scripts and some files included in this guide use **DB_DIR** which is the real path
-to your database directory. This has to be manually set to the real path. To ease this process
+Scripts included in my Slackware package are:
+ - initial_op_db.sh
+ - op_ctl.sh
+ - rc.dispatcher
+those scripts get installed by the package in /usr/local/bin directory.
+
+Scripts included in the Guide are:
+ - update_op_db.sh
+ - op_area_update.sh
+ - cron4op.sh
+ - set_DB_DIR_path.sh
+you need to manually copy thos scripts to /usr/local/bin directory.
+
+Most scripts and some files included use **DB_DIR** variable to refer to overpass database
+directory. This has to be manually set to your real database directory. To ease this process
 I have included yet another script that does that for you.
 
 Run "set_DB_DIR_path.sh" script with your real path as an argument and all files in the
@@ -104,8 +115,8 @@ are not in your current directory, you can pass that directory as second argumen
 "set_DB_DIR_path.sh" script. Please note that doing this does NOT guarantee anything,
 you still need to make sure that the real path is set.
 
-I have removed duplicat scripts! There is only one copy of each. Feel free to place scripts
-in one directory and run "set_DB_DIR_path.sh" there.
+I have removed duplicate scripts from the repository! There is only one copy of each. Feel
+free to place scripts in one directory and run "set_DB_DIR_path.sh" there.
 
 ### Initial Overpass Database:
 
@@ -128,15 +139,16 @@ Note that "Planet_File" above can be an extract for limited area, so you can use
 to initial your database.
 
 The file format has to be (.osm.bz2) format, this format is a lot larger than (.osm.pbf) file
-format, it takes longer to download - it shows if you do not have the band width. The other
-issue I have with this script is that it does not handle all options accepted by "update_database"
-program without editing the script.
+format, it takes longer to download - it shows if you do not have the bandwidth. Another
+issue I have with this script is that it does not handle all options accepted by program
+"update_database" without editing the script.
 
 My "initial_op_db.sh" script found with this "Guide" is a rewrite of this script (init_osm3s.sh)
-to overcome issues mentioned above. To use this script you may need to adjust some variables!
-And also you **must install** osmium-tools in your system [from my osmium repository](https://github.com/waelhammoudeh/osmium-tool_slackbuild).
+to overcome issues mentioned above. The "initial_op_db.sh" script requires OSM *osmium*
+program. Slackware package build script is available from my osmium-tool repository with
+[link here. ](https://github.com/waelhammoudeh/osmium-tool_slackbuild).
 
-update_database usage or accepted arguments:
+The overpass *update_database* program usage or accepted arguments:
 ```
 wael@yafa:~$ update_database -h
 Unkown argument: -h
@@ -144,7 +156,7 @@ Usage: update_database [--db-dir=DIR] [--version=VER] [--meta|--keep-attic] [--f
 ```
 
 The program "update_database" reads its input from standard input (the terminal) expecting
-uncompressed XML text format.
+OSM data as uncompressed XML text format.
 The "--flush-size" controls the amount of memory the progam uses. I set this to 8 with
 my 16GB ram in my machine, set this to 4 or 2 if you have less than 16 GB of memory.
 The "--compression-method" and "--map-compression-method" are to compress the produced
@@ -160,7 +172,7 @@ To use "initial_op_db.sh" script:
  * You may want to use lower / higher number for "flush-size". Use 4 if your ram < 16 GB.
 
 The script assumes that you installed my overpassAPI package using my SlackBuild script
-and that you also installed my osmium-tool_slackbuild.
+and that you also installed *osmium-tool*.
 
 The script takes THREE arguments; input file name, version number as date string
 and destination directory for database.
@@ -212,8 +224,8 @@ There is no known way to control logging to "transactions.log", it will be hard 
 ### Starting the "dispatcher" daemon:
 
 The "dispatcher" program is part of the overpass package, it is the daemon
-which forwards queries to the correct part of the package. As long as the
-dispatcher is running, your queries to overpass will be answered.
+which forwards queries to the correct part of overpass. As long as the dispatcher
+is running, your queries to overpass will be answered.
 
 The dispatcher program can take a lot of arguments:
 ```
@@ -261,7 +273,7 @@ overpass@yafa:/mnt/nvme4/op-meta/source$ dispatcher --osm-base --terminate
 
 The script "op_ctl.sh" can be used to control the dispatcher program after setting the
 "DB_DIR" variable to your real database directory. The script gets installed in the
-"/usr/local/bin/" directory by my overpass package SlackBuild script. The script is meant
+"/usr/local/bin/" directory by my overpass Slackware package. The script is meant
 to be used by the overpass user only. After setting DB_DIR you can start, stop and get
 status of the dispatcher with the script.
 
@@ -314,7 +326,7 @@ The "area" object is not an OpenStreetMaps object - like nodes, ways or relation
 The object is an Overpass type, it is generated by Overpass from OSM data and
 added to Overpass database by the "osm3s_query" program using "--rules" switch that
 reads settings from an XML formated file. The file is "areas.osm3s" which is included in
-the "rules" directory in my slackware overpass package "/usr/local/rules/".
+the "rules" directory in my Slackware overpass package "/usr/local/rules/".
 Another dispatcher instance has to be running with "--areas" switch in addition to the
 "--osm-base" instance, you can start that with:
 
@@ -323,50 +335,23 @@ overpass@yafa:/root$ /usr/local/bin/dispatcher --areas --db-dir=/path/to/overpas
 ```
 or just use "op_ctl.sh" script as the overpass user:
 ```
-op_ctl.sh start
+ $ op_ctl.sh start
 ```
-To generate "areas" in database developer provided "rules_loop.sh" script is used. The script
-needed changes to run. I have replaced this script with "op_area_update.sh" script, you just
-run the script with no argument as the overpass user. The script originally had an infinite loop
-that runs forever as shown below:
+To generate "areas" in overpass database developer provided "rules_loop.sh" script is used.
+The script needed changes to run. I have replaced this script with "op_area_update.sh" script,
+this script is used in two places; here to initial areas data and down below to keep this data
+updated where we change IMAX loop counter. To use the script set "DB_DIR" variable to your
+database directory.
 
-```
-while [[ true ]]; do
-{
-  echo "`date '+%F %T'`: update started" >>$LOG_FILE
-  #  ./osm3s_query --progress --rules <$DB_DIR/rules/areas.osm3s
-  ionice -c 2 -n 7 nice -n 19 $EXEC_DIR/osm3s_query --progress --rules <$RULES_DIR/areas.osm3s
-  echo "`date '+%F %T'`: update finished" >>$LOG_FILE
-  sleep 3
-}; done
+To generate "areas" in your database run the "op_area_update.sh" to completion ***without changing***
+IMAX loop counter. The area creation produces more files in your database with "area*" names,
+mine added nine of them. The "area" filter can be used now, a simple overpass query is provided
+to test for this in "area-test.op" file in this Guide. To test your database run:
 
-```
-
-This script uses the CPU extensively. For this reason I replaced the above while loop with
-this for loop:
-
-```
-# while [[ true ]]; do
-for ((i=1;i<=100;i++)); do
-{
-  echo "`date '+%F %T'`: update started" >>$LOG_FILE
-  #  ./osm3s_query --progress --rules <$DB_DIR/rules/areas.osm3s
-  ionice -c 2 -n 7 nice -n 19 $EXEC_DIR/osm3s_query --progress --rules <$RULES_DIR/areas.osm3s
-  echo "`date '+%F %T'`: update finished" >>$LOG_FILE
-  sleep 3
-}; done
-```
-
-I know this is not correct, but I do not want my CPU running hot all the time. I cannot tell
-the result of the above change I did. I will post what I learn here.
-
-The area creation produces more files with "area*" in your database directory, mine added
-nine of them. The "area" filter can be used now, a simple overpass query is provided to test
-for this in "area-test.op" file in this Guide. To test your database run:
 ```
  osm3s_query < area-test.op | sort -ub
 ```
-this should result in a sorted list of names for areas in your database.
+this should result in a sorted list of names for cities and towns in your database.
 
 ### Backup, Clone, Source:
 
@@ -488,13 +473,13 @@ The "update_op_db.sh" uses files dowloaded by "getdiff" program, so both share s
 I have structured all my scripts to use "DB_DIR" variable, if you followed my File System Structure
 all you need to set is this variable. Or you can use "set_DB_DIR_path.sh" script to do it for you.
 
-Note that "update_op_db.sh" script uses "gunzip" program and DOES NOT use osmium - osmium is still needed
-and used by "initial_op_db.sh".
+Note that "update_op_db.sh" script uses "gunzip" program and does not require osmium - osmium
+is still required to initial databse with "initial_op_db.sh" script.
 
 Edit the script with your settings and copy or move it to "/usr/local/bin/" directory, the script needs
 to be executable:
 ```
-chmod +x initial_op_db.sh
+chmod +x update_op_db.sh
 ```
 
 With filled settings, you can now update your overpass database using the downloaded (.osc)
@@ -505,14 +490,22 @@ LOGFILE=$DB_DIR/logs/update_op_db.log
 ```
 Check your log file and your database version file: DB_DIR/osm_base_version. Hope it works for you.
 
-**Note:** Area update is done in this script with a for loop for **ten** iterations, this is experiment
-and does not hurt the database; I hope. I still can use the "area" clause in queries, I just do not like
-the infinite loop in "rules_loop.sh" script and the hot CPU temperature. You may remove or comment
-out those lines if you like.
+**Area update:**
+
+The area update is done in "update_op_db.sh" script with a small loop counter of **ten** iterations,
+a **larger** loop counter is used in "op_area_update.sh" script. Running "update_op_db.sh" daily
+and "op_area_update.sh" weekly will keep areas files updated in your database.
+
+The "op_area_update.sh" script has a loop counter in "IMAX" variable, you can experiment with this
+counter running the script periodically like once a week or even once a month, checking your
+database results for "area" queries.
+
+The combination of daily area update with small loop counter in "update_op_db.sh" script and
+a larger loop counter in "op_area_update.sh" will keep areas files updated.
 
 #### Automate the Process:
 
-**Auto Updates**
+**Database Auto Updates**
 
 Now we can download new "Change Files" and update our database with them, we need this done
 automatically by the system. In Linux a daemon known as "cron" is used, you tell cron **when** to
@@ -539,7 +532,7 @@ cron job. As the "overpass" user edit crontab with:
 ```
 and enter this crontab entry:
 ```
-@daily ID=opUpdate /usr/local/bin/cron4op.sh 1> /dev/null
+@daily ID=opUpdateDB /usr/local/bin/cron4op.sh 1> /dev/null
 ```
 
 The name after the ID= above is needed by Dillon Cron and used as timestamp, you always provide
@@ -551,6 +544,16 @@ Do not forget to set "DB_DIR" variable to your real database directory if you us
 in your "getdiff.conf" file, if you are concerned about your password then set permission on the
 file - wherever your password is - to be readable only by "overpass" user. This is easier to do for
 "gediff.conf" file, but you get the idea. I do not do any of this, just FYI.
+
+**Area Auto Update**
+
+The same script used to initial area data is also used to keep it updated that script is the
+"op_area_update.sh". The script has a loop counter set to 100 iteration for area creation,
+I set this counter to 50 and run the script once a week. Keep in mind area data is being
+updated daily with "update_op_db.sh" using very small loop counter. Use the following
+crontab entry - as "overpass" user - to update area data once a week:
+
+@weekly ID=opAreaUpdate /usr/local/bin/op_area_update.sh 1> /dev/null
 
 Hint: '$ man crontab' will give you examples for entries.
 
@@ -627,9 +630,9 @@ to the "root" cron table:
 
 #### Area Update Again:
 
-I do not know what to do about the area update. My thinking is the infinite loop is needed for
-the **planet** database with minuetly updates. If that is the case we are okay; but I do not
-know!!!! I will post anything I find here. If anyone has any idea please let me know.
+My thinking is the infinite loop is needed for the **planet** database with minuetly updates.
+If that is the case we are okay; but I do not know!!!! I will post anything I find here. If anyone
+has any idea please let me know.
 
 It is complete A - Z. Not done yet.
 

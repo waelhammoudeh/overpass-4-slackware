@@ -53,6 +53,7 @@ NEWER_FILES=$GETDIFF_WD/newerFiles.txt
 EXEC_DIR=/usr/local/bin
 
 # used for area creation. SlackBuild script installs to: /usr/local/rules
+# eventually DB_DIR will have database files only - no other directories or files
 RULES_DIR=/usr/local/rules
 
 # full path to exectables we use
@@ -77,6 +78,7 @@ declare -a newFilesArray=()
 if [[ ! -s $NEWER_FILES ]]; then
    echo "$0: NEWER_FILES not found or empty - nothing to do."
    echo "$(date '+%F %T'): No newer files to update. Done." >>$LOGFILE
+   echo "++++++++++++++++++++++++++ Did Nothing +++++++++++++++++++++++++++"
    exit 0
 fi
 
@@ -237,7 +239,6 @@ do
     echo "$(date '+%F %T'): applying update from Change File: <$changeFile> Dated: <$VERSION>" >>$LOGFILE
 
     # Usage: update_database [--db-dir=DIR] [--version=VER] [--meta|--keep-attic] [--flush_size=FLUSH_SIZE] [--compression-method=(no|gz|lz4)] [--map-compression-method=(no|gz|lz4)]
-    # changeFile and stateFile are readable by ALL
 
     gunzip <$changeFile | $UPDATER --db-dir=$DB_DIR \
                                    --version=$VERSION \
@@ -269,23 +270,25 @@ echo "$(date '+%F %T'): started dispactcher daemon again" >>$LOGFILE
 # make sure dispatcher started
 sleep 2
 
+iCount=10
+
+# this is an experiment, database is not compromised -
+# assumes rules directory path: /usr/local/rules
+
 # update areas - we apply ALL changeFile(s) then use ONE area update call
 echo "$(date '+%F %T'): updating overpass areas" >>$LOGFILE
 
-# $QRY_EXEC --progress --rules < $DB_DIR/rules/areas.osm3s 2>&1 >/dev/null
+iCount=10
 
-# this is an experiment, database is not compromised -
-# assumes rules directory path: /usr/local/rules/
-
-for ((i=1;i<=10;i++)); do
+for ((i=1; i<=$iCount; i++)); do
 {
-   ionice -c 2 -n 7 nice -n 19 $EXEC_DIR/osm3s_query --progress --rules < /usr/local/rules/areas.osm3s 2>&1 >/dev/null
+   ionice -c 2 -n 7 nice -n 19 $EXEC_DIR/osm3s_query --progress --rules < $RULES_DIR/areas.osm3s 2>&1 >/dev/null
    sleep 3
 }; done
 
-echo "$(date '+%F %T'): done areas update" >>$LOGFILE
+echo "$(date '+%F %T'): done areas update; Loop Counter: $iCount" >>$LOGFILE
 
-# we MUST empty or REMOVE this file. getdiff recreates a new file
+# we MUST empty or remove this file. "getdiff" program recreates a new file
 mv $NEWER_FILES $NEWER_FILES.old
 
 echo "$(date '+%F %T'): Moved $NEWER_FILES TO: $NEWER_FILES.old" >>$LOGFILE

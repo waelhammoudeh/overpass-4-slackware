@@ -44,8 +44,6 @@ information.
 
 Guide details are provided in README files in the "Guide" directory as follows:
 
-GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION
-
 * README:
      Provide hardware requirements and software installation.
    Instruction to build ovepassAPI Slackware package.
@@ -67,7 +65,6 @@ GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION * GUIDE UNDER CONSTRUCTION
 * README.web :
      Has details for setting up Apache web server for the web user interface
    to overpass.
-
 
 What is OSM Overpass? 
   Quoting from https://wiki.openstreetmap.org/wiki/Overpass_API:

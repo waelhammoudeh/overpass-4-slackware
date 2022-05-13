@@ -13,7 +13,7 @@
 
 OP_USR_ID=367
 
-# we set DB_DIR variable with set_db_path.sh script - run as root
+# set DB_DIR variable to your real overpass database directory
 DB_DIR=/path/to/your/overpass/DBase
 
 EXEC_DIR=/usr/local/bin
@@ -105,16 +105,15 @@ case "$1" in
 
    # start base dispatcher
    echo " Starting overpass dispatcher with ${DIS_MODE} ..."
-#   sudo -u $USER $DSPTCHR --osm-base --db-dir=${DB_DIR} ${META} &
+
    $DSPTCHR --osm-base --db-dir=${DB_DIR} ${META} &
    sleep 1
 
+   # start areas dispatcher if base started successfully ONLY
    if (! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
       echo " Error: dispatcher did not start !!!"
       exit 1
    else
-      # only start areas dispatcher if base started successfully
-#      sudo -u $USER $DSPTCHR --areas --db-dir=${DB_DIR} &
       $DSPTCHR --areas --db-dir=${DB_DIR} &
       echo " overpass dispatcher started"
    fi
@@ -128,12 +127,10 @@ case "$1" in
        exit 2
     else
        # stop base dispatcher
-#       sudo -u $USER $DSPTCHR --osm-base --terminate
        $DSPTCHR --osm-base --terminate
 
        if [ -S ${DB_DIR}/osm3s_${VERSION}_areas ]; then
           # stop area dispatcher
-#          sudo -u $USER $DSPTCHR --areas --terminate
           $DSPTCHR --areas --terminate
        fi
           sleep 1
@@ -153,7 +150,6 @@ case "$1" in
       if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
          echo " dispatcher is running with ${DIS_MODE}"
          echo ""
-#         sudo -u $USER $DSPTCHR --status
          $DSPTCHR --status
       else
          echo " dispatcher is stopped. Not running!"
