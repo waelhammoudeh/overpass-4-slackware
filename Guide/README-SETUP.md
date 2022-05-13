@@ -96,6 +96,7 @@ Scripts included in my Slackware package are:
  - initial_op_db.sh
  - op_ctl.sh
  - rc.dispatcher
+
 those scripts get installed by the package in /usr/local/bin directory.
 
 Scripts included in the Guide are:
@@ -103,7 +104,8 @@ Scripts included in the Guide are:
  - op_area_update.sh
  - cron4op.sh
  - set_DB_DIR_path.sh
-you need to manually copy thos scripts to /usr/local/bin directory.
+
+you need to manually copy those scripts to /usr/local/bin directory.
 
 Most scripts and some files included use **DB_DIR** variable to refer to overpass database
 directory. This has to be manually set to your real database directory. To ease this process
@@ -146,7 +148,7 @@ issue I have with this script is that it does not handle all options accepted by
 My "initial_op_db.sh" script found with this "Guide" is a rewrite of this script (init_osm3s.sh)
 to overcome issues mentioned above. The "initial_op_db.sh" script requires OSM *osmium*
 program. Slackware package build script is available from my osmium-tool repository with
-[link here. ](https://github.com/waelhammoudeh/osmium-tool_slackbuild).
+[link here](https://github.com/waelhammoudeh/osmium-tool_slackbuild).
 
 The overpass *update_database* program usage or accepted arguments:
 ```
