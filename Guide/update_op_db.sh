@@ -219,8 +219,8 @@ if [[ ! $? -eq 0 ]]; then
 fi
 
 # log stopped dispatcher
-echo "$(date '+%F %T'): stopped dispactcher daemon" >>$LOGFILE
-echo "stopped dispactcher daemon"
+echo "$(date '+%F %T'): stopped dispatcher daemon" >>$LOGFILE
+echo "stopped dispatcher daemon"
 
 i=0
 j=0
@@ -237,7 +237,10 @@ do
     # get date only YYYY-MM-DD & use as version number
     VERSION=`cat $stateFile | grep timestamp | cut -d 'T' -f -1 | cut -d '=' -f 2`
 
-    echo "$(date '+%F %T'): applying update from Change File: <$changeFile> Dated: <$VERSION>" >>$LOGFILE
+    echo "$(date '+%F %T'): applying update from:" >>$LOGFILE
+    echo "                   Change File: <$changeFile>" >>$LOGFILE
+    echo "                   File Dated: <$VERSION>" >>$LOGFILE
+
     echo " applying update from Change File: <$changeFile> Dated: <$VERSION>"
 
     # Usage: update_database [--db-dir=DIR] [--version=VER] [--meta|--keep-attic] [--flush_size=FLUSH_SIZE] [--compression-method=(no|gz|lz4)] [--map-compression-method=(no|gz|lz4)]
@@ -268,8 +271,8 @@ done
 # start dispatcher
 $OP_CTL start 2>&1 >/dev/null
 
-echo "$(date '+%F %T'): started dispactcher daemon again" >>$LOGFILE
-echo "started dispactcher daemon again"
+echo "$(date '+%F %T'): started dispatcher daemon again" >>$LOGFILE
+echo "started dispatcher daemon again"
 
 # make sure dispatcher started
 sleep 2
