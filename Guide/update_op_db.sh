@@ -37,14 +37,24 @@ if [[ $EUID -ne $OP_USR_ID ]]; then
     exit 1
 fi
 
+
+SYS_ROOT=/var/lib
+
+# this can be a link to any directory on your system - "overpass" name should stay.
+OP_DIR=$SYS_ROOT/overpass
+
 # DB_DIR : overpass database directory
-DB_DIR=/path/to/database
+# DB_DIR=/path/to/your/database
+DB_DIR=$OP_DIR/database
 
 # GETDIFF_WD: getdiff Work Directory
-GETDIFF_WD=$DB_DIR/getdiff
+GETDIFF_WD=$OP_DIR/getdiff
 
 # DIFF_DIR: where to find differ files - downloaded "Change Files"
 DIFF_DIR=$GETDIFF_WD/diff
+
+#
+LOG_DIR=$OP_DIR/logs
 
 # NEWER_FILES : file produced by "getdiff" program
 NEWER_FILES=$GETDIFF_WD/newerFiles.txt
@@ -67,7 +77,9 @@ FLUSH_SIZE=4
 COMPRESSION=no
 
 # THIS script log file
-LOGFILE=$DB_DIR/logs/update_op_db.log
+LOGFILE=$LOG_DIR/update_op_db.log
+
+touch $LOGFILE
 
 echo "$(date '+%F %T'): update_op_db.sh started ..." >>$LOGFILE
 echo "$(date '+%F %T'): database directory is: $DB_DIR" >>$LOGFILE
@@ -78,7 +90,7 @@ declare -a newFilesArray=()
 if [[ ! -s $NEWER_FILES ]]; then
    echo "$0: NEWER_FILES not found or empty - nothing to do."
    echo "$(date '+%F %T'): No newer files to update. Done." >>$LOGFILE
-   echo "++++++++++++++++++++++++++ Did Nothing +++++++++++++++++++++++++++"
+   echo "++++++++++++++++++++++++++ Did Nothing +++++++++++++++++++++++++++" >>$LOGFILE
    exit 0
 fi
 

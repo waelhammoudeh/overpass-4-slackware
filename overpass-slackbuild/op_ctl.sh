@@ -13,8 +13,14 @@
 
 OP_USR_ID=367
 
-# set DB_DIR variable to your real overpass database directory
-DB_DIR=/path/to/your/overpass/DBase
+SYS_ROOT=/var/lib
+
+# this can be a link to any directory on your system - "overpass" name should stay.
+OP_DIR=$SYS_ROOT/overpass
+
+# DB_DIR : overpass database directory
+# DB_DIR=/path/to/your/database
+DB_DIR=$OP_DIR/database
 
 EXEC_DIR=/usr/local/bin
 DSPTCHR=$EXEC_DIR/dispatcher

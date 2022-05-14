@@ -18,8 +18,16 @@
 # crontab entry to run script for daily updates:
 # @daily ID=opUpdate /usr/local/bin/cron4op.sh 1> /dev/null
 
-DB_DIR=/path/to/database
-GETDIFF_WD=$DB_DIR/getdiff
+SYS_ROOT=/var/lib
+
+# this can be a link to any directory on your system - "overpass" name should stay.
+OP_DIR=$SYS_ROOT/overpass
+
+# DB_DIR : overpass database directory
+# DB_DIR=/path/to/your/database
+DB_DIR=$OP_DIR/database
+
+GETDIFF_WD=$OP_DIR/getdiff
 
 # "newerFiles.txt" produced by "getdiff", found in getdiff work directory.
 # Same as NEWER_FILES in "update_op_db.sh" and "NEWER_FILE" in getdiff.conf
@@ -33,13 +41,13 @@ CONF=$GETDIFF_WD/getdiff.conf
 PSWD=YOUR-REAL-OSM-PASSWORD-HERE
 
 # download Change Files
-/usr/local/bin/getdiff -c $CONF -p $PSWD 1>/dev/null
+/usr/local/bin/getdiff -c $CONF -p $PSWD >/dev/null 2>&1
 
 sleep 2
 
 if [[ -s $newfiles ]]; then
 
-    /usr/local/bin/update_op_db.sh 1>&2 >/dev/null
+    /usr/local/bin/update_op_db.sh >/dev/null 2>&1
 fi
 
 exit 0

@@ -38,13 +38,13 @@ Where you store the database is the "overpass" user home directory we used when
 we created the overpass group and user. If you need to make any changes to that,
 now is the time before you initial the database.
 
-You create the database directory as "root", somewhere on your system where you have
-enough free space and let us call that {db_root}, also as "root" you change ownership of
-that directory to overpass user and group; the followings two commands do that:
+You create the overpass directory as the "root" user, somewhere on your system where you
+have enough free space and let us call that {sys_root}, also as "root" you change ownership
+of that directory to "overpass" user and group; the followings two commands do that:
 
 ```
-   # mkdir {db_root}/overpass
-   # chown overpass:overpass {db_root}/overpass
+   # mkdir {sys_root}/overpass
+   # chown overpass:overpass {sys_root}/overpass
 ```
 
 Now we run everything as "overpass" user. To put "overpass" hat on as root user do:
@@ -66,59 +66,58 @@ Do not run anything as "root" unless it is only doable by "root".
 
 ### File System Structure:
 
-I refer to overpass home directory as **DB_DIR** that is where I initial my database,
-I create two directories under this; "logs" to keep log files in one place and "getdiff"
-as work directory for my getdiff program for updates - explained below. So my file
-system structure looks like:
+All scripts and configuration files here assume the following File System layout:
 
-DB_DIR
-  - getdiff
-  - logs
+OP_ROOT
+    - database
+    - getdiff
+    - logs
 
-and as written paths (found in scripts here):
- - DB_DIR/getdiff/somefile
- - DB_DIR/logs/somelogfile
+in addition {OP_ROOT} is assumed to have this path "/var/lib/overpass". This "overpass"
+directory entry can be a real directory or a link to another directory - but must have the
+"overpass" name - on the system. Replacing {OP_ROOT} with the value, we have:
 
-I place all my shell scripts in /usr/local/bin/ directory so they are in my path, all my
-shell scripts assume this location for scripts and exectables. Scripts that do anything
-to the database should only be run as the "overpass" user.
+/var/lib/overpass
+    - database
+    - getdiff
+    - logs
 
-You might need to copy the "rule" directory installed by the Slackware package to your
-database directory. As "overpass" user run:
+where database, getdiff and logs are directories for the indicated name created by the
+"overpass" user. My scripts all use the following paths with indicated purpose:
+
 ```
-$ cp -pR /usr/local/rules/ DB_DIR/
+The System Root is "/var/lib" is a System directory on Slackware - already exist.
+SYS_ROOT=/var/lib
+
+The Overpass Directory is the overpass user home directory, this can be a link or real
+directory your system - it must have the "overpass" name.
+OP_DIR=$SYS_ROOT/overpass
+
+Database Directory is where we initial the overpass database.
+DB_DIR=$OP_DIR/database
+
+Getdiff Work Directory where getdiff files are kept and "diff" directory under this is
+where differs are downloaded to.
+GETDIFF_WD=$OP_DIR/getdiff
+
+LOG_DIR=$OP_DIR/logs
+Log Directory is where we wrote log files to and link ones we can not redirect.
 ```
-Replace DB_DIR with your database directory.
 
-### Scripts and DB_DIR Variable:
+If the root file system is where you have disk space for overpass, then as the "root"
+user create "/var/lib/overpass" as the overpass home directory, then change the
+ownership to "overpass" user and group.
 
-Scripts included in my Slackware package are:
- - initial_op_db.sh
- - op_ctl.sh
- - rc.dispatcher
+If the free disk space you have is not on the root file system, then create a link to
+that directory as the root user with: (note the -sr options)
 
-those scripts get installed by the package in /usr/local/bin directory.
+```
+    root@yafa:/var/lib# ln -sr /path/to/your/overpass /var/lib/overpass
+```
 
-Scripts included in the Guide are:
- - update_op_db.sh
- - op_area_update.sh
- - cron4op.sh
- - set_DB_DIR_path.sh
-
-you need to manually copy those scripts to /usr/local/bin directory.
-
-Most scripts and some files included use **DB_DIR** variable to refer to overpass database
-directory. This has to be manually set to your real database directory. To ease this process
-I have included yet another script that does that for you.
-
-Run "set_DB_DIR_path.sh" script with your real path as an argument and all files in the
-current working directory will have "DB_DIR" variable set. If the scripts you want to change
-are not in your current directory, you can pass that directory as second argument to the
-"set_DB_DIR_path.sh" script. Please note that doing this does NOT guarantee anything,
-you still need to make sure that the real path is set.
-
-I have removed duplicate scripts from the repository! There is only one copy of each. Feel
-free to place scripts in one directory and run "set_DB_DIR_path.sh" there.
+If you use this File System Structure you do not need to manually edit my scripts to
+set paths, all scripts use this layout now. You still need to provide the "SOURCE" URL
+and "PASSWD" in getdiff.conf file.
 
 ### Initial Overpass Database:
 
@@ -167,7 +166,7 @@ and decompression! I set compression to "no", feel free to change this.
 
 To use "initial_op_db.sh" script:
 
- * Make sure that the script is executable:
+ * Make sure that the script is executable (it should be) if not use:
 ```
     # chmod +x /usr/local/bin/initial_op_db.sh
 ```
@@ -359,9 +358,16 @@ this should result in a sorted list of names for cities and towns in your databa
 
 * Keep your source files
 * Clone DB from time to time with : osm3s_query --clone=$TARGET_DIR
-* Clone does NOT copy areas files - make areas again.
+* Clone does NOT copy areas files - make areas again OR copy area files with:
+```
+    $ cp $DB_DIR/area* $TARGET_DIR/.
+```
+also copy base version number:
+```
+    $ cp $DB_DIR/osm_base_* $TARGET_DIR/.
+```
 
-TODO: adapt "download_clone.sh" from machine to machine in home office network or SON (small office network).
+TODO: Configure Apache so "download_clone.sh" will clone DB from machine to machine in (small office/area network).
 
 ### Database Update:
 

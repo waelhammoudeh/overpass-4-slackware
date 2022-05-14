@@ -14,7 +14,7 @@ DB_DIR=$3
 # EXEC_DIR : overpass bin directory from Slackware package
 EXEC_DIR=/usr/local/bin
 
-# update_database and osmium programs
+# update_database and osmium executables
 UPDATE_EXEC=$EXEC_DIR/update_database
 OSMIUM=$EXEC_DIR/osmium
 

@@ -24,15 +24,24 @@
 # this is a WRONG way to check user, we must look in passwd & goup files
 OP_USR_ID=367
 
-# set to your actual database directory
-DB_DIR=/path/to/database
+SYS_ROOT=/var/lib
+
+# this can be a link to any directory on your system - "overpass" name should stay.
+OP_DIR=$SYS_ROOT/overpass
+
+# DB_DIR : overpass database directory
+# DB_DIR=/path/to/your/database
+DB_DIR=$OP_DIR/database
+
+LOG_DIR=$OP_DIR/logs
 
 VERSION=v0.7.57
 EXEC_DIR=/usr/local/bin
 DSPTCHR=$EXEC_DIR/dispatcher
 RULES_DIR=/usr/local/rules
-LOG_FILE=$DB_DIR/logs/op_area_update.log
+LOG_FILE=$LOG_DIR/op_area_update.log
 
+touch $LOG_FILE
 
 if [[ $EUID -ne $OP_USR_ID ]]; then
     echo "$0: ERROR Not overpass user! You must run this script as the \"overpass\" user."

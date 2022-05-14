@@ -4,7 +4,7 @@
 compress
 nomail
 
-$DB_DIR/logs/update_op_db.log $DB_DIR/logs/op_area_update.log $DB_DIR/getdiff/getdiff.log {
+/var/lib/overpass/logs/update_op_db.log  /var/lib/overpass/logs/op_area_update.log /var/lib/overpass/getdiff/getdiff.log {
 
     su overpass overpass
     rotate 5
@@ -13,11 +13,11 @@ $DB_DIR/logs/update_op_db.log $DB_DIR/logs/op_area_update.log $DB_DIR/getdiff/ge
     notifempty
 }
 
-$DB_DIR/transactions.log {
+/var/lib/overpass/database/transactions.log {
 
     su overpass overpass
     rotate 5
-    size 200K
+    size 500K
     missingok
     notifempty
 }

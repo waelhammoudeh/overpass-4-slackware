@@ -21,7 +21,9 @@ SOURCE = https://osm-internal.download.geofabrik.de/north-america/us/arizona-upd
 # "{$HOME}/Downloads/getdiff/diff/" directory.
 # Full real path here. No path expansion is done. User has write permission on parent directory.
 # Directory is created if not present ONLY if parent directory exist. Path is used as entered.
-DIRECTORY = {DB_DIR}/getdiff/
+# DIRECTORY = {OP_DIR}/getdiff/
+# OP_DIR = /var/lib/overpass is a link to real system directory
+DIRECTORY = /var/lib/overpass/getdiff
 
 # BEGIN: start the download from file number - only the three digit number from file name.
 # This is for first use! Afterward, program reads its created file "start_id".
@@ -33,4 +35,4 @@ BEGIN = 264
 # Script helper! Update script should remove this file when done.
 # List of just downloaded files is added - appended - to this file.
 # New downloads recreate file again.
-NEWER_FILE = {DB_DIR}/getdiff/newerFile.txt
+NEWER_FILE = /var/lib/overpass/getdiff/newerFile.txt
