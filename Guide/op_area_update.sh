@@ -57,8 +57,22 @@ if [ ! -S ${DB_DIR}/osm3s_${VERSION}_areas ]; then
     exit 1
 fi
 
+# we all need to be on the same page
+INUSE_DIR=$($DSPTCHR --show-dir)
+
+if [[ $INUSE_DIR != "$DB_DIR/" ]]; then
+
+   echo "Error: Not same INUSE_DIR and DB_DIR"
+   echo "$(date '+%F %T'): Error dispatcher manages different database than destination" >>$LOG_FILE
+   exit 1
+fi
+
 #
 # IMAX is to control loop iteration counter - change & check query results
+#
+# to INITIAL area data set IMAX to 100 - 200 iterations. Arizona = 100 & USA = 200
+# to UPDATE area data set IMAX to half number above & run cronjob weekly or monthly
+# when UPDATE you may want to rename script with IMAX number: op_area_update50.sh
 #
 IMAX=100
 
@@ -66,7 +80,7 @@ echo "Area update started. Loop COUNT is set to: $IMAX"
 echo "`date '+%F %T'`: Area update started. Loop COUNT is set to: $IMAX" >>$LOG_FILE
 
 # while [[ true ]]; do
-for ((i=1;i<=$IMAX;i++)); do
+for ((i=1; i<=$IMAX; i++)); do
 {
   echo "`date '+%F %T'`: update started: iteration number <$i>" >>$LOG_FILE
   #  ./osm3s_query --progress --rules <$DB_DIR/rules/areas.osm3s
