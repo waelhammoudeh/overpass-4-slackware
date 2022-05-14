@@ -69,18 +69,18 @@ Do not run anything as "root" unless it is only doable by "root".
 All scripts and configuration files here assume the following File System layout:
 
 OP_ROOT
-    - database
-    - getdiff
-    - logs
+ - database
+ - getdiff
+ - logs
 
 in addition {OP_ROOT} is assumed to have this path "/var/lib/overpass". This "overpass"
-directory entry can be a real directory or a link to another directory - but must have the
-"overpass" name - on the system. Replacing {OP_ROOT} with the value, we have:
+directory entry can be a real directory or a link to another directory - but must end with
+"overpass" entry name. Replacing {OP_ROOT} with the value, we have:
 
 /var/lib/overpass
-    - database
-    - getdiff
-    - logs
+ - database
+ - getdiff
+ - logs
 
 where database, getdiff and logs are directories for the indicated name created by the
 "overpass" user. My scripts all use the following paths with indicated purpose:
@@ -117,7 +117,11 @@ that directory as the root user with: (note the -sr options)
 
 If you use this File System Structure you do not need to manually edit my scripts to
 set paths, all scripts use this layout now. You still need to provide the "SOURCE" URL
-and "PASSWD" in getdiff.conf file.
+and "PASSWD" to use my "getdiff" program.
+
+The "set_DB_DIR_path.sh" is no longer needed. It will soon get removed.
+
+TODO: edit README.SlackBuild to reflect this change.
 
 ### Initial Overpass Database:
 
