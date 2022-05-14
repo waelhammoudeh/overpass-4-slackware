@@ -534,7 +534,7 @@ cron job. As the "overpass" user edit crontab with:
 ```
 and enter this crontab entry:
 ```
-@daily ID=opUpdateDB /usr/local/bin/cron4op.sh 1> /dev/null
+@daily ID=opUpdateDB /usr/local/bin/cron4op.sh >/dev/null 2>&1
 ```
 
 The name after the ID= above is needed by Dillon Cron and used as timestamp, you always provide
@@ -560,7 +560,7 @@ value used to initial areas data. Keep in mind area data is being updated daily 
 database update script "update_op_db.sh" using very small loop counter. Use the following
 crontab entry - as "overpass" user - to update area data once a week:
 
-@weekly ID=opAreaUpdate /usr/local/bin/op_area_update.sh 1> /dev/null
+@weekly ID=opAreaUpdate /usr/local/bin/op_area_update.sh >/dev/null 2>&1
 
 Hint: '$ man crontab' will give you examples for entries.
 
@@ -606,12 +606,13 @@ as root user into your /etc/logrotate.d/ directory. This will rotate files depen
 # compress is global
 
 compress
+nomail
 
-$DB_DIR/logs/update_op_db.log  $DB_DIR/logs/op_area_update.log $DB_DIR/getdiff/getdiff.log {
+$DB_DIR/logs/update_op_db.log $DB_DIR/logs/op_area_update.log $DB_DIR/getdiff/getdiff.log {
 
     su overpass overpass
     rotate 5
-    size 100k
+    size 100K
     missingok
     notifempty
 }
@@ -620,7 +621,7 @@ $DB_DIR/transactions.log {
 
     su overpass overpass
     rotate 5
-    size 200k
+    size 200K
     missingok
     notifempty
 }
@@ -632,7 +633,7 @@ by ' # crontab -l', that said; to ensure that your logs get rotated add the foll
 to the "root" cron table:
 
 ```
-@daily ID=op_logrotate  /usr/sbin/logrotate /etc/logrotate.d/op_logrotate
+@daily ID=op_logrotate  /usr/sbin/logrotate /etc/logrotate.d/op_logrotate >/dev/null 2>&1
 ```
 
 #### Area Update Again:

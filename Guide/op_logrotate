@@ -2,12 +2,13 @@
 # compress is global
 
 compress
+nomail
 
-$DB_DIR/logs/update_op_db.log  $DB_DIR/logs/op_area_update.log $DB_DIR/getdiff/getdiff.log {
+$DB_DIR/logs/update_op_db.log $DB_DIR/logs/op_area_update.log $DB_DIR/getdiff/getdiff.log {
 
     su overpass overpass
     rotate 5
-    size 100k
+    size 100K
     missingok
     notifempty
 }
@@ -16,7 +17,7 @@ $DB_DIR/transactions.log {
 
     su overpass overpass
     rotate 5
-    size 200k
+    size 200K
     missingok
     notifempty
 }
