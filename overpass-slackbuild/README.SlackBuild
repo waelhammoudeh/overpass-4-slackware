@@ -33,9 +33,8 @@ real directory or a link to a directory with link name "overpass". Paths used in
 "op_ctl.sh" assume this File System Structure.
 
 The "rc.dispatcher.new" script is meant to be called by Slackware System Initial
-and Shutdown scripts. The "rc.dispatcher" script calls "op_ctl.sh" script above,
-so please set DB_DIR variable in "op_ctl.sh" first as mentioned above. The
-"rc.dispatcher.new" script is installed in "/etc/rc.d/" system directory.
+and Shutdown scripts. The "rc.dispatcher" script calls "op_ctl.sh" script above.
+The "rc.dispatcher.new" script is installed in "/etc/rc.d/" system directory.
 
 To have dispatcher daemon start and stop on system boot and system shutdown
 rename the script to "rc.dispatcher" (drop .new extension) and make sure that it
