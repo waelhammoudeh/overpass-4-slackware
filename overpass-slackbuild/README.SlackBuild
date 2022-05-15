@@ -27,10 +27,18 @@ initials overpass database from any OSM data file format supported by 'Osmium'.
 The script "op_ctl.sh" - overpass control - is to control the dispatcher daemon,
 it provides start, stop and status functions. Do NOT run as "root".
 
-File System Structure is modeled as "postgresql" SlackBuild Package! The database
-directory is placed under "/var/lib" with directory entry "overpass"; this can be a
-real directory or a link to a directory with link name "overpass". Paths used in the
-"op_ctl.sh" assume this File System Structure.
+File System Structure is assumed as illustrated below:
+
+/var/lib/overpass
+             |
+             |__database
+             |
+             |__getdiff
+             |
+             |__logs
+
+The "overpass" entry can be a real directory or a link with "overpass" name. The
+database is to be initialed in the above "database" directory.
 
 The "rc.dispatcher.new" script is meant to be called by Slackware System Initial
 and Shutdown scripts. The "rc.dispatcher" script calls "op_ctl.sh" script above.
