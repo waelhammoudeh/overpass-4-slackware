@@ -30,7 +30,7 @@ I used the "--attic" option.
 
 Note that directory size using "--attic" option is about **double** the "--meta" option.
 Countries with about 4 GB source file size - like Germany and France - will require
-disk space of 100 to 200 GB. You need to allow for growth, so in my 41 BG above I
+disk space of 100 to 200 GB. You need to allow for growth, so in my 41 GB above I
 need about 80 GB of free disk space, or the 22 GB means 40 to 45 GB of free space.
 Again you need to experiment with your region.
 
@@ -96,8 +96,8 @@ OP_DIR=$SYS_ROOT/overpass
 Database Directory is where we initial the overpass database.
 DB_DIR=$OP_DIR/database
 
-Getdiff Work Directory where getdiff files are kept and "diff" directory is created under
-which differ files are downloaded to.
+Getdiff Work Directory where getdiff files are kept and "diff" directory is created where
+differ files are downloaded to.
 GETDIFF_WD=$OP_DIR/getdiff
 
 LOG_DIR=$OP_DIR/logs
@@ -120,8 +120,6 @@ set paths, all scripts use this layout now. You still need to provide the "SOURC
 and "PASSWD" to use my "getdiff" program.
 
 The "set_DB_DIR_path.sh" is no longer needed. It will soon get removed.
-
-TODO: edit README.SlackBuild to reflect this change.
 
 ### Initial Overpass Database:
 
