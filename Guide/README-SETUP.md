@@ -90,18 +90,18 @@ The System Root is "/var/lib" is a System directory on Slackware - already exist
 SYS_ROOT=/var/lib
 
 The Overpass Directory is the overpass user home directory, this can be a link or real
-directory your system - it must have the "overpass" name.
+directory on your system - it must end with "overpass" entry name.
 OP_DIR=$SYS_ROOT/overpass
 
 Database Directory is where we initial the overpass database.
 DB_DIR=$OP_DIR/database
 
-Getdiff Work Directory where getdiff files are kept and "diff" directory under this is
-where differs are downloaded to.
+Getdiff Work Directory where getdiff files are kept and "diff" directory is created under
+which differ files are downloaded to.
 GETDIFF_WD=$OP_DIR/getdiff
 
 LOG_DIR=$OP_DIR/logs
-Log Directory is where we wrote log files to and link ones we can not redirect.
+Log Directory is where we write log files to and link ones we can not redirect / move.
 ```
 
 If the root file system is where you have disk space for overpass, then as the "root"
@@ -186,15 +186,16 @@ and destination directory for database.
 - Date is the last date contained in that input file in "YYYY-MM-DD" format.
     If your file was from Geofabrik then this date is listed on the download page. If not,
     then you have to use "osmium fileinfo --extended {inputfile}" to get that date.
-- Destination directory is overpass database directory and must exist (DB_DIR).
+- Destination directory is overpass database directory and must exist (DB_DIR). If you used
+  the File System Structure above, then this will be "/var/lib/overpass/database"
 
 As everything run this as the "overpass" user, move to the directory where you have your
 source file and assuming that "initial_op_db.sh" script is in your path "/usr/local/bin/" and
-your region source file name is "sourcefile.osm.pbf" with last date "2022-04-08" enter your
-real path for DB_DIR below:
+your region source file name is "sourcefile.osm.pbf" with last date "2022-04-08" and you are
+using the above File System layout ( DB_DIR is: /var/lib/overpass/database ):
 
 ```
- overpass@yafa:/source$ nohup initial_op_db.sh sourcefile.osm.pbf 2022-04-08 DB_DIR &
+ overpass@yafa:/source$ nohup initial_op_db.sh sourcefile.osm.pbf 2022-04-08  "/var/lib/overpass/database" &
 ```
 By default "initial_op_db.sh" passes (--meta) option to "update_database" program. Edit the
 script to change that.
@@ -261,7 +262,7 @@ You start "dispatcher" as the "overpass" user giving it your database directory 
 database was initialed, using "&" in the end to run in the background:
 
 ```
- overpass@yafa:/mnt/nvme4/op-meta/source$ dispatcher --osm-base --db-dir=/mnt/nvme4/op-meta --meta &
+ overpass@yafa:/mnt/nvme4/source$ dispatcher --osm-base --db-dir=/var/lib/overpass/database --meta &
 ```
 
 With dispatcher running in background, --db-dir option for "osm3s_query" program is not needed.
@@ -273,14 +274,22 @@ directory argument as follows (assuming "example" file is in your curent directo
 
 To stop the dispatcher daemon, as the overpass user run:
 ```
-overpass@yafa:/mnt/nvme4/op-meta/source$ dispatcher --osm-base --terminate
+overpass@yafa:/mnt/nvme4/source$ dispatcher --osm-base --terminate
 ```
 
-The script "op_ctl.sh" can be used to control the dispatcher program after setting the
-"DB_DIR" variable to your real database directory. The script gets installed in the
-"/usr/local/bin/" directory by my overpass Slackware package. The script is meant
-to be used by the overpass user only. After setting DB_DIR you can start, stop and get
-status of the dispatcher with the script.
+The script "op_ctl.sh" can be used to control the dispatcher program. The script gets
+installed into "/usr/local/bin/" directory by my overpass Slackware package. The script
+is meant to be used by the overpass user only. If you do not use the File System mentioned
+above, you will need to set DB_DIR variable in the script before using it.
+
+The "op_ctl.sh" script provides three functions: { start, stop & status }. Control the
+dispatcher as "overpass" user with:
+
+```
+  overpass@yafa:~$ op_ctl.sh start
+  overpass@yafa:~$ op_ctl.sh status
+  overpass@yafa:~$ op_ctl.sh stop
+```
 
 ### Start "Dispatcher" At Boot:
 
@@ -345,13 +354,13 @@ or just use "op_ctl.sh" script as the overpass user:
 To generate "areas" in overpass database developer provided "rules_loop.sh" script is used.
 The script needed changes to run. I have replaced this script with "op_area_update.sh" script,
 this script is used in two places; here to initial areas data and down below to keep this data
-updated where we change IMAX loop counter. To use the script set "DB_DIR" variable to your
-database directory.
+updated where we change IMAX loop counter.
 
 To generate "areas" in your database run the "op_area_update.sh" to completion ***without changing***
-IMAX loop counter. The area creation produces more files in your database with "area*" names,
-mine added nine of them. The "area" filter can be used now, a simple overpass query is provided
-to test for this in "area-test.op" file in this Guide. To test your database run:
+IMAX loop counter. This will take time to complete, let run to completion. The area creation
+produces more files in your database with "area*" names, mine added nine of them. The
+"area" filter can be used now, a simple overpass query is provided to test for this in file
+"area-test.op" in this Guide. To test your database run:
 
 ```
  osm3s_query < area-test.op | sort -ub
@@ -371,7 +380,8 @@ also copy base version number:
     $ cp $DB_DIR/osm_base_* $TARGET_DIR/.
 ```
 
-TODO: Configure Apache so "download_clone.sh" will clone DB from machine to machine in (small office/area network).
+TODO: Configure Apache so "download_clone.sh" will clone DB from machine to machine in
+(small office/area network).
 
 ### Database Update:
 
@@ -463,10 +473,11 @@ in your "DIRECTORY" setting under "diff" directory entry.
 If it does not work as expected, please double check your settings espacially the URL for SOURCE. And
 test your settings again.
 
-As mentioned in File System Structure above I create "getdiff" directory under my "DB_DIR" or
-overpass home, I do everything as the "overpass" user and my "DIRECTORY" setting is set to :
+As mentioned in File System Structure above "getdiff" Work Directory is created under
+"overpass" directory, this makes DIRECTORY setting:
+
 ```
-DIRECTORY = DB_DIR/getdiff
+DIRECTORY = /var/lib/overpass/getdiff
 ```
 with this setting, "getdiff" program created "diff" directory is where I find the new dowloaded
 differ files and their state.txt files.
@@ -482,23 +493,17 @@ The "update_op_db.sh" uses files dowloaded by "getdiff" program, so both share s
  * NEWER_FILES : file produced by "getdiff" program
  * DIFF_DIR : where to find differ files
 
-I have structured all my scripts to use "DB_DIR" variable, if you followed my File System Structure
-all you need to set is this variable. Or you can use "set_DB_DIR_path.sh" script to do it for you.
-
 Note that "update_op_db.sh" script uses "gunzip" program and does not require osmium - osmium
 is still required to initial databse with "initial_op_db.sh" script.
 
-Edit the script with your settings and copy or move it to "/usr/local/bin/" directory, the script needs
-to be executable:
-```
-chmod +x update_op_db.sh
-```
+To use the script copy to "/usr/local/bin/" directory, and make sure it is executable. Only
+change setting if you are NOT using my File System Structure.
 
 With filled settings, you can now update your overpass database using the downloaded (.osc)
 Change Files by running "update_op_db.sh" script as the "overpass" user. This script has "LOGFILE"
-setting, I set this to "logs" directory under DB_DIR:
+setting, I set this to "logs" directory under OP_DIR:
 ```
-LOGFILE=$DB_DIR/logs/update_op_db.log
+LOGFILE=/var/lib/overpass/logs/update_op_db.log
 ```
 Check your log file and your database version file: DB_DIR/osm_base_version. Hope it works for you.
 
@@ -550,7 +555,7 @@ and enter this crontab entry:
 The name after the ID= above is needed by Dillon Cron and used as timestamp, you always provide
 **full path** to scripts and programs to be run.
 
-Do not forget to set "DB_DIR" variable to your real database directory if you use this script.
+Adjust paths settings only if you do not use the File System Structure on top of this Guide.
 
 **Password Note** I enter my OSM password as text in this script file, you can also enter it
 in your "getdiff.conf" file, if you are concerned about your password then set permission on the
@@ -586,11 +591,12 @@ find /path/to/diff -mtime +7 -type f -delete
 I remove Change Files daily that are older than 7 days, to do that a new cron entry is added to
 "root" crontab as root of course, the following entry does that:
 ```
-@daily ID=rm_OSM_osc find /path/to/your/diff -mtime +7 -type f -delete
+@daily ID=rm_OSM_osc find /var/lib/overpass/getdiff/diff -mtime +7 -type f -delete
 ```
 
-The ID=rm_OSM_osc is needed by Dillon Cron as mentioned in update database above, replace
-/path/to/your/diff path string with your real path.
+The ID=rm_OSM_osc is needed by Dillon Cron as mentioned in update database above.
+The path above is for the file system structure on top of this Guide, change if you do not
+use that.
 
 #### Log Files And Rotation:
 
@@ -601,16 +607,17 @@ another two files we need linked into this directory - we can not move them. Tho
 do the following commands as the "overpass" user after moving to your logs directory:
 
 ```
-overpass@yafa:/mnt/nvme4/op2-meta/logs$ ln -s /mnt/nvme4/op2-meta/transactions.log .
-overpass@yafa:/mnt/nvme4/op2-meta/logs$ ln -s /mnt/nvme4/op2-meta/getdiff/getdiff.log .
+overpass@yafa:/var/lib/overpass/logs$ ln -s ../database/transactions.log .
+overpass@yafa:/var/lib/overpass/logs$ ln -s ../getdiff/getdiff.log .
 ```
 note the periods in the end, again replace my paths with your real paths. By doing this we have
 access to all log files from one directory.
 
-Logrotate program is used to rotate log files and and it comes comes configured in Slackware.
-Fix the database path in the file below - use "set_DB_DIR_path.sh" if you like - and place the file
-as root user into your /etc/logrotate.d/ directory. This will rotate files depending on their sizes.
-
+Logrotate program is used to rotate log files and and it comes configured in Slackware. A log
+rotate configure file is provided in "op_logrotate" file and shown below. Copy this file to your
+/etc/logrotate.d/ directory as the "root" user. This will rotate files depending on their sizes.
+To test run this command after you have copied the file:
+Log rotation configuration file:
 ```
 # logrotate file for overpass logs - four files are handled
 # compress is global
@@ -618,7 +625,7 @@ as root user into your /etc/logrotate.d/ directory. This will rotate files depen
 compress
 nomail
 
-$DB_DIR/logs/update_op_db.log $DB_DIR/logs/op_area_update.log $DB_DIR/getdiff/getdiff.log {
+/var/lib/overpass/logs/update_op_db.log  /var/lib/overpass/logs/op_area_update.log /var/lib/overpass/getdiff/getdiff.log {
 
     su overpass overpass
     rotate 5
@@ -627,15 +634,23 @@ $DB_DIR/logs/update_op_db.log $DB_DIR/logs/op_area_update.log $DB_DIR/getdiff/ge
     notifempty
 }
 
-$DB_DIR/transactions.log {
+/var/lib/overpass/database/transactions.log {
 
     su overpass overpass
     rotate 5
-    size 200K
+    size 500K
     missingok
     notifempty
 }
+
 ```
+To test run this command - as root - after you have copied the file:
+```
+ # logrotate -d /etc/logrotate.d/op_logrotate
+```
+
+The -d option above will just test and does not rotate any file. It will tell you what the
+program will do for each file listed.
 
 If your machine does NOT run 24/7 you may miss the log rotation! By default Slackware calls
 logrotate as a daily cron job at 4:40 AM local time. See /etc/cron.daily and see root crontab
