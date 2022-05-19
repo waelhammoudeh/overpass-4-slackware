@@ -54,15 +54,31 @@ if [[ $EUID -ne $OP_USR_ID ]]; then
     exit 1
 fi
 
+# this script should NOT run while "update_op_db.sh" is running
+SLP_FLAG=TRUE
+UPDATE_DB_SCRIPT=$EXEC_DIR/update_op_db.sh
+while [[ $SLP_FLAG = "TRUE" ]]; do
+{
+    if ( pgrep -f $UPDATE_DB_SCRIPT  2>&1 > /dev/null) ; then
+        echo "$(date '+%F %T'): Sleeping 5 minutes; for database update script to finish!" >>$LOG_FILE
+        sleep 300
+    else
+        SLP_FLAG=FALSE
+    fi
+
+}; done
+
 # dispatcher must be running with --areas option
 if ( ! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
     echo "Error: dispatcher is NOT running!"
     echo "Areas dispatcher must be running to update areas. Exiting."
+    echo "$(date '+%F %T'): Areas dispatcher must be running to update areas. Exiting." >>$LOG_FILE
     exit 1
 fi
 
 if [ ! -S ${DB_DIR}/osm3s_${VERSION}_areas ]; then
     echo "Error: Areas dispatcher is not running. Exiting"
+    echo "$(date '+%F %T'): Areas dispatcher is not running. Exiting" >>$LOG_FILE
     exit 1
 fi
 
