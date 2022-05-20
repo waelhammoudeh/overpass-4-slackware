@@ -520,7 +520,7 @@ a week plus the daily "update_op_db.sh" script.
 The combination of daily area update with small loop counter in "update_op_db.sh" script and
 a larger loop counter in "op_area_update.sh" will keep areas files updated.
 
-**NOTE:** Those two scripts should be running at the **same time**.
+**NOTE:** Those two scripts should NOT be running at the **same time**.
 
 #### Automate the Process:
 
