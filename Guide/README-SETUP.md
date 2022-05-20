@@ -513,10 +513,14 @@ and "op_area_update.sh" weekly will keep areas files updated in your database.
 
 The "op_area_update.sh" script has a loop counter in "IMAX" variable, you can experiment with this
 counter running the script periodically like once a week or even once a month, checking your
-database results for "area" queries.
+database results for "area" queries. I set the IMAX variable to 50 to update Arizona areas, I had
+used 100 to initial the areas, that is half for area update. I run "op_area_update.sh" script once
+a week plus the daily "update_op_db.sh" script.
 
 The combination of daily area update with small loop counter in "update_op_db.sh" script and
 a larger loop counter in "op_area_update.sh" will keep areas files updated.
+
+**NOTE:** Those two scripts should be running at the **same time**.
 
 #### Automate the Process:
 
@@ -550,7 +554,7 @@ and enter this crontab entry:
 @daily ID=opUpdateDB /usr/local/bin/cron4op.sh >/dev/null 2>&1
 ```
 
-The name after the ID= above is needed by Dillon Cron and used as timestamp, you always provide
+The name after the ID= above is needed by Dillon Cron and used as a timestamp, you always provide
 **full path** to scripts and programs to be run.
 
 Adjust paths settings only if you do not use the File System Structure on top of this Guide.
@@ -589,7 +593,7 @@ find /path/to/diff -mtime +7 -type f -delete
 I remove Change Files daily that are older than 7 days, to do that a new cron entry is added to
 "root" crontab as root of course, the following entry does that:
 ```
-@daily ID=rm_OSM_osc find /var/lib/overpass/getdiff/diff -mtime +7 -type f -delete
+@daily ID=rm_OSM_osc find /var/lib/overpass/getdiff/diff -mtime +7 -type f -delete >/dev/null 2>&1
 ```
 
 The ID=rm_OSM_osc is needed by Dillon Cron as mentioned in update database above.
