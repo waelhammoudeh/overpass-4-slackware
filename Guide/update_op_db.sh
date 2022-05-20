@@ -37,7 +37,6 @@ if [[ $EUID -ne $OP_USR_ID ]]; then
     exit 1
 fi
 
-
 SYS_ROOT=/var/lib
 
 # this can be a link to any directory on your system - "overpass" name should stay.
@@ -83,6 +82,21 @@ touch $LOGFILE
 
 echo "$(date '+%F %T'): update_op_db.sh started ..." >>$LOGFILE
 echo "$(date '+%F %T'): database directory is: $DB_DIR" >>$LOGFILE
+
+# when doing database update, this script should NOT run while AREAS is being
+# updated. Wait for "op_area_update.sh" to finish first.
+SLP_FLAG=TRUE
+AREA_UPDATE_SCRIPT=$EXEC_DIR/op_area_update*.sh
+while [[ $SLP_FLAG = "TRUE" ]]; do
+{
+    if ( pgrep -f $AREA_UPDATE_SCRIPT  2>&1 > /dev/null) ; then
+        echo "$(date '+%F %T'): Sleeping 5 minutes; for database update script to finish!" >>$LOGFILE
+        sleep 300
+    else
+        SLP_FLAG=FALSE
+    fi
+
+}; done
 
 # initial an empty array
 declare -a newFilesArray=()

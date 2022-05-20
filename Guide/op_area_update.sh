@@ -54,7 +54,8 @@ if [[ $EUID -ne $OP_USR_ID ]]; then
     exit 1
 fi
 
-# this script should NOT run while "update_op_db.sh" is running
+# when doing areas update, this script should NOT run while database is being
+# updated. Wait for "update_op_db.sh" to finish first.
 SLP_FLAG=TRUE
 UPDATE_DB_SCRIPT=$EXEC_DIR/update_op_db.sh
 while [[ $SLP_FLAG = "TRUE" ]]; do
