@@ -57,7 +57,9 @@ fi
 # when doing areas update, this script should NOT run while database is being
 # updated. Wait for "update_op_db.sh" to finish first.
 SLP_FLAG=TRUE
-UPDATE_DB_SCRIPT=$EXEC_DIR/update_op_db.sh
+# UPDATE_DB_SCRIPT=$EXEC_DIR/update_op_db.sh
+UPDATE_DB_SCRIPT=update_op_db.sh
+
 while [[ $SLP_FLAG = "TRUE" ]]; do
 {
     if ( pgrep -f $UPDATE_DB_SCRIPT  2>&1 > /dev/null) ; then

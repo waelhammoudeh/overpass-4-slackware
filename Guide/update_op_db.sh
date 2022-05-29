@@ -86,7 +86,9 @@ echo "$(date '+%F %T'): database directory is: $DB_DIR" >>$LOGFILE
 # when doing database update, this script should NOT run while AREAS is being
 # updated. Wait for "op_area_update.sh" to finish first.
 SLP_FLAG=TRUE
-AREA_UPDATE_SCRIPT=$EXEC_DIR/op_area_update*.sh
+# AREA_UPDATE_SCRIPT=$EXEC_DIR/op_area_update*.sh -- no path with grep!
+AREA_UPDATE_SCRIPT=op_area_update*.sh
+
 while [[ $SLP_FLAG = "TRUE" ]]; do
 {
     if ( pgrep -f $AREA_UPDATE_SCRIPT  2>&1 > /dev/null) ; then
