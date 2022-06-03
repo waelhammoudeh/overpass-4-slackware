@@ -63,7 +63,7 @@ UPDATE_DB_SCRIPT=update_op_db.sh
 while [[ $SLP_FLAG = "TRUE" ]]; do
 {
     if ( pgrep -f $UPDATE_DB_SCRIPT  2>&1 > /dev/null) ; then
-        echo "$(date '+%F %T'): Sleeping 5 minutes; for database update script to finish!" >>$LOG_FILE
+        echo "$(date '+%F %T'): Sleeping 5 minutes; for \"Update Overpass Database\" script to finish!" >>$LOG_FILE
         sleep 300
     else
         SLP_FLAG=FALSE

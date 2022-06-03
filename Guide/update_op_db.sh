@@ -87,12 +87,14 @@ echo "$(date '+%F %T'): database directory is: $DB_DIR" >>$LOGFILE
 # updated. Wait for "op_area_update.sh" to finish first.
 SLP_FLAG=TRUE
 # AREA_UPDATE_SCRIPT=$EXEC_DIR/op_area_update*.sh -- no path with grep!
-AREA_UPDATE_SCRIPT=op_area_update*.sh
+# AREA_UPDATE_SCRIPT=op_area_update*.sh -- THIS expression did not do what I thought it would
+# I RENAME my "op_area_update.sh" script to "op_area_update50.sh" with IMAX loop counter set 50.
+AREA_UPDATE_SCRIPT=op_area_update*
 
 while [[ $SLP_FLAG = "TRUE" ]]; do
 {
     if ( pgrep -f $AREA_UPDATE_SCRIPT  2>&1 > /dev/null) ; then
-        echo "$(date '+%F %T'): Sleeping 5 minutes; for database update script to finish!" >>$LOGFILE
+        echo "$(date '+%F %T'): Sleeping 5 minutes; for \"Area Update\" script to finish!" >>$LOGFILE
         sleep 300
     else
         SLP_FLAG=FALSE
