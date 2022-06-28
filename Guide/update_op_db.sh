@@ -93,8 +93,10 @@ AREA_UPDATE_SCRIPT=op_area_update*
 
 while [[ $SLP_FLAG = "TRUE" ]]; do
 {
-    if ( pgrep -f $AREA_UPDATE_SCRIPT  2>&1 > /dev/null) ; then
-        echo "$(date '+%F %T'): Sleeping 5 minutes; for \"Area Update\" script to finish!" >>$LOGFILE
+    # do NOT use -f switch as we are looking for process name & use quotes
+    if ( pgrep "$AREA_UPDATE_SCRIPT"  2>&1 > /dev/null) ; then
+        echo "$(date '+%F %T'): Areas are being updated; running \"op_area_update*.sh\" found" >>$LOGFILE
+        echo "$(date '+%F %T'): Waiting 5 minutes; for \"Area Update\" script to finish!" >>$LOGFILE
         sleep 300
     else
         SLP_FLAG=FALSE

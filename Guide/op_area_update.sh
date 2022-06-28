@@ -54,6 +54,9 @@ if [[ $EUID -ne $OP_USR_ID ]]; then
     exit 1
 fi
 
+# activate debugging
+set -x
+
 # when doing areas update, this script should NOT run while database is being
 # updated. Wait for "update_op_db.sh" to finish first.
 SLP_FLAG=TRUE
@@ -62,8 +65,10 @@ UPDATE_DB_SCRIPT=update_op_db.sh
 
 while [[ $SLP_FLAG = "TRUE" ]]; do
 {
-    if ( pgrep -f $UPDATE_DB_SCRIPT  2>&1 > /dev/null) ; then
-        echo "$(date '+%F %T'): Sleeping 5 minutes; for \"Update Overpass Database\" script to finish!" >>$LOG_FILE
+    # do NOT use -f switch as we are looking for process name & use quotation marks
+    if ( pgrep "$UPDATE_DB_SCRIPT"  2>&1 > /dev/null) ; then
+        echo "$(date '+%F %T'): Found running \"update_op_db.sh\" script." >>$LOG_FILE
+        echo "$(date '+%F %T'): Waiting 5 minutes; for \"Update Overpass Database\" script to finish!" >>$LOG_FILE
         sleep 300
     else
         SLP_FLAG=FALSE
