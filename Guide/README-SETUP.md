@@ -663,6 +663,12 @@ to the "root" cron table:
 @daily ID=op_logrotate  /usr/sbin/logrotate /etc/logrotate.d/op_logrotate >/dev/null 2>&1
 ```
 
+#### Shutdown Caveat:
+
+The two scripts "update_op_db.sh" and "op_area_update.sh" do not handle shutdown
+signals. To avoid corrupted database make sure that those scripts are done and have
+completed their work before shutting down the system.
+
 #### Area Update Again:
 
 My thinking is the infinite loop is needed for the **planet** database with minuetly updates.
