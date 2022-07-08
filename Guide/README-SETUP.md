@@ -667,7 +667,8 @@ to the "root" cron table:
 
 The two scripts "update_op_db.sh" and "op_area_update.sh" do not handle shutdown
 signals. To avoid corrupted database make sure that those scripts are done and have
-completed their work before shutting down the system.
+completed their work before shutting down the system. Check the log files from both
+scripts.
 
 #### Area Update Again:
 
