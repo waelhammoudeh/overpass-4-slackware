@@ -24,6 +24,8 @@
 # 305.osc.gz
 # 305.state.txt
 
+# WARNING: Script needs to run to completion to avoid corrupted database.
+
 OP_USR_ID=367
 
 if [[ $EUID -ne $OP_USR_ID ]]; then

@@ -20,6 +20,8 @@
 # this script is a rewrite of overpass script "rules_loop.sh" with new name: op_area_update.sh
 #
 
+# WARNING: Script needs to run to completion to avoid corrupted database.
+
 # only overpass user can run this
 # this is a WRONG way to check user, we must look in passwd & goup files
 OP_USR_ID=367
