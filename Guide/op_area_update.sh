@@ -37,7 +37,8 @@ DB_DIR=$OP_DIR/database
 
 LOG_DIR=$OP_DIR/logs
 
-VERSION=v0.7.57
+# use glob for VERSION number when checking for area dispatcher socket
+# VERSION=v0.7.58
 EXEC_DIR=/usr/local/bin
 DSPTCHR=$EXEC_DIR/dispatcher
 RULES_DIR=/usr/local/rules
@@ -86,7 +87,8 @@ if ( ! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
     exit 1
 fi
 
-if [ ! -S ${DB_DIR}/osm3s_${VERSION}_areas ]; then
+# the glob '*' is for VERSION number
+if [ ! -S ${DB_DIR}/osm3s_*_areas ]; then
     echo "Error: Areas dispatcher is not running. Exiting"
     echo "$(date '+%F %T'): Areas dispatcher is not running. Exiting" >>$LOG_FILE
     exit 1
@@ -118,9 +120,11 @@ echo "`date '+%F %T'`: Area update started. Loop COUNT is set to: $IMAX" >>$LOG_
 for ((i=1; i<=$IMAX; i++)); do
 {
   echo "`date '+%F %T'`: update started: iteration number <$i>" >>$LOG_FILE
-  #  ./osm3s_query --progress --rules <$DB_DIR/rules/areas.osm3s
+
   ionice -c 2 -n 7 nice -n 19 $EXEC_DIR/osm3s_query --progress --rules <$RULES_DIR/areas.osm3s
+
   echo "`date '+%F %T'`: update finished: iteration number <$i>" >>$LOG_FILE
+
   sleep 3
 }; done
 
