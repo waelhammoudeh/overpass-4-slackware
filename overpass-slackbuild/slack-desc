@@ -14,6 +14,6 @@ overpass: API and gets back the data set that corresponds to the query.
 overpass:
 overpass: Wiki Web site: https://wiki.openstreetmap.org/wiki/Overpass_API
 overpass: 
-overpass: Source:
-overpass:   https://dev.overpass-api.de/releases/osm-3s_v0.7.56.8.tar.gz
+overpass: Source URL: https://dev.overpass-api.de/releases/
+overpass: Developer GitHub: https://github.com/drolbr/Overpass-API.git
 overpass:

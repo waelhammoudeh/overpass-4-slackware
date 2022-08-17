@@ -77,18 +77,20 @@ This is my opinion for hardware:
 Software Installation:
 
 Important Notes:
- - This SlackBuild script compiles the overpassAPI software from source,
+ - The included SlackBuild script compiles the overpassAPI software from source,
    package destination {PKGDEST} installation root is set to /usr/local/.
- - This script creates two new directories under /usr/local/ with names
-   "cgi-bin" and "templates".
+ - The build script creates THREE new directories under /usr/local/ with names
+   "cgi-bin", "templates" and "rules".
  - Blog directory along with overpass-doc are added to the package in the
    html directory; for educational purposes. Available on the web online too.
- - This script replaces the source "index.html" file in the html directory with
-   that used in an earlier version 0.7.55.9.
- - This script does NOT setup any web server, however it makes the process
+ - This build script replaces the tar ball source "index.html" file in the html
+    directory with that used in an earlier version 0.7.55.9.
+ - The build script does NOT setup any web server, however it makes the process
    much easier.
- - Included is a script to start and stop the dispatcher dameon for overpass;
-   dispatcher is started after database setup.
+ - Included in the package by this build script are three helper scripts:
+   1) initial_op_db.sh : script to initial overpass database.
+   2) op_ctl.sh: overpass control script.
+   3) rc.dispatcher: used in system startup and shutdown scripts.
  
 Required before building package:
 You need to create "overpass" group and user before building overpassAPI, and

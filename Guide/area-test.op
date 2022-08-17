@@ -1,2 +1,2 @@
-[out:csv(name, ::count)];
-area[admin_level=8]; out count; out;
+[out:csv(name; false)]; //output name; do not include "name" column header
+area[admin_level=8]; out;

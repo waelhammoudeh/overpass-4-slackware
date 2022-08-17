@@ -24,7 +24,7 @@ DB_DIR=$OP_DIR/database
 
 EXEC_DIR=/usr/local/bin
 DSPTCHR=$EXEC_DIR/dispatcher
-VERSION=v0.7.57
+VERSION=v0.7.58
 USER=overpass
 DIS_MODE="normal mode"
 unset META
