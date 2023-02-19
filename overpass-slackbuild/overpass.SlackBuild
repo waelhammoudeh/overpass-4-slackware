@@ -30,7 +30,7 @@
 
 CWD=$(pwd)
 PKGNAM=overpass
-VERSION=0.7.58.5
+VERSION=0.7.59.2
 SOURCE_NAME=osm-3s_v
 BUILD=${BUILD:-1}
 TAG=${TAG:-_wh}

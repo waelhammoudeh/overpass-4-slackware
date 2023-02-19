@@ -18,7 +18,15 @@ This build script installs the following helper scripts into /usr/local/bin/ dir
 
  * initial_op_db.sh
  * op_ctl.sh
+
+Installed to /etc/rc.d/ directory:
  * rc.dispatcher.new
+
+For new installs above file needs to be renamed as follows:
+
+ # mv /etc/rc.d/rc.dispatcher.new  /etc/rc.d/rc.dispatcher
+
+Please see my Guide for full scripts usage.
 
 Database needs to be created (initialed) before you can use overpass; this
 procedure is explained in the "Guide" directory. The "initial_op_db.sh" script
@@ -65,13 +73,10 @@ is executable then add the following lines to the following files:
 You may need to create the "/etc/rc.d/rc.local_shutdown" if not present in your
 system.
 
+To include the Guide in the package, copy the Guide directory to build script
+parent directory directory.
+
 Overpass-API upgrade:
 
-If upgrading running overpass, stop dispatcher before 'upgradepkg' step and
-do not forget to rename your new dispatcher after the upgrade with:
-  # mv /etc/rc.d/rc.dispatcher.new /etc/rc.d/rc.dispatcher
+If upgrading running overpass server, stop dispatcher before 'upgradepkg' step.
 
-I have updated my "op_area_update.sh" script (included in the Guide directory).
-If you are upgrading overpass-API to version v0.7.58.5 and use that script, then
-you need to use the updated (latest) script both to generate area and also to
-update area files. Find the updated script in the Guide directory.

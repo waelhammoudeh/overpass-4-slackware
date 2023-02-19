@@ -9,17 +9,10 @@ Concepts and methods mentioned here can be applied to any Linux distribution not
 
 ##### This guide is a work in progress!
 
-#### Correction:
-
-I had given wrong instruction to initial overpass database with full history or
-"attic" data in previous version of this guide. The wrong instructions have been
-removed since, please accept my apology.
-
 #### Warning:
 
 Running overpass database instance initialed from extract for limited area file with
-**FULL HISTORY (attic)** is not supported. There is an experimental approach mentioned
-in the file README-SETUP.md in this guide.
+**FULL HISTORY (attic)** is not supported.
 
 #### Prerequisite and caveat:
 
