@@ -24,6 +24,11 @@ DB_DIR=$OP_DIR/database
 
 EXEC_DIR=/usr/local/bin
 DSPTCHR=$EXEC_DIR/dispatcher
+
+# VERSION is the number used in dispatcher sock lock files:
+# /var/lib/overpass/database/osm3s_v0.7.58_areas
+# /var/lib/overpass/database/osm3s_v0.7.58_osm_base
+
 VERSION=v0.7.58
 USER=overpass
 DIS_MODE="normal mode"
