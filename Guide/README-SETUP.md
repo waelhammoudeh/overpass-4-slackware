@@ -460,6 +460,7 @@ geofabrik.de website. For each file in the list there is a date for its modifica
 close to the date in Change file we are looking for. Look inside "state.txt" and check timestamp
 line to match just after your region date. Once we match dates in "state.txt" the sequence
 number for change file to start updating from is the number in sequenceNumber line.
+The sequence number is 4 to 9 digit long number, never starts with zero.
 
 The sequenceNumber line in this matched "state.txt" file has the sequence number needed
 for the 'begin' argument of my "getdiff" program.
@@ -534,9 +535,14 @@ This ends with an entry formatted as {region}-updates, where region is the name 
 
 The argument for 'begin' is the sequence number for the change file to start downloading from.
 
-To ensure you have the right sequence number, start with fresh downloaded OSM data file, then
+To ensure that you have the right sequence number, start with fresh downloaded OSM data file, then
 your change files will be generated the very next day by geofabrik.de servers. Easy is better.
 The sequence number is inside the corresponding "state.txt" file at the sequenceNumber line.
+The next day, browse your area updates page for new state.txt files, you will easly find your needed
+sequence number.
+
+The sequence number is 4 to 9 digit long number, never starts with zero. By OSM convention daily change
+files have sequence number of four digits; at geofabrik.de this convention is followed.
 
 If this not possible, then follow the instructions mentioned above under the heading
 "Know last date included in your region OSM data file:" to find your sequence number.
