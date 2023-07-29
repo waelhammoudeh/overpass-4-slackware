@@ -125,7 +125,7 @@ The "set_DB_DIR_path.sh" is no longer needed. It will soon get removed.
 
 OverpassAPI provides two scripts to initial the database found in "/usr/local/bin" directory .
 The first is the "download_clone.sh" script which is for cloning **whole planet** database from
-a live overpass server. This script can not be used for a llimited area or region.
+a live overpass server. This script can not be used for a limited area or region.
 
 The second script is "init_osm3s.sh" script. This script calls overpass "update_database"
 program to accomplish its goal. This script usage is as follows:

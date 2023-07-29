@@ -7,6 +7,13 @@ How to utilize cron and logrotate utilities to automate updates and maintenance 
 
 Concepts and methods mentioned here can be applied to any Linux distribution not just Slackware.
 
+#### Upgrades:
+
+Updated the bash script for database update "update_op_db.sh" in the Guide.
+The updated script is needed for new upgraded "getdiff" program.
+The program output file "newerFiles.txt" has changed format, old format is not compatible with the format.
+
+
 ##### This guide is a work in progress!
 
 #### Warning:
