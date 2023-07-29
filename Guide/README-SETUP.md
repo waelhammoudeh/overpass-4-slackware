@@ -385,8 +385,92 @@ TODO: Configure Apache so "download_clone.sh" will clone DB from machine to mach
 
 OSM data changes by the minute - literally. Recall Change Files were mentioned in README-DATA.md
 section "OSM File Format", they have (.osc) file extension and they include changes within a time period.
-The overpassAPI provides two ways to keep databases updated with "Change Files"
 
+Lets recap and say the obvious. Each data element inside OSM data files has a date;
+it gets this date when edited for addition, deletion or modification. To bring OSM data
+up to date, newer elements are added or merged into the data. Newer elements are in
+the change files. To update OSM data file or database we need to know the last date
+for data included in that original OSM file then add data dated just AFTER this date from
+change files.
+
+###### Know last date included in your region OSM data file:
+
+At geofabrik.de servers regional OSM extracts data files have 2 sets, the first include full historic data, the second
+does not. Extracts with full historic data are generated **weekly** while the non-historic ones are
+generated **daily**. Since we can not initial an overpass database with full historic support for limited area,
+please stay away from full historic data file to initial your database.
+
+At geofabrik.de website, the date for last included data in the file is stated on the download page.
+Under "Commonly Used Formats" heading at the line with the download link you will find something like the following:
+```
+This file was last modified 14 hours ago and contains all OSM data up to 2023-07-28T20:21:58Z. File size:233 MB;
+```
+
+Under "Other Formats and Auxiliary Files" heading; the line with the download link will say:
+```
+This file was last modified 6 days ago. File size: 439 MB;
+```
+in this case you calculate the date by going back 6 days from today. Please note that this is the same
+data file listed under the "Commonly Used Formats" heading in older OSM data format and a lot bigger
+file size. Use the smaller file size with (.pbf) data format listed first under "Commonly Used Formats" heading
+to download your region data file.
+
+TODO: include screenshot.
+
+There are tools that can be used to get information about OSM data files, using one you
+can get the last date for data included in that file. One tool (program) is "osmium" with
+the fileinfo command. For example the following command was issued in the directory
+where I have my OSM data file "arizona-latest-internal.osm.pbf" - note no historic data:
+```
+$ osmium fileinfo arizona-latest-internal.osm.pbf
+```
+The output was:
+```
+File:
+  Name: arizona-latest-internal.osm.pbf
+  Format: PBF
+  Compression: none
+  Size: 265419524
+Header:
+  Bounding boxes:
+    (-114.8325,30.05891,-109.0437,37.00596)
+  With history: no
+  Options:
+    generator=osmium/1.15.0
+    osmosis_replication_base_url=https://osm-internal.download.geofabrik.de/north-america/us/arizona-updates
+    osmosis_replication_sequence_number=3763
+    osmosis_replication_timestamp=2023-07-18T20:21:43Z
+    pbf_dense_nodes=true
+    pbf_optional_feature_0=Sort.Type_then_ID
+    sorting=Type_then_ID
+    timestamp=2023-07-18T20:21:43Z
+```
+notice the timestamp line at the end. This is the date for latest data included in the file.
+
+There are other tools you may use that will give you this information. For osmium you may want
+my slackware package find it [here](https://github.com/waelhammoudeh/osmium-tool_slackbuild).
+
+Now we know the LAST date included in our data file, we need to match that with the change file
+with date just AFTER this date. Change files have corresponding "state.txt" files which includes
+a timestamp line and sequenceNumber line. We look in "state.txt" files looking for date just
+after our last date we just found.
+
+The change files and their corresponding state.txt are listed on the region **updates** page at
+geofabrik.de website. For each file in the list there is a date for its modification, this date is very
+close to the date in Change file we are looking for. Look inside "state.txt" and check timestamp
+line to match just after your region date. Once we match dates in "state.txt" the sequence
+number for change file to start updating from is the number in sequenceNumber line.
+
+The sequenceNumber line in this matched "state.txt" file has the sequence number needed
+for the 'begin' argument of my "getdiff" program.
+
+At "download.geofabrik.de" - this is the public server - the region **updates** page lists "state.txt"
+and change files in **sorted** order, those same files are **not** sorted and do not include modified
+date for the internal server. Internal and public servers files are generated at just about the same time,
+they also share file names "the 3-digit number file name", if you are using the internal server, it is easier
+to browse your region updates page on the **public** server.
+
+The overpassAPI provides two ways to keep databases updated with "Change Files"
 The first method uses "update_from_directory" program and used with a live server; meaning the
 "dispatcher" has to be running, database can still be queried during the update process. This is the
 method used in the script "apply_osc_to_db.sh" shipped with the API source, you can look at the
@@ -432,63 +516,30 @@ The program is written in C language, download, compile and place the executable
 "/usr/local/bin/" directory because that is where a script down below expects to find it.
 (only root can write to this directory - so be root).
 
-The repository includes an example configuration file: "getdiff.conf.example" in its root directory,
-edit the file with your settings and save it without the "example" extension please.
-
-Fill the following settings:
+modify the example configuration file: "getdiff.conf.example" included with this Guide,
+Set values for KEYS below and save it without the "example" extension please:
 
   - SOURCE
   - BEGIN
   - DIRECTORY
 
-If you use Geofabrik internal server, please fill "USER" setting too, we will provide password when we call the program.
+If you use Geofabrik internal server, please fill "USER" value too, we will provide password when we call the program.
 
-Program "getdiff" appends newly dowloaded files names to the file 'newerFiles.txt' in its working durectory.
-This file is read by "update_op_db.sh" script to do the updates. The script renames this file when done - emptying
+Program "getdiff" appends newly downloaded file names to the file 'newerFiles.txt' in its working directory.
+This file is processed by "update_op_db.sh" script to do the updates. The script renames this file when done - emptying
 or hiding the file from "getdiff". We could have deleted / removed altogether, but there is a plan for it!
 
 The 'source' argument is the internet address for your area (region) updates page at geofabrik.de site.
-This ends with an entry formated as {region}-updates, where region is the name of your area or country.
+This ends with an entry formatted as {region}-updates, where region is the name of your area or country.
 
-The argument for 'begin' is the sequence number for the change file to start download from.
+The argument for 'begin' is the sequence number for the change file to start downloading from.
 
-##### Sequence Number:
+To ensure you have the right sequence number, start with fresh downloaded OSM data file, then
+your change files will be generated the very next day by geofabrik.de servers. Easy is better.
+The sequence number is inside the corresponding "state.txt" file at the sequenceNumber line.
 
-This is a unique number for each 'Change File', it identifies the file and is used to locate it within a file system.
-Sequence numbers are 4 to 9 digit number, never starts with zero. The number of digits varies with time period
-they are generated by, as of this writing they are as follows on "planet.openstreetmap.org/replication/" website:
-
-```
-Time Granularity              Sequence Number Length
------------------------------------------------------
-
-  Daily                                  4 digits
-  Hourly                                 5 digits
-  Minutely                               7 digits
-```
-
-I do not know if those number of digits are fixed, they may change.
-
-The change files at geofabrik.de servers are daily change files and use the same OSM convention for sequence number.
-It is a four digit number at geofabrik.de download server.
-
-How is the sequence number used to locate the file? The number is formated into a 9 character long buffer
-left padded with zeros, the least significant 3 digits are the file name while the other digits form directories.
-```
-Example 3672 --> 000003672 --> /000/003/672
-
-change file : /000/003/672.osc.gz
-state.txt file : /000/003/672.state.txt
-
-```
-
-Change files have a corresponding 'state.txt', which has 2 lines; timestamp line and sequenceNumber line.
-The date in the timestamp line is the date of last OSM data included in the change file. When updating
-your database, we start from data added AFTER we downloaded our area / region data file. We browse
-throught 'state.txt' files looking for date just AFTER our data file date, use the sequence number from
-the matched 'state.txt' file.
-
-I have a feeling that I have made it harder than it should be!
+If this not possible, then follow the instructions mentioned above under the heading
+"Know last date included in your region OSM data file:" to find your sequence number.
 
 With all settings filled in configuration file - we need to make sure that all is okay now. Run "getdiff" to download
 your region Change Files to test your settings in one of two ways:
@@ -527,7 +578,7 @@ program provided by overpassAPI. The "dispatcher" must be stopped while "update_
 The "update_op_db.sh" uses files dowloaded by "getdiff" program, so both share some settings, namely:
 
  * DB_DIR : overpass database directory
- * DIFF_DIR : where to find differ files
+ * DIFF_DIR : where to find differ (change) files
 
 Note that "update_op_db.sh" script uses "gunzip" program and does not require osmium - osmium
 is still required to initial databse with "initial_op_db.sh" script.
