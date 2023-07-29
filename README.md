@@ -11,7 +11,9 @@ Concepts and methods mentioned here can be applied to any Linux distribution not
 
 Updated the bash script for database update "update_op_db.sh" in the Guide.
 The updated script is needed for new upgraded "getdiff" program.
-The program output file "newerFiles.txt" has changed format, old format is not compatible with the format.
+The program output file "newerFiles.txt" has changed format, old format is not compatible with the new format.
+
+Note: Watch for new (needed) updates to this guide ... soon I hope.
 
 
 ##### This guide is a work in progress!
