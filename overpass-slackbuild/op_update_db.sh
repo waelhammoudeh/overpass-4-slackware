@@ -94,7 +94,7 @@ DIFF_DIR=$GETDIFF_WD/diff
 LOG_DIR=$OP_DIR/logs
 
 # script log file
-LOGFILE=$LOG_DIR/update_op_db.log
+LOGFILE=$LOG_DIR/op_update_db.log
 
 # input to script "newerFiles.txt"
 NEWER_FILES=$GETDIFF_WD/newerFiles.txt
@@ -312,15 +312,15 @@ done
 
 # done checking
 
-# wait for op_area_update.sh script to finish if running
+# wait for op_update_areas.sh script to finish if running
 SLEEP_FLAG=TRUE
-AREA_UPDATE_SCRIPT=op_area_update*
+AREA_UPDATE_SCRIPT=op_update_areas*
 
 while [[ $SLEEP_FLAG = "TRUE" ]]; do
 {
     # do NOT use -f switch as we are looking for process name & use quotes
     if ( pgrep "$AREA_UPDATE_SCRIPT"  2>&1 > /dev/null) ; then
-        echo "$(date '+%F %T'): Areas are being updated; running \"op_area_update*.sh\" found" >>$LOGFILE
+        echo "$(date '+%F %T'): Areas are being updated; running \"op_update_areas.sh\" found" >>$LOGFILE
         echo "$(date '+%F %T'): Waiting 5 minutes; for \"Area Update\" script to finish!" >>$LOGFILE
         sleep 300
     else

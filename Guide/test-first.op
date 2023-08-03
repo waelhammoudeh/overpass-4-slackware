@@ -3,7 +3,6 @@
    box below with good points within your installed database. */
    
 // the above was multilines comment - this is a one line comment.
-   
 
 [out:csv("name";false)];
 way(33.56090, -111.96920, 33.57510, -111.93470)[highway];

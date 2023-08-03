@@ -1,8 +1,18 @@
 #!/usr/bin/bash
 
-# Copyright 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 Roland Olbricht et al.
+# This is "op_make_areas.sh" bash script:
+# Creates areas in newly initialed overpass database.
+# Note: this is the same script as "op_update_areas.sh" with one exception; IMAX
+# The loop counter {IMAX} here is set to twice the value found in areas update
+# script "op_update_areas.sh".
+# This "op_make_areas.sh" script is intended to run only once on newly initialed
+# overpass database.
 #
-# This file is part of Overpass_API.
+# Note that both scripts write to the SAME log file!
+#
+# This file is part of the Guide for overpass-4-slackware found on GitHub at:
+# https://github.com/waelhammoudeh/overpass-4-slackware
+#
 #
 # Overpass_API is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -17,7 +27,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Overpass_API. If not, see <https://www.gnu.org/licenses/>.
 
-# this script is a rewrite of overpass script "rules_loop.sh" with new name: op_area_update.sh
+# this script is a rewrite of overpass script "rules_loop.sh" with the new name
 #
 
 # WARNING: Script needs to run to completion to avoid corrupted database.
@@ -37,12 +47,10 @@ DB_DIR=$OP_DIR/database
 
 LOG_DIR=$OP_DIR/logs
 
-# use glob for VERSION number when checking for area dispatcher socket
-# VERSION=v0.7.58
 EXEC_DIR=/usr/local/bin
 DSPTCHR=$EXEC_DIR/dispatcher
 RULES_DIR=/usr/local/rules
-LOG_FILE=$LOG_DIR/op_area_update.log
+LOG_FILE=$LOG_DIR/op_update_areas.log
 
 touch $LOG_FILE
 
@@ -57,14 +65,14 @@ if [[ $EUID -ne $OP_USR_ID ]]; then
     exit 1
 fi
 
-# activate debugging
-set -x
+set -e
 
 # when doing areas update, this script should NOT run while database is being
 # updated. Wait for "update_op_db.sh" to finish first.
-SLP_FLAG=TRUE
 # UPDATE_DB_SCRIPT=$EXEC_DIR/update_op_db.sh
-UPDATE_DB_SCRIPT=update_op_db.sh
+
+SLP_FLAG=TRUE
+UPDATE_DB_SCRIPT=op_update_db.sh
 
 while [[ $SLP_FLAG = "TRUE" ]]; do
 {
@@ -87,8 +95,7 @@ if ( ! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
     exit 1
 fi
 
-# the glob '*' is for VERSION number
-if [ ! -S ${DB_DIR}/osm3s_*_areas ]; then
+if [ ! -S ${DB_DIR}/osm3s_areas ]; then
     echo "Error: Areas dispatcher is not running. Exiting"
     echo "$(date '+%F %T'): Areas dispatcher is not running. Exiting" >>$LOG_FILE
     exit 1
@@ -109,24 +116,24 @@ fi
 #
 # to INITIAL area data set IMAX to 100 - 200 iterations. Arizona = 100 & USA = 200
 # to UPDATE area data set IMAX to half number above & run cronjob weekly or monthly
-# when UPDATE you may want to rename script with IMAX number: op_area_update50.sh
+# script named "op_initial_areas.sh" has {IMAX} loop counter set to double the
+# value of {IMAX} in "op_update_areas.sh" script.
 #
 IMAX=100
 
 echo "Area update started. Loop COUNT is set to: $IMAX"
 echo "`date '+%F %T'`: Area update started. Loop COUNT is set to: $IMAX" >>$LOG_FILE
 
-# while [[ true ]]; do
 for ((i=1; i<=$IMAX; i++)); do
 {
-  echo "`date '+%F %T'`: update started: iteration number <$i>" >>$LOG_FILE
+  echo "`date '+%F %T'`: update iteration number < $i > started " >>$LOG_FILE
 
   ionice -c 2 -n 7 nice -n 19 $EXEC_DIR/osm3s_query --progress --rules <$RULES_DIR/areas.osm3s
 
-  echo "`date '+%F %T'`: update finished: iteration number <$i>" >>$LOG_FILE
+  echo "`date '+%F %T'`: update iteration number < $i > done." >>$LOG_FILE
 
-  sleep 3
+  sleep 1
 }; done
 
-echo "Area Update Done After < $IMAX > Iterations"
+echo "Area Update Done After $IMAX Iterations"
 echo "`date '+%F %T'`: *** Area Update Done After < $IMAX > Iterations ***" >>$LOG_FILE

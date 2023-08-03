@@ -1,8 +1,8 @@
 This is the main "README" file for the overpass installation and setup Guide.
 
-Guide details are provided in README files as follows:
+Guide details are provided in seperate README files as follows:
 
- *) README - this file:
+ *) README - this file you are reading now:
      Provide hardware requirements and software installation.
      Software provide tools to initial, maintain and query database.
 
@@ -25,53 +25,17 @@ From the "Complete Installation Guide" that comes with the software:
  the better, because caching of disk content in the RAM will significantly speed
  up Overpass API. The processor speed will have little relevance. For the hard
  disk, it depends on what you want to install. A full planet database with
- minutely updates should have at least 250 GB of hard disk space at disposal.
- Without minute diffs and meta data, 100 GB would already suffice."
-
-Of course the better hardware the faster result, the big difference shows up in
-database initialization and package building when it comes to the cpu, ram and
-hard disk. The query result speed is also important, but when this doubles or
-even triples, we are talking about seconds so instead of 2 second with great
-modern machine verses 4 or 5 seconds with an old machine; that is what the
-processor speed have little relevance above is for. This processor speed will
-make huge difference during database initialization, 30 minutes verses hours!
-It comes down what you can or cannot tolerate. I have two machines they are
-both old, both are made by Dell, have 64 bit processors - not same ones - and
-both have 16 GB memory; here is a partial list from "inxi -F" command output:
-
-first machine:
-
-System:    Host: yafa.local Kernel: 5.12.12 x86_64 bits: 64 Desktop: IceWM 2.3.4 Distro: Slackware 14.2
-Machine:   Type: Desktop System: Dell product: Precision T5600 v: 01 serial: <superuser required>
-           Mobo: Dell model: 0Y56T3 v: A00 serial: <superuser required> UEFI: Dell v: A19 date: 06/30/2019
-CPU:       Info: 2x Quad Core model: Intel Xeon E5-2643 0 bits: 64 type: MCP SMP cache: L2: 20 MiB
-           Speed: 1197 MHz min/max: 1200/3500 MHz Core speeds (MHz): 1: 1197 2: 1591 3: 1269 4: 1197 5: 1197 6: 1216 7: 1197
-           8: 1606
-
-Drives:    Local Storage: total: 1.75 TiB used: 239.6 GiB (13.4%)
-           ID-1: /dev/nvme0n1 vendor: Samsung model: SSD 970 EVO Plus 1TB size: 931.51 GiB
-           ID-2: /dev/sda vendor: Western Digital model: WD2500AAJS-75M0A0 size: 232.83 GiB
-           ID-3: /dev/sdb vendor: Toshiba model: MK1655GSX size: 149.05 GiB
-           ID-4: /dev/sdc vendor: Samsung model: SSD 870 EVO 500GB size: 465.76 GiB
-           ID-5: /dev/sdg type: USB vendor: SanDisk model: Cruzer Blade size: 14.56 GiB
-
-second machine:
-
-System:    Host: lazyant.local Kernel: 5.10.3 x86_64 bits: 64 Desktop: IceWM 2.0.0 Distro: Slackware 14.2
-Machine:   Type: Desktop System: Dell product: Precision WorkStation 670 v: N/A serial: <superuser required>
-           Mobo: Dell model: 0XC837 serial: <superuser required> BIOS: Dell v: A07 date: 03/15/2006
-CPU:       Info: 2x Single Core model: Intel Xeon bits: 64 type: SMP L2 cache: 4 MiB
-           Speed: 3192 MHz min/max: N/A Core speeds (MHz): 1: 3192 2: 3192
-
-Drives:    Local Storage: total: 838.39 GiB used: 297.82 GiB (35.5%)
-           ID-1: /dev/sda vendor: Seagate model: ST3300622A size: 279.46 GiB
-           ID-2: /dev/sdb vendor: Western Digital model: WD2000BB-00RDA0 size: 186.31 GiB
-           ID-3: /dev/sdc vendor: A-Data model: SU650 size: 223.57 GiB
-           ID-4: /dev/sdd vendor: Western Digital model: WD1600AVBS-63SVA0 size: 149.05 GiB
+ minutely updates will require 100s of GB and is out of the scope of this repository.
+ Here we are using extracts for limited area. The amount of OSM data file will
+ vary from country to country depending on a lot of things. The data file
+ for the United States is a lot bigger than the data file for the state of Arizona
+ that I use. My database directory size is under 30 GB for Arizona with meta
+ data included. My guess is you need any where from 50 to 250 GB of free
+ disk space.
 
 This is my opinion for hardware:
-  1- CPU: any 64 bit - no 32 bit.
-  2- RAM: 4 GB.
+  1- CPU: any multicore 64 bit - no 32 bit please.
+  2- RAM: At least 4 GB.
   3- Hard disk: Solid State Drive is better than magnetic with at least 70 GB free space.
 
 Software Installation:
@@ -87,26 +51,28 @@ Important Notes:
     directory with that used in an earlier version 0.7.55.9.
  - The build script does NOT setup any web server, however it makes the process
    much easier.
- - Included in the package by this build script are three helper scripts:
+ - Included in the package by my SlackBuild script are three helper scripts:
    1) initial_op_db.sh : script to initial overpass database.
    2) op_ctl.sh: overpass control script.
    3) rc.dispatcher: used in system startup and shutdown scripts.
  
 Required before building package:
 You need to create "overpass" group and user before building overpassAPI, and
-set ownership on the database directory. Database directory is where you will
+set ownership on overpass home directory. Overpass directory is where you will
 store your database on your system, you should have enough free space to
-store your database, it will be the home directory for the overpass user.
-This is done with the following commands:
+store your database.
+
+The following commands will accomplish those requirements:
 
    # groupadd -g 367 overpass
-   # useradd -u 367 -g 367 -d /your/database/directory overpass
-   # mkdir /your/database/directory
-   # chown overpass:overpass /your/database/directory
+   # useradd -u 367 -g 367 -d /your/overpass/directory overpass
+   # mkdir /your/overpass/directory
+   # chown overpass:overpass /your/overpass/directory
 
-Replace "/your/database/directory" with your actual database directory; where
-you will store your database. You do need to create the directory and set its
-ownership.
+Replace "/your/overpass/directory" with your actual overpass home directory;
+where you will store your database. You do need to create the directory and set
+its ownership.
+
 Thanks to Robby Workman from SlackBuilds.org for issuing and including the
 above ids in the "Recommended UID/GIDs" document in their site. This avoids
 conflicts with software installed from SlackBuilds.org, so I highly recommend
@@ -124,10 +90,9 @@ To accomplish our goal follow these steps:
 1) Create user and group as outlined above in "Required before building".
 2) Build the package with SlackBuild script and install it on your machine.
 3) Download open street maps data for your area and initial the database.
-4) Start overpass dispatcher dameon with "rc.dispatcher". You need to set
-database directory first, make sure script is executable.
+4) Start overpass "dispatcher" dameon to manage the database.
 
-To have dispatcher start and stop on system boot and shutdown add the
+To have dispatcher start and stop on your system boot and shutdown; add the
 following lines to the following files, (after database setup):
 
  /etc/rc.d/rc.local
@@ -147,7 +112,11 @@ following lines to the following files, (after database setup):
 You may need to create the "/etc/rc.d/rc.local_shutdown" if not present in your
 system. The rc.dispatcher script has other options; please see the script file.
 
-5) Setup a web server such as "Apache Web Server" for your overpass server.
+5) Database needs to be updated periodically or automatically, scripts are
+provided for this and an automation process is described and implemented.
+
+6) Setup a web server such as "Apache Web Server" for your overpass server, enable
+internet access to your database.
 
 The long story is broken into files mentioned on top of this README, so
 please see "README-DATA.md", "README-SETUP.md" and "README.web".

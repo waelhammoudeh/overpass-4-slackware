@@ -1,20 +1,176 @@
-This repository is a guide for setting up overpassAPI server on a local machine;
-your own server - with limited area database. I use Linux Slackware64, included
-in this repository is a SlackBuild script to build a Slackware package for the
-overpassAPI software, scripts to initial and update overpass database, program to
-retrieve "Change Files" from Geofabrik servers for the updates: ["getdiff"](https://github.com/waelhammoudeh/getdiff).
-How to utilize cron and logrotate utilities to automate updates and maintenance of the database.
+This repository is a guide for setting up OSM overpass software on a local machine
+for limited area initialed from an OSM extract data file. It covers software installation,
+database initialization, database manager "dispatcher" control, web server setup for
+database access, database updates. An automation process is described and implemented
+for running the server and for the database updates.
+
+I use Linux Slackware64 system, included in this repository is a SlackBuild script to
+build a Slackware package for the overpassAPI software, scripts to initial and update
+overpass database, script to control the dispatcher and program to retrieve the
+"Change Files" from Geofabrik servers needed for database updates: ["getdiff"](https://github.com/waelhammoudeh/getdiff).
 
 Concepts and methods mentioned here can be applied to any Linux distribution not just Slackware.
 
-#### Upgrades:
+### Changes:
 
-Updated the bash script for database update "update_op_db.sh" in the Guide.
-The updated script is needed for new upgraded "getdiff" program.
-The program output file "newerFiles.txt" has changed format, old format is not compatible with the new format.
+**Overpass**
 
-Note: Watch for new (needed) updates to this guide ... soon I hope.
+On April 25/2023 the Overpass developer made the following announcement in a blog post:
 
+```
+Since almost two weeks a new version of the Overpass API is out.
+This version addresses primarly those people that maintain an
+instance on a magnetic hard disk. The version has changed the
+data format of the backend such that updates run four times faster.
+```
+Read the [blog here](https://dev.overpass-api.de/blog/version_0_7_60.html)
+
+  - New database format
+  - New migration program from [v0.7.52 - v0.7.59] database format to v0.7.60 database format.
+  - New log file in the database directory with file name: 'database.log'
+  - Dropped Version Number from socket file names.
+
+**Guide Scripts Renamed And Moved To Package Directory**
+
+ Scripts names now start with "op"; scripts for the overpass user, followed by the action - verb,
+ then the object each scripts acts upon.
+
+ Scripts have been moved to SlackBuild directory and are included in the package; you still
+ need to copy "op_logrotate" to "/etc/logrotate.d/" if you use it.
+
+ The old "op_area_update.sh" script gets two new names; op_make_areas.sh and op_update_areas.sh,
+ the first has the {IMAX} loop counter set to twice the value found in the second for this {IMAX},
+ the first is run to make areas in a new database and the second is run once a week from a cron job
+ to keep areas updated. Note that they both still write to the same log file, we have too many of them!
+
+ ```
+    Old Name                     New Name
+  ------------------------------------------------------------
+  initial_op_db.sh           op_initial_db.sh
+  op_area_update.sh          op_make_areas.sh
+  op_area_update.sh          op_update_areas.sh
+  update_op_db.sh            op_update_db.sh
+```
+
+**op_ctl.sh**
+
+  - Restructured the script
+  - Removerd Version Number from socket file names
+
+**gediff**
+
+  - Program was upgraded with code improvements and more
+  - The program output file 'newerFiles.txt' format has changed.
+  - For all changes see [my getdiff repository](https://github.com/waelhammoudeh/getdiff)
+
+**op_update_db.sh**
+
+  - Updated the script to process the new format from 'newerFiles.txt' file.
+
+**op_logrotate**
+
+  - The new 'database.log' file is included in this file.
+
+**SlackBuild**
+
+  - Updated to overpass version 0.7.61.4
+  - Dropped the 'new' file name extension from '/etc/rc.d/rc.dispatcher'
+  - Scripts from the Guide are installed by the package build script.
+  - The op_logrotate file has been moved to the package build directory.
+
+**Upgrade Instructions:**
+
+The procedure to upgrade is simple, put no mistakes are allowed; there is no way to go back!
+We first build the new slackware package as usual, stop the "dispatcher" and use upgradepkg.
+Once that is done, we will have the new tool to migrate the database to the new format.
+The migratation process does not convert area files in overpass database. We have to remake
+areas after the migratation. Please follow the steps below exactly:
+
+  - download the source tar ball; the URL is in the "overpass.info" file. Place the source into
+    the build script directory and as "root" build the package with:
+    ```
+     # ./overpass.SlackBuild
+    ```
+  assuming the package built okay, it will be placed in your "/tmp" directory.
+
+  - **Before** the upgrade step, we stop the "dispatcher"; since you are "root", issue:
+  ```
+   # /etc/rc.d/rc.dispatcher stop
+  ```
+  you could also switch to "overpass" user and use "op_ctl.sh" as follows:
+  ```
+   # su overpass
+   $ op_ctl.sh stop
+
+   go back to "root"
+   $ exit
+   #
+   ```
+   it is important that the dispatcher is stopped, double check with "status" check as follows:
+   ```
+   # /etc/rc.d/rc.dispatcher status
+   ```
+   the output should be:
+   ```
+   /usr/local/bin/op_ctl.sh: Database directory is set to: /var/lib/overpass/database
+
+   dispatcher stopped
+   ```
+
+  - Upgrade with the new built overpass package; as root issue:
+  ```
+   # upgradepkg /tmp/overpass-0.7.61.4-x86_64-3_wh.tgz
+   ```
+  - Switch to "overpass" user, start the dispatcher:
+  ```
+   # su overpass
+   $ op_ctl.sh start
+   ```
+   your output should look like the following:
+   ```
+   overpass@yafa:/root$ op_ctl.sh start
+
+   /usr/local/bin/op_ctl.sh: Database directory is set to: /var/lib/overpass/database
+
+   Starting base dispatcher with meta data support ...
+   base dispatcher started.
+
+   Starting areas dispatcher ...
+   areas dispatcher started
+   ```
+
+   - Migrate your database to new format, still as the "overpass" user issue this command:
+   ```
+   $ migrate_database --migrate
+   ```
+   note the switch --migrate after the command. This will take few minutes to complete
+   for small region database. After this completes, your database has been converted to
+   the new format. Use my "test-first.op" query file to check as follows:
+   ```
+   $ osm3s_query < test-first.op | sort -u
+   ```
+   keeping my fingers crossed, I hope this worked okay for you.
+
+   - Remove area files from your database directory, as "overpass" issue:
+   ```
+   $ rm /var/lib/overpass/database/area*
+   ```
+   this is assuming you followed my file system structure outlined in my Guide, adjust the path
+   above to your database directory if you did not follow my file system structure.
+
+   - Make new area files compatible with the new database format; as "overpass" user:
+   ```
+   $ op_make_areas.sh
+   ```
+   This step will take about an hour for small region database. Test your new area files using
+   "test-area.op" file in the Guide:
+   ```
+   osm3s_query < test-area.op | sort -u
+   ```
+  I hope everything was successful for you.
+
+  If this was not successful, new database has to be initialed after insalling the new overpass
+  package.
 
 ##### This guide is a work in progress!
 
@@ -29,19 +185,19 @@ There are some requirements to install and learn overpass, the most important
 thing is time and patience in addition to the followings:
 
   * Hardware demands for memory at least 4 GB, fast hard disk - Solid State Drive
-     or NVME - with disk space at least 50 GB for a small one country area and 64
+     or NVME - with disk space at least 70 GB for a small one country area and 64
      bit multi core processor.
   * Basic knowledge of Unix / Linux commands, not afraid to use the terminal.
   * Software tool to operate on OSM data files, I recommend Osmium Command
-     Line Tools - I have a SlackBuild script next to this repository. You may use
-     other tools.
-  * Caveat to keep in mind that I am NOT an overpass expert neither very smart.
+     Line Tools - use my [SlackBuild](https://github.com/waelhammoudeh/osmium-tool_slackbuild) script to build slackware package.
+     You may use other tools.
+  * Caveat to keep in mind is that I am NOT an overpass expert neither very smart.
 
 #### Organization:
 
 This repository has two directories; the first is "overpass-slackbuild" where I
 placed the build script for Slackware package. The second directory is the "Guide"
-where you will find instruction files for overpass setup and other essential
+where you will find instructions and files for overpass setup and other essential
 information.
 
 Guide details are provided in README files in the "Guide" directory as follows:
@@ -57,16 +213,14 @@ Guide details are provided in README files in the "Guide" directory as follows:
 
      - Disk storage and file system structure
      - Database initialization
-     - Software setup to query and control database
+     - Software setup and configuration
      - Areas creation.
-     - Automating updates using my "getdiff" program
-     - Scripts to utilize cron and logrotate for maintenance and updates.
-
-     This will need another README no kidding.
+     - Database maintenance and updates
+     - Automating the updates
+     - Log maintenance and rotation
 
 * README.web :
-     Has details for setting up Apache web server for the web user interface
-   to overpass.
+     Has details for setting up Apache web server to access the database through the internet.
 
 What is OSM Overpass? 
   Quoting from https://wiki.openstreetmap.org/wiki/Overpass_API:

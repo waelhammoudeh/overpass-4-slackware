@@ -1,5 +1,9 @@
 This is the "README.SlackBuild" file for overpassAPI SlackBuild script.
 
+This script is part of "overpass-4-slackware" repository found at:
+ https://github.com/waelhammoudeh/overpass-4-slackware
+
+
 Before building overpass software package you need "overpass" user and group.
 This can be done with the following commands:
 
@@ -16,17 +20,19 @@ on the second command line above.
 
 This build script installs the following helper scripts into /usr/local/bin/ directory:
 
- * initial_op_db.sh
+ * op_initial_db.sh
  * op_ctl.sh
+ * op_make_areas.sh
+ * op_update_areas.sh
+ * op_update_db.sh
 
-Installed to /etc/rc.d/ directory:
- * rc.dispatcher.new
+Installed to /etc/rc.d/ directory is file below:
+ * rc.dispatcher
 
-For new installs above file needs to be renamed as follows:
+Included with the script is a log rotation configuration file named "op_logrotate"
+to manage log files.
 
- # mv /etc/rc.d/rc.dispatcher.new  /etc/rc.d/rc.dispatcher
-
-Please see my Guide for full scripts usage.
+Please see my Guide in the above mentioned repository for full scripts usage.
 
 Database needs to be created (initialed) before you can use overpass; this
 procedure is explained in the "Guide" directory. The "initial_op_db.sh" script
@@ -48,13 +54,13 @@ File System Structure is assumed as illustrated below:
 The "overpass" entry can be a real directory or a link with "overpass" name. The
 database is to be initialed in the above "database" directory.
 
-The "rc.dispatcher.new" script is meant to be called by Slackware System Initial
+The "rc.dispatcher" script is meant to be called by Slackware System startup
 and Shutdown scripts. The "rc.dispatcher" script calls "op_ctl.sh" script above.
-The "rc.dispatcher.new" script is installed in "/etc/rc.d/" system directory.
+The "rc.dispatcher" script is installed in "/etc/rc.d/" system directory.
 
-To have dispatcher daemon start and stop on system boot and system shutdown
-rename the script to "rc.dispatcher" (drop .new extension) and make sure that it
-is executable then add the following lines to the following files:
+To have dispatcher daemon start and stop on system boot and system
+shutdown; make sure that it is executable then add the following lines
+to the following files in your system:
 
  /etc/rc.d/rc.local
  ============================
@@ -74,9 +80,18 @@ You may need to create the "/etc/rc.d/rc.local_shutdown" if not present in your
 system.
 
 To include the Guide in the package, copy the Guide directory to build script
-parent directory directory.
+parent directory.
 
 Overpass-API upgrade:
 
 If upgrading running overpass server, stop dispatcher before 'upgradepkg' step.
 
+IF UPGRADING FROM EARLIER VERSION THAN 0.7.60 READ FULL UPGRADE
+INSTRUCTIONS AT THE REPOSITORY GITHUB IN ITS FRONT README.md FILE:
+
+https://github.com/waelhammoudeh/overpass-4-slackware
+
+READ BEFORE THE UPGRADE PLEASE.
+
+Wael Hammoudeh
+7/31/2023

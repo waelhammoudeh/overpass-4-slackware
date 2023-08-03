@@ -24,7 +24,7 @@ OSMIUM=$EXEC_DIR/osmium
 # option to use - recommended is "--meta"
 META=--meta
 
-# experimental option for limited area extract - WARNING has multiple issues.
+# WARNING avoid this opton, NOT supported for limited area extract; has multiple issues.
 # META=--keep-attic
 
 # accepted values are one of [ no| gz | lz4 ]
@@ -57,7 +57,7 @@ fi
 
 if [[ ! -s $INFILE ]]; then
 
-    echo "$0: Error could not find or empty input file: $INFILE"
+    echo "$0: Error could not find input file (maybe empty): $INFILE"
     exit 1
 fi
 
@@ -89,12 +89,5 @@ $OSMIUM cat $INFILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
                                             --flush-size=$FLUSH_SIZE \
                                             --compression-method=$COMPRESSION \
                                             --map-compression-method=$COMPRESSION 2>&1 >/dev/null
-
-# copy "rules" directory to new database?!
-# told everyone to do it on their own!
-# cp -pR /usr/local/rules $DB_DIR
-
-# I still think this a better idea than set_DB_DIR_path.sh script,,,, but comment it out for now
-# sed -i "s|DB_DIR=/path/to/your/overpass/DBase|DB_DIR=\"$DB_DIR\"|" $EXEC_DIR/op_ctl.sh
 
 exit 0

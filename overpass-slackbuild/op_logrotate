@@ -1,0 +1,23 @@
+# logrotate file for overpass logs - FIVE files are handled
+# compress is global
+
+compress
+nomail
+
+/var/lib/overpass/logs/op_update_db.log  /var/lib/overpass/logs/op_update_areas.log /var/lib/overpass/getdiff/getdiff.log {
+
+    su overpass overpass
+    rotate 5
+    size 100K
+    missingok
+    notifempty
+}
+
+/var/lib/overpass/database/transactions.log /var/lib/overpass/database/database.log {
+
+    su overpass overpass
+    rotate 5
+    size 500K
+    missingok
+    notifempty
+}
