@@ -1,8 +1,11 @@
 TODO: Write better details.
 
+  Web support setup for overpass adds network or internet access to your database,
+  your database can be queried from remote machines (locally or through the internet).
+
 3) Setup Apatche Web Server:
 
-    With full installation of Slackware, the Apache web server is installed by
+    With full installation of Slackware, the Apache web server package is installed by
     httpd package. This package includes one of the best documentation in open
     source software; you can find the documentation on your system at:
        /var/www/htdocs/manual/index.html

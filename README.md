@@ -42,6 +42,7 @@ Read the [blog here](https://dev.overpass-api.de/blog/version_0_7_60.html)
  the first has the {IMAX} loop counter set to twice the value found in the second for this {IMAX},
  the first is run to make areas in a new database and the second is run once a week from a cron job
  to keep areas updated. Note that they both still write to the same log file, we have too many of them!
+ Log files names have changed; the two we have now are: "op_update_db.log" and "op_update_areas.log"
 
  ```
     Old Name                     New Name
