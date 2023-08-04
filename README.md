@@ -152,7 +152,7 @@ areas after the migratation. Please follow the steps below exactly:
    ```
    keeping my fingers crossed, I hope this worked okay for you.
 
-   - Remove area files from your database directory **(only area files)** as the "overpass" issue:
+   - Remove area files from your database directory **(only area files)** as the "overpass" user issue:
    ```
    $ rm /var/lib/overpass/database/area*
    ```
@@ -171,7 +171,9 @@ areas after the migratation. Please follow the steps below exactly:
    ```
   I hope everything was successful for you.
 
-  - Edit "overpass" user crontab entry for areas update to use new script name.
+  - Edit "overpass" user crontab entry for areas update to use the new script name.
+
+  - Replace old "op_logrotate" file with the new file in SlackBuild directory.
 
   If this was not successful, new database has to be initialed after insalling the new overpass
   package.
