@@ -152,7 +152,7 @@ areas after the migratation. Please follow the steps below exactly:
    ```
    keeping my fingers crossed, I hope this worked okay for you.
 
-   - Remove area files from your database directory **(only area* files)** as the "overpass" issue:
+   - Remove area files from your database directory **(only area files)** as the "overpass" issue:
    ```
    $ rm /var/lib/overpass/database/area*
    ```
