@@ -77,7 +77,7 @@ while [[ $SLP_FLAG = "TRUE" ]]; do
 {
     # do NOT use -f switch as we are looking for process name & use quotation marks
     if ( pgrep "$UPDATE_DB_SCRIPT"  2>&1 > /dev/null) ; then
-        echo "$(date '+%F %T'): Found running \"update_op_db.sh\" script." >>$LOG_FILE
+        echo "$(date '+%F %T'): Found running \"op_update_db.sh\" script." >>$LOG_FILE
         echo "$(date '+%F %T'): Waiting 5 minutes; for \"Update Overpass Database\" script to finish!" >>$LOG_FILE
         sleep 300
     else

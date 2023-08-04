@@ -93,7 +93,7 @@ DIFF_DIR=$GETDIFF_WD/diff
 # log file directory
 LOG_DIR=$OP_DIR/logs
 
-# script log file
+# script log file : TODO: get script name from shell
 LOGFILE=$LOG_DIR/op_update_db.log
 
 # input to script "newerFiles.txt"
@@ -131,7 +131,7 @@ if [[ ! $? -eq 0 ]]; then
     exit 1
 fi
 
-echo "$(date '+%F %T'): update_op_db.sh started ..." >>$LOGFILE
+echo "$(date '+%F %T'): op_update_db.sh started ..." >>$LOGFILE
 echo "$(date '+%F %T'): database directory to update: $DB_DIR" >>$LOGFILE
 
 # need error exit function maybe ... code & log msg?
