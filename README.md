@@ -152,12 +152,13 @@ areas after the migratation. Please follow the steps below exactly:
    ```
    keeping my fingers crossed, I hope this worked okay for you.
 
-   - Remove area files from your database directory, as "overpass" issue:
+   - Remove area files from your database directory **(only area* files)** as the "overpass" issue:
    ```
    $ rm /var/lib/overpass/database/area*
    ```
    this is assuming you followed my file system structure outlined in my Guide, adjust the path
-   above to your database directory if you did not follow my file system structure.
+   above to your database directory if you did not follow my file system structure. Again areas*
+   files **only** are to be removed from the database directory.
 
    - Make new area files compatible with the new database format; as "overpass" user:
    ```
@@ -166,9 +167,11 @@ areas after the migratation. Please follow the steps below exactly:
    This step will take about an hour for small region database. Test your new area files using
    "test-area.op" file in the Guide:
    ```
-   osm3s_query < test-area.op | sort -u
+    $ osm3s_query < test-area.op | sort -u
    ```
   I hope everything was successful for you.
+
+  - Edit "overpass" user crontab entry for areas update to use new script name.
 
   If this was not successful, new database has to be initialed after insalling the new overpass
   package.
@@ -220,8 +223,8 @@ Guide details are provided in README files in the "Guide" directory as follows:
      - Automating the updates
      - Log maintenance and rotation
 
-* README.web :
-     Has details for setting up Apache web server to access the database through the internet.
+* README-WEB.md :
+     Has details for setting up Apache Web Server to access the overpass database through the network and internet.
 
 What is OSM Overpass? 
   Quoting from https://wiki.openstreetmap.org/wiki/Overpass_API:
