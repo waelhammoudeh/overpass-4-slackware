@@ -109,12 +109,24 @@ and to stop it:
 
 The # mark above is for "root" prompt; all this is done as "root".
 
+To test your setup and after you successfully started Apache Web Server; run this command:
+```
+$ curl http://localhost/api/timestamp
+```
+your output should look something like:
+```
+2023-08-03
+```
+this is the contents of "osm_base_version" file in your database. For us this is the last date in the last applied "change file" by our "op_update_db.sh" script.
+This confirms that the "dispatcher" daemon is running and healthy, in addition it confirms that our update mechanism is working.
+
+
 To make Apache Web Server start on boot, we set the control script to be executable:
 ```
 # chmod 755 /etc/rc.d/rc.httpd
 ```
 
-To test your setup, send the "test-area.op" example query from the Guide to your overpass
+To further test your setup, send the "test-area.op" example query from the Guide to your overpass
 server using curl as follows ($ is your prompt):
 ```
  $ curl -G http://localhost/api/interpreter --data-urlencode data='[out:csv(name;false)];area[admin_level=8];out;'
