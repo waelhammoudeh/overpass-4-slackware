@@ -134,7 +134,7 @@ server using curl as follows ($ is your prompt):
 you should get a list of cities and towns in your database.
 
 If you have your local or home network setup; you can send the above query to your overpass machine
-from a different computer. If your overpass machine is accessible from the internet, you will be to send
+from a different computer. If your overpass machine is accessible from the internet, you will be able to send it
 queries from anywhere.
 
 Network setup is beyond this Guide. But as a hint for local or home network, consider static IP numbers for your
