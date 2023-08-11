@@ -3,141 +3,175 @@ This is the "README-DATA.md" file for overpass Slackware package.
 
 IMPORTANT: This is a work in progress, may also have inaccurate information.
 
-The "data" is the subject in this file; That is OpenStreetMap (OSM) data.
-Overpass database is initialed using OSM data file. Just the basic information is mentioned here
-about OSM data files - books are written about the subject, what they are made of and their format.
-You get to meet Osmium! And finally the internet sources where to get your data file are mentioned.
+OpenStreetMap (OSM) data is the subject in this file. Books have been written about this subject; but my aim here
+is give you enough information so you know what file to get and where to get that from.
 
-OpenStreetMap(OSM) data basic element is made of three types:
- - nodes (defining points in space),
- - ways (defining linear features and area boundaries), and
- - relations (which are sometimes used to explain how other elements work together).
+OSM data has three basic element, they are:
+ - node: defines one point on a map.
+ - way: collection of nodes (points) defines linear features like roads and boundaries.
+ - relations: collection of related nodes and ways; which are sometimes used to explain how elements work together.
 
-Each element is defined using TAGS; a tag is a pair of NAME and VALUE, and each element has an ID number.
-The very basic element point (that is a node) will have at least two tags, longtitude and latitude plus an ID number.
-Usually elements have a lot more than those tags.
+### Information categories:
 
-### Terminology
-Meta, Attic and ChangeSet:
+OSM data includes various types of information, information can be categorized as follows:
 
-**Meta:**
-extra information such as objects versions, timestamps; create or change times,
-and the editing user information (user id and name) are all considered meta information or meta for short.
-OSM data files with "meta" can have full or partial meta information, sometimes part or all meta information
-is intentionally removed. For example; user information like name, user id are removed for privacey reasons and laws.
+1. **Must-Have Information**: These are the essential attributes that define a geographic feature. For example, a node must have longitude, latitude, and an ID to be a valid point on the map.
 
-**Attic:**
-An attic in a house is where one keeps his / her old junk. Attic data is historical data,
-things change, street names even city name can change (Bombay to Mumbai, India), other things
-may change in the database, element version number.
-Quoting from overpassAPI installation:
+2. **Extra Information (Meta Data)**: Beyond the core attributes, elements may include additional meta data. This meta data encompasses elements like version numbers,
+creation and modification dates, and user (the mapper) details. This information provides valuable context about the feature's history and evolution. Meta data can be classified as either
+"ALL" or "PARTIAL." An element with "ALL" meta data includes comprehensive information, while "PARTIAL" meta data may have certain details omitted, often for privacy reasons
+or legal compliance.
 
-```
-Since Overpass API v0.7.50, it is possible to also retain previous object versions, the so called
-attic versions, in the database. Previous object versions are accessible via [date:...], [diff:...],
-[adiff:...] as well as some filters like (changed:...)."
-```
-It is important to note here that initialing overpass database with attic (historical) data from
-an extract (limited area) file is not supported. An expermintal approach is shown in this guide
-where queries mentioned above are only available on the command line using "osm3s_query"
-program, and maintaining the "transactions.log" is problematic since it grows very rapidly.
+3. **Historic (attic) data**: All OSM data are **dated**. The map you usually view are static, they represent the state of elements at one particular moment in time.
+Historic data spans from the early days of OSM's collection efforts, historic data files include all versions of elements. This extensive coverage allows users to explore the
+historical development of various geographic elements.
 
-**ChangeSet:**
-Objects have tags which can change in values, deleted or new tags get
-added to the object. Changes in current release OSM file from the previous release
-is the ChangeSet. Change can be over time too, an object state can change over a
-period of time - say one day - an object gets a new tag added or another tag gets
-new value (changed); this is how (.osc) OSM Change files are produced.
-OSM Change files are small and can be used to updated previous OSM file and
-databases that uses them. Change file will include instruction to add, remove or change elements or their tags.
+In summary; amount of information varies among elements, every element has a unique **ID** and a **DATE**, remember ID and DATE.
 
-### OSM File Format:
-The data is shipped in files, OSM data files come in multiple formats and sizes. There are many tools (programs) that work with OSM data files.
-Two standout as must know; [Osmosis (Java)](https://wiki.openstreetmap.org/wiki/Osmosis) and [Osmium (C++)](https://wiki.openstreetmap.org/wiki/Osmium) they both basicly have the
-same functionality. I have a slackware package repository here on github for ["osmium tools"](https://github.com/waelhammoudeh/osmium-tool_slackbuild), if you need it.
-The manual page from osmium-file-formats (part of osmium tools) defines them nicely:
+### OSM Data File Format:
 
-```
-$ man osmium-file-formats
+The OSM common file formats are:
+  1- **XML** plain text format: older format, large in size, they are usually compressed to reduce their large size.
+  2- **pbf** Protocolbuffer Binary Format: binary format intended as an alternative to the XML format. Newer format, compact, their smaller size makes them more effecient to tranfer.
+  3- **OPL** format (usually with suffix .osm.opl or just .opl).
+  4- **O5M/O5C** format (usually with suffix .o5m or .o5c)
 
-OSMIUM-FILE-FORMATS(5)       OSMIUM-FILE-FORMATS(5)
+### State.txt File for OSM Data Files
 
-NAME
-       osmium-file-formats - OSM file formats known to Osmium
+Not related to file format; each OSM data file has a corresponding "state.txt" file, this includes planet, regional extract and OSM change files - see below.
+This "state.txt" file contains two essential elements:
 
-FILE TYPES
-       OSM uses three types of files for its main data:
+1. **Sequence Number**: This number uniquely identifies the OSM data file and aids in locating it within a file system.
 
-       Data files
-              These  are  the  most  common files.  They contain the OSM data from a specific point in time.
-              This can either be a planet file containing all OSM data or some kind of extract.  At most one
-              version of every object (node, way, or relation) is contained in this file.  Deleted objects are not
-              in this file.  The usual suffix used is .osm.
+2. **Timestamp**: The "state.txt" file includes the most recent date (for data) included in the OSM data file. This date provides crucial context about the timeframe this file covers.
 
-       History files
-              These  files  contain  not  only the current version of an object, but their history, too.  So for
-              any object (node, way, or relation) there can be zero or more versions in this file.  Deleted
-              objects can also be in this file.  The usual suffix used is .osm or .osh.  Because sometimes the
-              same suffix  is used as for normal data files (.osm) and because there is no clear indicator in
-              the header, it is not always clear what type of file you have in front of you.
+Understanding the information within the "state.txt" file helps users navigate and manage OSM data files effectively.
 
-       Change files
-              Sometimes called diff files or replication diffs these files contain the changes between one state
-              of the OSM database and another  state. Change files can contains several versions of an object
-              and also deleted objects.  The usual suffix used is .osc.
+### Change Files: Capturing Data Evolution
 
-       All these files have in common that they contain OSM objects (nodes, ways, and relations).  History files
-       and change files can contain several versions of the same object and also deleted objects, data files can’t.
-```
----                                                                         ---
+Change files play a crucial role in tracking and updating OSM data over time:
 
-**File size:**
+Change files, also known as differ files (diff for short) or replication differs, capture the modifications between two OSM data files. These files record changes to objects, including additions,
+modifications, and deletions. In short change files are the difference between two OSM data files; an older and a newer one. Change files have (.osc) file name suffix or (.osc.gz) when compressed.
 
-* Depends on the area, city smaller than country.
-* (.pbf) file always smaller than (.osm) file.
-* Files with history (attic) always bigger than latest with meta.
+Granularity: Change files come in different time granularities, such as minute, hour, or day. They are considerably smaller in size compared to full OSM data files and provide a means to
+efficiently update existing OSM data files or OSM databases.
 
-The size of the area is understandable, keep in mind also some areas (countries) have more
-amount of data generated by more contributors and this varies wildly among countries.
+Assuming we have the older OSM data file, merging this older file with change file(s) - we might need more than one change files - we can generate the new data file.
+This process effectively updates the existing data file with the latest changes.
 
-Data file format plays a great deal in OSM data file size, OSM (.pbf) is a compact binary format and
-latest added file format is the most efficient and hence smallest size among files format.
-As shown above from "osmium-file-formats" manual page; history files (with attic data) contain
-more data, more than one version of one object sometimes deleted versions. Change files (differs)
-are small since they cover small period of time ranging from minutes for minutely, days for daily
-and week for weekly update, change files can be generated to cover any desired period of time
-providing that period has data available. Another thing about change files is they include
-instructions to modify data by changing - say tag value - or adding or removing objects.
-Finally since change files are used to update OSM data, their availablity will help you to keep
-your data up to date with the latest OSM data.
-
-**Internet Sources:**
+### Internet Sources:
 
  - http://download.openstreetmap.fr/extracts/
  - https://download.geofabrik.de/
  - https://download.bbbike.org/osm/
  - and many other local sites.
 
-As you see there are a lot of choices for OSM data. I use and recommend Geofabrik website
-for the following reasons:
+As you see there are a lot of choices for OSM data. I use and recommend Geofabrik website.
 
-- Simple organization for regional extracts from continents to countries and sub regions.
-- Extracts are available in different OSM file format, including (.pbf) most compact and smaller
-   file size for faster download.
-- Geofabrik provide daily Change Files (.osc) for all extracts needed to update OSM data.
+### In (Geofabrik.de) We Trust:
+
+When obtaining OSM data files, Geofabrik.de is a reputable source that offers a wide range of options:
+
+- **Region-Specific Files**: Geofabrik.de provides organized regional extracts, ranging from continents to countries and sub-regions. These files allow you to focus on the specific geographic area
+that interests you.
+
+- **File Formats and Timing**: Geofabrik.de offers OSM data files in two formats: .osm.bz2 and .osm.pbf. While both formats contain the same data, .osm.pbf files are more up-to-date, generated daily,
+and usually available one or more days ahead of .osm.bz2 files.
+
+- **Historic Regional Extracts**: Additionally, Geofabrik.de provides historic regional extracts in .osh.pbf format. These files contain historical versions of elements and are generated weekly.
+
+- **Last Included Data Date**: The region's main download page lists links to data files along with the last date for data included in each file. This information is crucial for updating your data
+file or database.
+
+- **Accessing All Files**: While not all files may be listed on the main download page, you can use the INDEX page to access other files. The INDEX page URL is the region's URL ending with the
+country name followed by a slash.
+
+- **Public and Internal Servers**: Geofabrik.de offers two download servers: a public server and an internal server. Data files on the public server have partial meta data due to European laws.
+User information is excluded from these files. The internal server is restricted to openstreetmap.org contributors and can be accessed with an openstreetmap.org account.
+
+-**Change Files**: Geofabrik.de offers daily change files for all regions they have. They are listed under {region-updates} directory entry; where region is your area name. This list is sorted for their
+"public server" while it is unsorted for their "internal server", the "state.txt" files are the same in both lists; it much easier to browse the sorted list when needed.
+
+See the [technical page](https://download.geofabrik.de/technical.html) at geofabrik.de for more info.
+
 - Geofabrik also provide polygon (.poly) file that describes the extent of each region and
   in most cases shap files for regions. (Get those for your region, you may need them.)
 
-My overpass database update script depends on Geofabrik supplied Change Files! You may need to do
-more work to update your overpass database if you use some other source other than Geofabrik.
+### Osmium Command Line Tools:
 
-It does not hurt to check local sites like government or universities for OSM data, you may just
-find what you want.
+Osmium is one program with a collection of tools (commands) to work with OSM data files, see program website [here.](https://osmcode.org/osmium-tool/)
+If you work with OSM data files, you need such a program, get my [Slackware package build script]( https://github.com/waelhammoudeh/osmium-tool_slackbuild) and install this package.
 
-**File storage:**
-[^1].
-* Keep the file used to initial DB - may need it again.
-* Hard to tell what the database size will be, but it is going to always grow larger.
-* Database initialed with attic data will be the largest size, then meta and no meta is smallest.
+One of the commands is 'fileinfo' it shows information about an OSM file; a fairly new file from 'geofabrik.de' example:
+```
+wael@yafa:~/osmium-update$ osmium fileinfo **--extended** arizona-latest-internal.osm.pbf
+File:
+  Name: arizona-latest-internal.osm.pbf
+  Format: PBF
+  Compression: none
+  Size: 265419524
+Header:
+  Bounding boxes:
+    (-114.8325,30.05891,-109.0437,37.00596)
+  With history: no
+  Options:
+    generator=osmium/1.15.0
+    osmosis_replication_base_url=https://osm-internal.download.geofabrik.de/north-america/us/arizona-updates
+    osmosis_replication_sequence_number=3763
+    osmosis_replication_timestamp=2023-07-18T20:21:43Z
+    pbf_dense_nodes=true
+    pbf_optional_feature_0=Sort.Type_then_ID
+    sorting=Type_then_ID
+    timestamp=2023-07-18T20:21:43Z
+[======================================================================] 100%
+Data:
+  Bounding box: (-115.7133191,30.9030825,-108.218831,38.8430606)
+  **Timestamps:**
+    First: 2007-08-10T17:38:36Z
+    **Last: 2023-07-18T19:45:41Z**
+  Objects ordered (by type and id): yes
+  Multiple versions of same object: no
+  CRC32: not calculated (use --crc/-c to enable)
+  Number of changesets: 0
+  Number of nodes: 36140382
+  Number of ways: 3758726
+  Number of relations: 17465
+  Smallest changeset ID: 0
+  Smallest node ID: 13265445
+  Smallest way ID: 2901206
+  Smallest relation ID: 56412
+  Largest changeset ID: 0
+  Largest node ID: 11053675192
+  Largest way ID: 1190465397
+  Largest relation ID: 16089412
+  Number of buffers: 57276 (avg 696 objects per buffer)
+  Sum of buffer sizes: 3632038840 (3.463 GB)
+  Sum of buffer capacities: 3757768704 (3.583 GB, 97% full)
+Metadata:
+  All objects have following metadata attributes: all
+  Some objects have following metadata attributes: all
+wael@yafa:~/osmium-update$
+```
 
-[^1]:  More about this to come.
+This outputs a lot of information about the source file: 'arizona-latest-internal.osm.pbf'. On the command line I used **--extended** command option to see all information.
+For the output I added **bold** for the **Timestamps** and for **Last** under that;
+this is the most recent date for data included in this file. This date is needed to update the file or database initialed from this file.
+
+
+### Choosing your OSM data file:
+
+Quoting from 'geofabrik.de [technical page:](https://download.geofabrik.de/technical.html)
+```
+pbf files
+The .osm.pbf data format is the common format for the exchange of raw OpenStreetMap data. It is fast to read and write and can be directly processed by most programs dealing with OSM data.
+Our .osm.pbf files are 100% pure, un-filtered OSM and contain all data and metadata available in OSM for the region; the only thing they don't contain is history, i.e. information about past edits.
+```
+
+The **pbf** file format is the recommended file format to use (smaller size and more up to date than .osm.bz2). Stay away from (.osh.pbf) historic files. Historic fuctionality is not supported in
+overpass database initialed from a regional extract OSM data file.
+When downloading your regional OSM data file, keep a record of the most recent **DATE** included in that file. (It is on the same line with the link).
+
+Wael Hammoudeh
+
+Update: August 9th / 2023

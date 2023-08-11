@@ -30,6 +30,8 @@ I used the "--attic" option.
 
 ```
 
+**Using --attic option for limited area database is NOT supported, avoid**
+
 Note that directory size using "--attic" option is about **double** the "--meta" option.
 Countries with about 4 GB source file size - like Germany and France - will require
 disk space of 100 to 200 GB. You need to allow for growth, so in my 41 GB above I
@@ -594,7 +596,7 @@ With filled settings, you can now update your overpass database using the downlo
 Change Files by running "op_update_db.sh" script as the "overpass" user. This script has "LOGFILE"
 setting, I set this to "logs" directory under OP_DIR:
 ```
-LOGFILE=/var/lib/overpass/logs/update_op_db.log
+LOGFILE=/var/lib/overpass/logs/op_update_db.log
 ```
 Check your log file and your database version file: DB_DIR/osm_base_version. Hope it works for you.
 

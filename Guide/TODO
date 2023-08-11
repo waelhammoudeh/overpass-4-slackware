@@ -1,10 +1,7 @@
 TODO List:
 
-        * Setup apache to serve database files for "downloas_clone.sh" to work.
-        * Data files; what to do with source data files? maintain!!!
-        * Multi databases?
+ 1)  update data readme
+ 2) backup, recovery
 
 
-Shorter list ... but still things to do.
-Note: help is more than welcome.
-STILL HELP IS MORE THAN WELCOME
+
