@@ -31,6 +31,7 @@ In summary; amount of information varies among elements, every element has a uni
 ### OSM Data File Format:
 
 The OSM common file formats are:
+
   1- **XML** plain text format: older format, large in size, they are usually compressed to reduce their large size.
 
   2- **pbf** Protocolbuffer Binary Format: binary format intended as an alternative to the XML format. Newer format, compact, their smaller size makes them more effecient to tranfer.
