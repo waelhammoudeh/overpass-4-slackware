@@ -34,7 +34,7 @@ The OSM common file formats are:
 
   1- **XML** plain text format: older format, large in size, they are usually compressed to reduce their large size.
 
-  2- **pbf** Protocolbuffer Binary Format: binary format intended as an alternative to the XML format. Newer format, compact, their smaller size makes them more effecient to tranfer.
+  2- **pbf** Protocolbuffer Binary Format: binary format intended as an alternative to the XML format. Newer format, compact, their smaller size makes them more efficient to transfer.
 
   3- **OPL** format (usually with suffix .osm.opl or just .opl).
 
@@ -59,7 +59,7 @@ Change files play a crucial role in tracking and updating OSM data over time:
 Change files, also known as differ files (diff for short) or replication differs, capture the modifications between two OSM data files. These files record changes to objects, including additions,
 modifications, and deletions. In short change files are the difference between two OSM data files; an older and a newer one. Change files have (.osc) file name suffix or (.osc.gz) when compressed.
 
-Granularity: Change files come in different time granularities, such as minute, hour, or day. They are considerably smaller in size compared to full OSM data files and provide a means to
+Granularity: Change files come in different time granularities, such as minutely, hourly, or daily. They are considerably smaller in size compared to full OSM data files and provide a means to
 efficiently update existing OSM data files or OSM databases.
 
 Assuming we have the older OSM data file, merging this older file with change file(s) - we might need more than one change files - we can generate the new data file.
