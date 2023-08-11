@@ -109,7 +109,7 @@ If you work with OSM data files, you need such a program, get my [Slackware pack
 
 One of the commands is 'fileinfo' it shows information about an OSM file; a fairly new file from 'geofabrik.de' example:
 ```
-wael@yafa:~/osmium-update$ osmium fileinfo __--extended__ arizona-latest-internal.osm.pbf
+wael@yafa:~/osmium-update$ osmium fileinfo (__--extended__) arizona-latest-internal.osm.pbf
 File:
   Name: arizona-latest-internal.osm.pbf
   Format: PBF
@@ -131,9 +131,9 @@ Header:
 [======================================================================] 100%
 Data:
   Bounding box: (-115.7133191,30.9030825,-108.218831,38.8430606)
-  **Timestamps:**
+  (**Timestamps:**)
     First: 2007-08-10T17:38:36Z
-    **Last: 2023-07-18T19:45:41Z**
+    (**Last: 2023-07-18T19:45:41Z**)
   Objects ordered (by type and id): yes
   Multiple versions of same object: no
   CRC32: not calculated (use --crc/-c to enable)
