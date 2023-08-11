@@ -108,8 +108,8 @@ Osmium is one program with a collection of tools (commands) to work with OSM dat
 If you work with OSM data files, you need such a program, get my [Slackware package build script]( https://github.com/waelhammoudeh/osmium-tool_slackbuild) and install this package.
 
 One of the commands is 'fileinfo' it shows information about an OSM file; a fairly new file from 'geofabrik.de' example:
-```
-wael@yafa:~/osmium-update$ osmium fileinfo (__--extended__) arizona-latest-internal.osm.pbf
+<pre>
+wael@yafa:~/osmium-update$ osmium fileinfo <b>--extended</b> arizona-latest-internal.osm.pbf
 File:
   Name: arizona-latest-internal.osm.pbf
   Format: PBF
@@ -131,9 +131,9 @@ Header:
 [======================================================================] 100%
 Data:
   Bounding box: (-115.7133191,30.9030825,-108.218831,38.8430606)
-  (**Timestamps:**)
+  <b>Timestamps:</b>
     First: 2007-08-10T17:38:36Z
-    (**Last: 2023-07-18T19:45:41Z**)
+    <b>Last: 2023-07-18T19:45:41Z</b>
   Objects ordered (by type and id): yes
   Multiple versions of same object: no
   CRC32: not calculated (use --crc/-c to enable)
@@ -156,7 +156,7 @@ Metadata:
   All objects have following metadata attributes: all
   Some objects have following metadata attributes: all
 wael@yafa:~/osmium-update$
-```
+</pre>
 
 This outputs a lot of information about the source file: 'arizona-latest-internal.osm.pbf'. On the command line I used **--extended** command option to see all information.
 For the output I added **bold** for the **Timestamps** and for **Last** under that;
