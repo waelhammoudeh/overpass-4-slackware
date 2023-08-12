@@ -123,8 +123,6 @@ If you use this File System Structure you do not need to manually edit my script
 set paths, all scripts use this layout now. You still need to provide the "SOURCE" URL
 and "PASSWD" to use my "getdiff" program.
 
-The "set_DB_DIR_path.sh" is no longer needed. It will soon get removed.
-
 ### Initial Overpass Database:
 
 OverpassAPI provides two scripts to initial the database found in "/usr/local/bin" directory .

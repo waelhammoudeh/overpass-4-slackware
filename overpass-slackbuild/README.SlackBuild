@@ -8,12 +8,12 @@ Before building overpass software package you need "overpass" user and group.
 This can be done with the following commands:
 
      # groupadd -g 367 overpass
-     # useradd -u 367 -g 367 -d /your/database/directory overpass
+     # useradd -u 367 -g 367 -d /path/to/overpass overpass
 
 Feel free to use a different uid and gid if desired, but 367 is recommended to
 avoid conflicts with other stuff from SlackBuilds.org.
 
-Please replace "/your/database/directory" with your actual database directory.
+Please replace "/path/to/overpass" with your actual database directory.
 That is the directory where you plan to initial the database in.
 Please also note the space between that directory path and "overpass" user name
 on the second command line above.

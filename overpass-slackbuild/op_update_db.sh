@@ -37,7 +37,7 @@
 #
 # Notes & warnings:
 # script will NOT work to update database initialed with "--keep-attic" switch
-# This script should NOT run while my "op_area_update.sh" is running
+# This script should NOT run while my "op_update_areas.sh" is running
 # Script needs to run to completion to avoid corrupted database.
 
 # function to check database directory
