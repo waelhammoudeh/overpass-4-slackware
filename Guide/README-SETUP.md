@@ -2,13 +2,13 @@ This is the "README-SETUP.md" file for Overpass Guide.
 
 **This is INCOMPLETE STILL**
 
-I am trying to complete this file and making it shorter, but it not working that way ....
+I am trying to complete this file and making it shorter, but it is not working that way ....
 
 ### Changes:
 
 **Areas Making & Updates**
 
-Making areas have change a lot since I started using overpass, I still do not fully understand the process.
+Making areas have changed a lot since I started using overpass, I still do not fully understand the process.
 
  - In "op_make_areas.sh" script I have changed the IMAX loop counter to 2. Down from 100.
  - Areas update is only done after database update (daily) with loop counter 2 also.
@@ -119,7 +119,7 @@ many many times the size of the region OSM data file and varied wildly!
   region      OSM data file        database directory Size
   ---------------------------------------------------------
   Arizona       254 MB                      26 GB
-  US West       2.8 GB                        71 GB
+  US West       2.8 GB                      71 GB
 ```
 The database directory size was between (30 - 90) times the size of the respected region OSM data file size. I do not know why the multiplier varied so much! I guess YMMV!
 
