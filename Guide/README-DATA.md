@@ -3,13 +3,15 @@ This is the "README-DATA.md" file for overpass Slackware package.
 
 IMPORTANT: This is a work in progress, may also have inaccurate information.
 
-OpenStreetMap (OSM) data is the subject in this file. Books have been written about this subject; but my aim here
-is to give you enough information so you know what file to get and where to get that from.
+OpenStreetMap (OSM) data is the subject in this file. The aim here is to give you enough information so you know what file to get and where to get that from.
 
 OSM data has three basic element, they are:
  - node: defines one point on a map.
  - way: collection of nodes (points) defines linear features like roads and boundaries.
  - relations: collection of related nodes and ways; which are sometimes used to explain how elements work together.
+
+In addition to those basic elements, you will encounter "Areas" which are not native OSM object but can be created from
+closed ways and multipolygon relations.
 
 ### Information categories:
 
@@ -39,6 +41,8 @@ The OSM common file formats are:
   3- **OPL** format (usually with suffix .osm.opl or just .opl).
 
   4- **O5M/O5C** format (usually with suffix .o5m or .o5c)
+
+See [OSM File Formats Manual](https://osmcode.org/file-formats-manual/)
 
 
 ### State.txt File for OSM Data Files
@@ -70,7 +74,7 @@ This process effectively updates the existing data file with the latest changes.
  - http://download.openstreetmap.fr/extracts/
  - https://download.geofabrik.de/
  - https://download.bbbike.org/osm/
- - and many other local sites.
+ - Local sources; like local government or education institutions.
 
 As you see there are a lot of choices for OSM data. I use and recommend Geofabrik website.
 
@@ -81,10 +85,11 @@ When obtaining OSM data files, Geofabrik.de is a reputable source that offers a 
  - **Region-Specific Files**: Geofabrik.de provides organized regional extracts, ranging from continents to countries and sub-regions. These files allow you to focus on the specific geographic area
 that interests you.
 
- - **File Formats and Timing**: Geofabrik.de offers OSM data files in two formats: .osm.bz2 and .osm.pbf. While both formats contain the same data, .osm.pbf files are more up-to-date, generated daily,
-and usually available one or more days ahead of .osm.bz2 files.
+ - **File Formats and Timing**: Geofabrik.de offers daily regional extract OSM data files in two formats: .osm.bz2 and .osm.pbf. Both formats contain the same data. The (.osm.pbf) files are
+ generated directly from the planet data file, then (.osm.bz2) are converted from this  (.osm.pbf) in a low priority process so they are one or more days behind the (.osm.pbf) files.
 
- - **Historic Regional Extracts**: Additionally, Geofabrik.de provides historic regional extracts in .osh.pbf format. These files contain historical versions of elements and are generated weekly.
+ - **Historic Regional Extracts**: Additionally, Geofabrik.de provides historic regional extracts in (.osh.pbf) format. These files contain historical versions of elements and are generated weekly.
+ Of course historic data files are bigger in size than non-historic files. Please keep in mind that historic functionality in overpass is not supported for limited area database - from extracts.
 
  - **Last Included Data Date**: The region's main download page lists links to data files along with the last date for data included in each file. This information is crucial for updating your data
 file or database.
@@ -93,10 +98,10 @@ file or database.
 country name followed by a slash.
 
  - **Public and Internal Servers**: Geofabrik.de offers two download servers: a public server and an internal server. Data files on the public server have partial meta data due to European laws.
-User information is excluded from these files. The internal server is restricted to openstreetmap.org contributors and can be accessed with an openstreetmap.org account.
+Some user information is excluded from these files. The internal server is restricted to openstreetmap.org contributors and can be accessed with an openstreetmap.org account.
 
- - **Change Files**: Geofabrik.de offers daily change files for all regions they have. They are listed under {region-updates} directory entry; where region is your area name. This list is sorted for their
-"public server" while it is unsorted for their "internal server", the "state.txt" files are the same in both lists; it much easier to browse the sorted list when needed.
+ - **Change Files**: Geofabrik.de offers daily change files for all regions they have. They are listed under **{region}-updates** directory entry; where region is your area name. This list is sorted for their
+"public server" while it is unsorted for their "internal server", the "state.txt" files are the same in both lists; it is much easier to browse the sorted list when needed.
 
 See the [technical page](https://download.geofabrik.de/technical.html) at geofabrik.de for more info.
 
@@ -108,7 +113,8 @@ See the [technical page](https://download.geofabrik.de/technical.html) at geofab
 Osmium is one program with a collection of tools (commands) to work with OSM data files, see program website [here.](https://osmcode.org/osmium-tool/)
 If you work with OSM data files, you need such a program, get my [Slackware package build script]( https://github.com/waelhammoudeh/osmium-tool_slackbuild) and install this package.
 
-One of the commands is 'fileinfo' it shows information about an OSM file; a fairly new file from 'geofabrik.de' example:
+One of osmium commands is 'fileinfo' it shows information about an OSM data file; a fairly new OSM data file from 'geofabrik.de' example:
+
 <pre>
 wael@yafa:~/osmium-update$ osmium fileinfo <b>--extended</b> arizona-latest-internal.osm.pbf
 File:

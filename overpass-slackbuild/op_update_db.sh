@@ -413,13 +413,12 @@ sleep 2
 
 # update areas data - we apply ALL changeFile(s) then use ONE area update call
 
-# this is an experiment, database is not compromised.
-# assumes rules directory path: /usr/local/rules
-# set iCount to a lot smaller number compared to IMAX in "op_area_update.sh" script
-# DO NOT SET LESS THAN TEN
-# do NOT set < 10
-
-iCount=10
+# this is an experiment
+#
+# cut down loop counter from 10 down to 2. 8/18/2023 W. H.
+#
+# iCount=10
+iCount=2
 
 echo "$(date '+%F %T'): @@@@ updating overpass areas: With Loop Counter = $iCount" >>$LOGFILE
 

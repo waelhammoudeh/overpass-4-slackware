@@ -119,7 +119,10 @@ fi
 # script named "op_initial_areas.sh" has {IMAX} loop counter set to double the
 # value of {IMAX} in "op_update_areas.sh" script.
 #
-IMAX=100
+
+# cut down loop counter from 100 down to 2. maybe once only too?! August 18/2023 W. H.
+# IMAX=100
+IMAX=2
 
 echo "Area update started. Loop COUNT is set to: $IMAX"
 echo "`date '+%F %T'`: Area update started. Loop COUNT is set to: $IMAX" >>$LOG_FILE

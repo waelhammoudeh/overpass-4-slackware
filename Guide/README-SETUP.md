@@ -1,93 +1,76 @@
 This is the "README-SETUP.md" file for Overpass Guide.
 
-In this file I explain overpass database initialization, overpass dispatcher daemon
-role and how to start it, overpass areas creation is explained. After setup we move
-to keeping the database updated with latest available OSM data. Finally we get to
-automating the database updates and up keep. Hope you enjoy the ride.
+**This is INCOMPLETE STILL**
 
-**Moved Most Scripts Mentioned Here To SlackBuild Directory**
+I am trying to complete this file and making it shorter, but it not working that way ....
 
-### Local Storage:
+### Changes:
 
-At this point you need to decide where to store the database. Store the database
-on a fast hard drive like SSD (Solid State Drive) or NVME if you have one, the faster
-the drive the less time for the query result since there will be a lot of file I/O.
-You need to make sure you have enough space for the database. I cannot tell
-you how much since it depends on your file and data files vary wildly in size for
-countries and regions, hence it is hard to tell the required disk space. You may
-have to experiment with this!
-My database directory size may help to give you an idea of the space you need.
-First I did initial two databases from one source data file with "attic" data and
-this source file was in (.pbf) format with size 362 MegaByte (MB). In both databases
-I did initial "areas" [^1] the first database I used the "--meta" option and the second
-I used the "--attic" option.
+**Areas Making & Updates**
 
-```
-  Option      File Count      Directory Size
-  -----------------------------------------------
-  --attic        103              41 GB
-  --meta         55               22 GB
+Making areas have change a lot since I started using overpass, I still do not fully understand the process.
 
-```
+ - In "op_make_areas.sh" script I have changed the IMAX loop counter to 2. Down from 100.
+ - Areas update is only done after database update (daily) with loop counter 2 also.
+ - Remove overpass crontab entry for opAreaUpade.
 
-**Using --attic option for limited area database is NOT supported, avoid**
 
-Note that directory size using "--attic" option is about **double** the "--meta" option.
-Countries with about 4 GB source file size - like Germany and France - will require
-disk space of 100 to 200 GB. You need to allow for growth, so in my 41 GB above I
-need about 80 GB of free disk space, or the 22 GB means 40 to 45 GB of free space.
-Again you need to experiment with your region.
+In this "README-SETUP.md" file:
+  - initial database, make areas and start database manager will result in functional database on local machine.
+  - database manager control, start on boot and stop on shutdown.
+  - update database
+  - automatation & log files handling.
+  - backup & recovery. (working on it.)
 
-Where you store the database is the "overpass" user home directory we used when
-we created the overpass group and user. If you need to make any changes to that,
-now is the time before you initial the database.
+### Required Reading:
 
-You create the overpass directory as the "root" user, somewhere on your system where you
-have enough free space and let us call that {sys_root}, also as "root" you change ownership
-of that directory to "overpass" user and group; the followings two commands do that:
+[README-START.md](https://github.com/waelhammoudeh/overpass-4-slackware/Guide/README-START.md)
 
-```
-   # mkdir {sys_root}/overpass
-   # chown overpass:overpass {sys_root}/overpass
-```
+This file builds on README-START.md, please read that file first if you did not do so.
 
-Now we run everything as "overpass" user. To put "overpass" hat on as root user do:
+### Required Software:
 
-```
-  # su overpass <enter>
-```
-Then your prompt should look like this on your terminal (note $ NOT # anymore):
-```
-  overpass@lazyant:/root$
-```
-And "whoami" command and its output should look like:
-```
-  overpass@lazyant:/root$ whoami
-  overpass
-```
+**overpass_API**
+I assume you have installed "overpass_API" software. If not; see README_START.md, build and install
+my overpass Slackware package; my scripts to initial and update overpass database are included in this
+package.
 
-Do not run anything as "root" unless it is only doable by "root".
+**Osmium**
+[Osmium command line tools](https://github.com/waelhammoudeh/osmium-tool_slackbuild) is required to use my "op_initial_db.sh" script.
+You will always use osmium when working with OSM data files.
+
+**getdiff**
+My ["getdiff" program](https://github.com/waelhammoudeh/getdiff) is required to update overpass database.
+
+**Region OSM data file**
+I also assume you already downloaded your region data file in (.osm.pbf) format from Geofabrik.de website.
 
 ### File System Structure:
 
 All scripts and configuration files here assume the following File System layout:
 
-OP_ROOT
- - database
- - getdiff
- - logs
+<pre>
+{OP_HOME}
+      |--- database/
+      |--- getdiff/
+      |--- logs/
+</pre>
 
-in addition {OP_ROOT} is assumed to have this path "/var/lib/overpass". This "overpass"
+in addition {OP_HOME} is assumed to have this path "/var/lib/overpass". This "overpass"
 directory entry can be a real directory or a link to another directory - but must end with
-"overpass" entry name. Replacing {OP_ROOT} with the value, we have:
+"overpass" entry name. Replacing {OP_HOME} with the value, we have:
 
-/var/lib/overpass
- - database
- - getdiff
- - logs
+<pre>
+/var/lib/overpass/
+      |--- database/
+      |--- getdiff/
+      |--- logs/
+</pre>
 
 where database, getdiff and logs are directories for the indicated name created by the
-"overpass" user. My scripts all use the following paths with indicated purpose:
+"overpass" user.
+
+All my scripts use the following paths for indicated purpose:
 
 ```
 The System Root is "/var/lib" is a System directory on Slackware - already exist.
@@ -100,7 +83,7 @@ OP_DIR=$SYS_ROOT/overpass
 Database Directory is where we initial the overpass database.
 DB_DIR=$OP_DIR/database
 
-Getdiff Work Directory where getdiff files are kept and "diff" directory is created where
+Getdiff Working Directory where getdiff files are kept and "diff" directory is created where
 differ files are downloaded to.
 GETDIFF_WD=$OP_DIR/getdiff
 
@@ -108,21 +91,94 @@ LOG_DIR=$OP_DIR/logs
 Log Directory is where we write log files to and link ones we can not redirect / move.
 ```
 
-If the root file system is where you have disk space for overpass, then as the "root"
-user create "/var/lib/overpass" as the overpass home directory, then change the
-ownership to "overpass" user and group.
-
-If the free disk space you have is not on the root file system, then create a link to
-that directory as the root user with: (note the -sr options)
+The {OP_HOME} directory was created when "overpass" user was created. Create a link to your "overpass"
+home directory under "/var/lib/" directory:
 
 ```
-    root@yafa:/var/lib# ln -sr /path/to/your/overpass /var/lib/overpass
+    root@yafa:/var/lib# ln -s /path/to/your/overpass /var/lib/overpass
 ```
+then create the three directories mentioned above. Note: if you need to change overpass home directory use "usermod" command.
 
-If you use this File System Structure you do not need to manually edit my scripts to
-set paths, all scripts use this layout now. You still need to provide the "SOURCE" URL
-and "PASSWD" to use my "getdiff" program.
+### Version number (database & area):
 
+Among the files created in the overpass database directory at initialisation is "osm_base_version" file, and with areas creation
+"area_version" file. It is customarily to use last date for included OSM data in the database as the version number with "YYYY-MM-DD"
+formated string. My "op_initial_db.sh" script second parameter is for this version number. This number will get replaced with each
+update applied to the database by my update script. The same version number is used for the "area_version" (created / updated from same data).
+
+Note that the "timestamp" program in "cgi-bin" directory outputs the contents of "osm_base_version" file. See README-WEB.md file.
+
+### Space Required:
+
+The overpass database directory size will depend on your region OSM data file size. I do not have any method to tell how much space
+you need - you have to try! Initialing the database with no meta data will save **very little** space; do not bother. To get an idea, I
+have initialed two databases - with meta data - and made areas in both, both sources were in (.pbf) format. Database directory size was
+many many times the size of the region OSM data file and varied wildly!
+
+```
+  region      OSM data file        database directory Size
+  ---------------------------------------------------------
+  Arizona       254 MB                      26 GB
+  US West       2.8 GB                        71 GB
+```
+The database directory size was between (30 - 90) times the size of the respected region OSM data file size. I do not know why the multiplier varied so much! I guess YMMV!
+
+**All commands are to be executed by the overpass user unless specified otherwise**
+
+**All the information about your OSM data file needed for initial and update scripts below can be retrieved with "osmium fileinfo --extended"**
+
+Listed below is "osmium fileinfo --extended" output for my region OSM data file "arizona-latest-internal.osm.pbf";
+I will list the relevant line(s) for script argument when needed - note that the output has four sections (File, Header, Data & Metadata):
+
+```
+overpass@yafa:~/source$ osmium fileinfo --extended arizona-latest-internal.osm.pbf
+File:
+  Name: arizona-latest-internal.osm.pbf
+  Format: PBF
+  Compression: none
+  Size: 265419524
+Header:
+  Bounding boxes:
+    (-114.8325,30.05891,-109.0437,37.00596)
+  With history: no
+  Options:
+    generator=osmium/1.15.0
+    osmosis_replication_base_url=https://osm-internal.download.geofabrik.de/north-america/us/arizona-updates
+    osmosis_replication_sequence_number=3763
+    osmosis_replication_timestamp=2023-07-18T20:21:43Z
+    pbf_dense_nodes=true
+    pbf_optional_feature_0=Sort.Type_then_ID
+    sorting=Type_then_ID
+    timestamp=2023-07-18T20:21:43Z
+[======================================================================] 100%
+Data:
+  Bounding box: (-115.7133191,30.9030825,-108.218831,38.8430606)
+  Timestamps:
+    First: 2007-08-10T17:38:36Z
+    Last: 2023-07-18T19:45:41Z
+  Objects ordered (by type and id): yes
+  Multiple versions of same object: no
+  CRC32: not calculated (use --crc/-c to enable)
+  Number of changesets: 0
+  Number of nodes: 36140382
+  Number of ways: 3758726
+  Number of relations: 17465
+  Smallest changeset ID: 0
+  Smallest node ID: 13265445
+  Smallest way ID: 2901206
+  Smallest relation ID: 56412
+  Largest changeset ID: 0
+  Largest node ID: 11053675192
+  Largest way ID: 1190465397
+  Largest relation ID: 16089412
+  Number of buffers: 57276 (avg 696 objects per buffer)
+  Sum of buffer sizes: 3632038840 (3.463 GB)
+  Sum of buffer capacities: 3757768704 (3.583 GB, 97% full)
+Metadata:
+  All objects have following metadata attributes: all
+  Some objects have following metadata attributes: all
+overpass@yafa:~/source$
+```
 ### Initial Overpass Database:
 
 OverpassAPI provides two scripts to initial the database found in "/usr/local/bin" directory .
@@ -143,15 +199,13 @@ Usage:  /usr/local/bin/init_osm3s.sh  Planet_File  Database_Dir  Executable_Dir 
 Note that "Planet_File" above can be an extract for limited area, so you can use this script
 to initial your database.
 
-The file format has to be (.osm.bz2) format, this format is a lot larger than (.osm.pbf) file
-format, it takes longer to download - it shows if you do not have the bandwidth. Another
-issue I have with this script is that it does not handle all options accepted by program
-"update_database" without editing the script.
+This "init_osm3s.sh" script requires input file to be in (.osm.bz2) format, this format is a lot larger than (.osm.pbf) file
+format, it takes longer to download - it shows if you do not have the bandwidth.
 
-My "op_initial_db.sh" script included in my SlackBuild is a rewrite of this script (init_osm3s.sh)
-to overcome issues mentioned above. The "op_initial_db.sh" script requires OSM *osmium*
-program. Osmium Slackware package build script is available from my
-[osmium-tool repository](https://github.com/waelhammoudeh/osmium-tool_slackbuild).
+**op_initial_db.sh script:**
+
+My "op_initial_db.sh" script included in my SlackBuild is a replacement to overpass (init_osm3s.sh) script.
+
 
 The overpass *update_database* program usage or accepted arguments:
 ```
@@ -170,35 +224,54 @@ and decompression! I set compression to "no", feel free to change this.
 
 To use "op_initial_db.sh" script:
 
- * Make sure that the script is executable (it should be) if not use:
+ * Make sure that the script is executable (it should be) if not; set it to be exectable with:
 ```
     # chmod +x /usr/local/bin/op_initial_db.sh
 ```
  * You may want to use lower / higher number for "flush-size". Use 4 if your ram < 16 GB.
 
 The script assumes that you installed my overpassAPI package using my SlackBuild script
-and that you also installed *osmium-tool*.
+and that you also installed *osmium*. I also assume you already created "database" directory.
 
 The script takes THREE arguments; input file name, version number as date string
 and destination directory for database.
 
-- Input file name is your region downloaded OSM file. In any format supported by "osmium".
-- Date is the last date contained in that input file in "YYYY-MM-DD" format.
-    If your file was from Geofabrik then this date is listed on the download page. If not,
-    then you have to use "osmium fileinfo --extended {inputfile}" to get that date.
+- Input file name is your region OSM data file in any format supported by "osmium".
+  If the file is not in your current directory, then include the path with file name.
+- Date is the last date contained in that input file in "YYYY-MM-DD" format. This date will be
+  used as the version number for the database.
 - Destination directory is overpass database directory and must exist (DB_DIR). If you used
   the File System Structure above, then this will be "/var/lib/overpass/database"
 
+  **version number from osmium output:**
+  The output from "osmium fileinfo" above includes 2 timestamp lines labeled (timestamp + Timestamps):
+
+  - The first is under the "Header" section, this is the file creation time. This is **not** what we want.
+
+  - The second is under the "Data" section and has First and Last lines; it provides a range for data dates in the file.
+
+ <pre>
+ Data:
+  Bounding box: (-115.7133191,30.9030825,-108.218831,38.8430606)
+  Timestamps:
+    First: 2007-08-10T17:38:36Z
+    Last: <b>2023-07-18</b>T19:45:41Z
+</pre>
+
+the version number we will use is from the **Last:** line above in "YYYY-MM-DD" format. It is **2023-07-18** from this file.
+
 As everything run this as the "overpass" user, move to the directory where you have your
 source file and assuming that "op_initial_db.sh" script is in your path "/usr/local/bin/" and
-your region source file name is "sourcefile.osm.pbf" with last date "2022-04-08" and you are
-using the above File System layout ( DB_DIR is: /var/lib/overpass/database ):
+your region source file name is "sourcefile.osm.pbf" with last date "2023-07-18" and you are
+using the above mentioned File System layout ( DB_DIR is: /var/lib/overpass/database ):
 
 ```
- overpass@yafa:/source$ nohup op_initial_db.sh sourcefile.osm.pbf 2022-04-08  "/var/lib/overpass/database" &
+ overpass@yafa:/source$ nohup op_initial_db.sh sourcefile.osm.pbf 2023-07-18  "/var/lib/overpass/database" &
 ```
-By default "op_initial_db.sh" passes (--meta) option to "update_database" program. Edit the
-script to change that.
+
+By default "op_initial_db.sh" passes (--meta) option to "update_database" program. Edit the script to change that.
+
+This process will take some time to complete; depending on your region data file size and your hardware.
 
 With those steps so far, you can query your database on the command line using the "test-first.op"
 example file provided in the root directory in this Guide; the example uses bounding box for "Arizona",
@@ -210,23 +283,22 @@ command above assumes you are in the directory where the "test-first.op" file is
 "DB_DIR" with your actual database directory. Anybody on the system can use overpass to
 query the database, but to control overpass you need to put overpass hat on; be the "overpass" user.
 
-If you are new to overpass then **osm3s_query** program is your friend, get to know it.
+**osm3s_query**
+If you are new to overpass then "osm3s_query" program is your friend, get to know it. In short it has 2 modes:
+ - Interactive mode: you enter your query statements in the terminal and end your input with "Ctrl D".
+ - Batch mode: you write your query in a text file; like the example above then use shell redirection for input.
+   You can use c-programming comment style in your file - please see the example file above.
 
-### Database with FULL HISTORY (attic):
+
+
+
+
+
+
+### Limited Area Database with FULL HISTORY (attic) Is Not Supported:
 
 **Using Full History extracts to initial overpass database is not supported and discouraged**
 
-This approach is highly experimental, the produced database can **only** be queried via the
-command line, no web access with this database is available. In addition your log file
-"transactions.log" **grows very rapidly**. I discourage this use. You use "osm3s_query" program
-with "--quiet" switch or redirect stderr using your shell to query database in a terminal. In addition
-to those short comings it is also **NOT** possible to update the database using my "op_update_db.sh"
-script mentioned below.
-
-To initial the database, your source input file must have "attic" or historical data, the "op_initial_db.sh"
-script used above can be used with setting "META" to "--keep-attic", just uncomment that line.
-There is no known way to control logging to "transactions.log", it will be hard to maintain that file.
-**Stay away from using --keep-attic when using a regional extract file.**
 
 ### Starting the "dispatcher" daemon:
 
@@ -260,10 +332,10 @@ The important arguments for us now are: ( --osm-base,  --areas, --meta, --attic 
  * --db-dir: actual overpass database directory.
 
 You start "dispatcher" as the "overpass" user giving it your database directory and how that
-database was initialed, using "&" in the end to make run in the background:
+database was initialed, using "&" in the end to make it run as background process:
 
 ```
- overpass@yafa:/mnt/nvme4/source$ dispatcher --osm-base --db-dir=/var/lib/overpass/database --meta &
+ overpass@yafa:~/source$ dispatcher --osm-base --db-dir=/var/lib/overpass/database --meta &
 ```
 
 With dispatcher running in the background, --db-dir option for "osm3s_query" program is not needed.
@@ -758,8 +830,16 @@ Scripts do not handle shutdown signals. To avoid corrupted database make sure th
 scripts are done and have completed their work before shutting down the system.
 Check log files for all scripts always.
 
-Wael K. Hammoudeh
-
-August 2nd / 2023
 
 [^1]:  More about this below.
+
+Note to myself:
+
+Managing custom output
+To make the custom output feature operational, you only need to copy the default templates into the corresponding subdirectory of the database:
+
+cp -pR "templates" "db/"
+
+Wael K. Hammoudeh
+
+August 18/2023
