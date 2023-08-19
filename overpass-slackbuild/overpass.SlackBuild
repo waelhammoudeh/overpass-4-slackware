@@ -177,8 +177,9 @@ chmod 755 $PKGDEST/$MYPREFIX/bin/op_update_db.sh
 cp $CWD/op_make_areas.sh $PKGDEST/$MYPREFIX/bin/
 chmod 755 $PKGDEST/$MYPREFIX/bin/op_make_areas.sh
 
-cp $CWD/op_update_areas.sh $PKGDEST/$MYPREFIX/bin/
-chmod 755 $PKGDEST/$MYPREFIX/bin/op_update_areas.sh
+# removed on 8/18/2023
+# cp $CWD/op_update_areas.sh $PKGDEST/$MYPREFIX/bin/
+# chmod 755 $PKGDEST/$MYPREFIX/bin/op_update_areas.sh
 
 mkdir -p $PKGDEST/install
 cat $CWD/slack-desc > $PKGDEST/install/slack-desc
@@ -198,7 +199,7 @@ cp $CWD/op_ctl.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/rc.dispatcher $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/op_update_db.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/op_make_areas.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/op_update_areas.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+# cp $CWD/op_update_areas.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/op_logrotate $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/rc.local $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/rc.local_shutdown $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
