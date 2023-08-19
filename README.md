@@ -13,6 +13,11 @@ Concepts and methods mentioned here can be applied to any Linux distribution not
 
 ### Changes:
 
+August 18/2023
+
+op_make_areas.sh: change IMAX loop counter from 100 down to 2.
+op_update_areas.sh: removed script - areas objects are updated daily after database update with iCount = 2.
+
 **Overpass**
 
 On April 25/2023 the Overpass developer made the following announcement in a blog post:
