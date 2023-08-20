@@ -8,11 +8,11 @@ I am trying to complete this file and making it shorter, but it is not working t
 
 **Areas Making & Updates**
 
-Making areas have changed a lot since I started using overpass, I still do not fully understand the process.
-
  - In "op_make_areas.sh" script I have changed the IMAX loop counter to 2. Down from 100.
  - Areas update is only done after database update (daily) with loop counter 2 also.
  - Remove overpass crontab entry for opAreaUpade.
+ - Removed "op_update_areas.sh" script from SlackBuild script.
+ - Cron entry to remove old change files is "overpass" user entry - **no root usage**
 
 
 In this "README-SETUP.md" file:
@@ -181,6 +181,10 @@ overpass@yafa:~/source$
 ```
 ### Initial Overpass Database:
 
+### Limited Area Database with FULL HISTORY (attic) Is Not Supported:
+
+**Using Full History extracts to initial overpass database is not supported and discouraged we do not use --attic option here**
+
 OverpassAPI provides two scripts to initial the database found in "/usr/local/bin" directory .
 The first is the "download_clone.sh" script which is for cloning **whole planet** database from
 a live overpass server. This script can not be used for a limited area or region.
@@ -206,8 +210,7 @@ format, it takes longer to download - it shows if you do not have the bandwidth.
 
 My "op_initial_db.sh" script included in my SlackBuild is a replacement to overpass (init_osm3s.sh) script.
 
-
-The overpass *update_database* program usage or accepted arguments:
+Like "init_osm3s.sh" script my "op_initial_db.sh" script calls the overpass supplied *update_database* program;  update_database usage is:
 ```
 wael@yafa:~$ update_database -h
 Unkown argument: -h
@@ -224,7 +227,7 @@ and decompression! I set compression to "no", feel free to change this.
 
 To use "op_initial_db.sh" script:
 
- * Make sure that the script is executable (it should be) if not; set it to be exectable with:
+ * Make sure that the script is executable (it should be) if not; set it to be executable with:
 ```
     # chmod +x /usr/local/bin/op_initial_db.sh
 ```
@@ -287,18 +290,8 @@ query the database, but to control overpass you need to put overpass hat on; be 
 If you are new to overpass then "osm3s_query" program is your friend, get to know it. In short it has 2 modes:
  - Interactive mode: you enter your query statements in the terminal and end your input with "Ctrl D".
  - Batch mode: you write your query in a text file; like the example above then use shell redirection for input.
-   You can use c-programming comment style in your file - please see the example file above.
-
-
-
-
-
-
-
-### Limited Area Database with FULL HISTORY (attic) Is Not Supported:
-
-**Using Full History extracts to initial overpass database is not supported and discouraged**
-
+ - You can use c-programming comment style in your input file in batch mode - please see "test-first.op" and "test-area.op" files in the Guide.
+ - You avoid network code / translation by using "osm3s_query" directly.
 
 ### Starting the "dispatcher" daemon:
 
@@ -325,10 +318,10 @@ Accepted arguments are:
   --time=number: Set the time unit  limit for the total of all running processes to this value in bytes.
   --rate-limit=number: Set the maximum allowed number of concurrent accesses from a single IP.
 ```
-The important arguments for us now are: ( --osm-base,  --areas, --meta, --attic and --db-dir ).
+The important arguments for us now are: ( --osm-base,  --areas, --meta and --db-dir ).
  * --osm-base: start basic or main dispatcher.
  * --areas: start areas dispatcher.
- * --meta | --attic: must match initialed database option.
+ * --meta: must match initialed database option.
  * --db-dir: actual overpass database directory.
 
 You start "dispatcher" as the "overpass" user giving it your database directory and how that
@@ -353,7 +346,8 @@ overpass@yafa:/mnt/nvme4/source$ dispatcher --osm-base --terminate
 The script "op_ctl.sh" can be used to control the dispatcher program. The script gets
 installed into "/usr/local/bin/" directory by my overpass Slackware package. The script
 is meant to be used by the overpass user only. If you are not using the File System mentioned
-above, you will need to set DB_DIR variable in the script before using it.
+above, you will need to set DB_DIR variable in the script before using it. My "op_ctl.sh" script starts
+both main (--osm-base) and area (--areas) dispatchers.
 
 The "op_ctl.sh" script provides three functions: { start, stop & status }. Control the
 dispatcher as "overpass" user with:
@@ -372,12 +366,12 @@ The dispatcher is run as daemon, in Slackware daemons start/stop scripts are add
 to the system "/etc/rc.d/" directory prefixed with (rc.) - which stands for Run Command.
 In my SlackBuild script directory, I provide "rc.dispatcher" script to start
 the dispatcher. When you install your package, you will find a new file with
-the name "rc.dispatcher" in your "/etc/rc.d/" this script is almost ready to be used.
+the name "rc.dispatcher" in your "/etc/rc.d/" this script is ready for use.
 
-No editing is required for "rc.dispatcher" script; just ensure that it is exectable.
+No editing is required for "rc.dispatcher" script; just ensure that it is executable.
 
-This script has been rewritten, it only calls "op_ctl.sh" script now. The "root" user can use
-it to start, stop and get status as follows:
+This script has been rewritten, it only calls "op_ctl.sh" script now. The "root" user switches to "overpass" user
+and can use it to start, stop and get status as follows:
 ```
  # /etc/rc.d/rc.dispatcher start
  # /etc/rc.d/rc.dispatcher stop
@@ -408,7 +402,7 @@ You may need to create the "/etc/rc.d/rc.local_shutdown" if not present in your 
 
 ### Area Creation:
 
-The "area" object is not an OpenStreetMaps object - like nodes, ways or relations.
+The "area" object is not an OpenStreetMaps object - like nodes, ways and relations.
 The object is an Overpass type, it is generated by Overpass from OSM data and
 added to Overpass database by the "osm3s_query" program using "--rules" switch that
 reads settings from an XML formated file. The file is "areas.osm3s" which is included in
@@ -423,13 +417,21 @@ or just use "op_ctl.sh" script as the overpass user; it starts both instances fo
 ```
  $ op_ctl.sh start
 ```
-To generate "areas" in overpass database developer provided "rules_loop.sh" script is used.
-I have replaced this script with "op_make_areas.sh" script to make areas type in a new initialed overpass
-database.
+To generate "areas" in overpass database developer provides "rules_loop.sh" script. In his script, developer
+has an infinite loop - runs forever - to make area objects. My understanding for the infinite is that it is needed
+with minutely updates for a server running all the time. I might be wrong on this!
 
-To generate "areas" in your database run the script "op_make_areas.sh" to completion ***without changing***
-IMAX loop counter. This will take time to complete, let the script run to completion. The area creation
-produces more files in your database with "area*" names, mine added nine of them. The
+I have replaced this script with "op_make_areas.sh" script to make the area objects in a new initialed overpass
+database. I have found that "area" functionality is available in overpass after only **ONE** execution of the command in the loop:
+
+```
+ $ osm3s_query --progress --rules <$RULES_DIR/areas.osm3s
+```
+
+Because of this new understanding to me, I have changed the loop counter from 100 down to 2. Yes 2 instead of 1 just in case I am wrong.
+I should point out that area creation has changed a lot since I have started using overpass.
+
+The area creation produces more files in your database with "area*" names, mine added nine of them. The
 "area" filter can be used now, a simple overpass query is provided to test area functions in the file named
 "test-area.op" in this Guide. To test your database run:
 
@@ -438,18 +440,7 @@ produces more files in your database with "area*" names, mine added nine of them
 ```
 this should result in a sorted list of names for cities and towns in your database.
 
-### Backup, Clone, Source:
-
-* Keep your source files
-* Clone DB from time to time with : osm3s_query --clone=$TARGET_DIR
-* Clone does NOT copy areas files - make areas again OR copy area files with:
-```
-    $ cp $DB_DIR/area* $TARGET_DIR/.
-```
-also copy base version number:
-```
-    $ cp $DB_DIR/osm_base_* $TARGET_DIR/.
-```
+With initialed database, areas made and dispatcher daemon running on startup you now have your own running "overpass" server, congratulations.
 
 ### Database Update:
 
@@ -460,232 +451,148 @@ Lets recap and say the obvious. Each data element inside OSM data files has a da
 it gets this date when edited for addition, deletion or modification. To bring OSM data
 up to date, newer elements are added or merged into the data. Newer elements are in
 the change files. To update OSM data file or database we need to know the last date
-for data included in that original OSM file then add data dated just AFTER this date from
+for data included in that original OSM file then merge data dated just AFTER this date from
 change files.
 
-###### Know last date included in your region OSM data file:
+The update process is two steps process; download change files then apply those change files to the database.
 
-At geofabrik.de servers regional OSM extracts data files have 2 sets, the first include full historic data, the second
-does not. Extracts with full historic data are generated **weekly** while the non-historic ones are
-generated **daily**. Since we can not initial an overpass database with full historic support for limited area,
-please stay away from full historic data file to initial your database.
+#### Download Change Files:
 
-At geofabrik.de website, the date for last included data in the file is stated on the download page.
-Under "Commonly Used Formats" heading at the line with the download link you will find something like the following:
-```
-This file was last modified 14 hours ago and contains all OSM data up to 2023-07-28T20:21:58Z. File size:233 MB;
-```
+I will use my "getdiff" to download Change Files from geofabrik.de server. [My getdiff is here.](https://github.com/waelhammoudeh/getdiff)
 
-Under "Other Formats and Auxiliary Files" heading; the line with the download link will say:
-```
-This file was last modified 6 days ago. File size: 439 MB;
-```
-in this case you calculate the date by going back 6 days from today. Please note that this is the same
-data file listed under the "Commonly Used Formats" heading in older OSM data format and a lot bigger
-file size. Use the smaller file size with (.pbf) data format listed first under "Commonly Used Formats" heading
-to download your region data file.
+The getdiff program required arguments:
+ - source
+ - begin
 
-TODO: include screenshot.
-
-There are tools that can be used to get information about OSM data files, using one you
-can get the last date for data included in that file. One tool (program) is "osmium" with
-the fileinfo command. For example the following command was issued in the directory
-where I have my OSM data file "arizona-latest-internal.osm.pbf" - note no historic data:
+The source argument is the URL to your area updates  directory at geofabrik.de download server.
+This source is listed in the "osmium fileinfo -e" output above under the *Header* section: Options:
 ```
-$ osmium fileinfo arizona-latest-internal.osm.pbf
-```
-The output was:
-```
-File:
-  Name: arizona-latest-internal.osm.pbf
-  Format: PBF
-  Compression: none
-  Size: 265419524
-Header:
-  Bounding boxes:
-    (-114.8325,30.05891,-109.0437,37.00596)
-  With history: no
   Options:
-    generator=osmium/1.15.0
+
     osmosis_replication_base_url=https://osm-internal.download.geofabrik.de/north-america/us/arizona-updates
-    osmosis_replication_sequence_number=3763
-    osmosis_replication_timestamp=2023-07-18T20:21:43Z
-    pbf_dense_nodes=true
-    pbf_optional_feature_0=Sort.Type_then_ID
-    sorting=Type_then_ID
-    timestamp=2023-07-18T20:21:43Z
 ```
-notice the timestamp line at the end. This is the date for latest data included in the file.
 
-There are other tools you may use that will give you this information. For osmium you may want
-my slackware package find it [here](https://github.com/waelhammoudeh/osmium-tool_slackbuild).
+the source above is the string starting just after the '=' sign.
 
-Now we know the LAST date included in our data file, we need to match that with the change file
-with date just AFTER this date. Change files have corresponding "state.txt" files which includes
-a timestamp line and sequenceNumber line. We look in "state.txt" files looking for date just
-after our last date we just found.
-
-The change files and their corresponding state.txt are listed on the region **updates** page at
-geofabrik.de website. For each file in the list there is a date for its modification, this date is very
-close to the date in Change file we are looking for. Look inside "state.txt" and check timestamp
-line to match just after your region date. Once we match dates in "state.txt" the sequence
-number for change file to start updating from is the number in sequenceNumber line.
-The sequence number is 4 to 9 digit long number, never starts with zero.
-
-The sequenceNumber line in this matched "state.txt" file has the sequence number needed
-for the 'begin' argument of my "getdiff" program.
-
-At "download.geofabrik.de" - this is the public server - the region **updates** page lists "state.txt"
-and change files in **sorted** order, those same files are **not** sorted and do not include modified
-date for the internal server. Internal and public servers files are generated at just about the same time,
-they also share file names "the 3-digit number file name", if you are using the internal server, it is easier
-to browse your region updates page on the **public** server.
-
-The overpassAPI provides two ways to keep databases updated with "Change Files"
-The first method uses "update_from_directory" program and used with a live server; meaning the
-"dispatcher" has to be running, database can still be queried during the update process. This is the
-method used in the script "apply_osc_to_db.sh" shipped with the API source, you can look at the
-script found in the executable "usr/local/bin" directory.
-
-The second method uses "update_database" program and used with a stopped server; meaning the
-"dispatcher" can not be running. The developer words about this method:
-```
-(As a side note, this also works for applying OSC files onto an existing database. Thus you can
-make daily updates by applying these diffs with a cronjob. This method takes fewer disk loads
-than minute updates, and the data is still pretty timely.)
-```
-This is the method I will use here to keep overpass database updated. The server will be stopped
-for a period of one to three minutes during the update; since mine is for personal use, I do not
-announce this down time, if yours is on an intranet network - used by others - you should announce
-this 1 to 3 minutes down time.
-
-The update process is broken into two steps; retrieve Change Files and apply them to database. The
-first is done using my "getdiff" program, the second is done with my "op_update_db.sh" script.
-
-I use Geofabrik website to get my extracts for them providing **daily "Change Files"** for those
-extracts. Those files include changes in the area extract in the last 24 hours only, when updating
-with them, your OSM data is updated up to that time. This makes updating data a lot easier, which
-makes life easier, easier is better, thank you very much Geofabrik.
-If you do not use Geofabrik for your extracts, this may not help you much and you need to look
-somewhere else to update your database. You may apply the same concept in your own scripts.
-
-You will be wearing three "hats" here, your own normal self, "overpass" and "root" users ... you will dance!
-No seriously, if you think it is easier for you to setup "getdiff" by editing "getdiff.conf" file and make sure
-everything is running correctly by testing your configuration as your own self first before downloading
-files as the "overpass" user, then feel free to do that. Everything done to the database will be done as the
-"overpass" user. Downloading "Change Files" should also be done as "overpass" user. The "dispatcher"
-daemon is started by overpass, "root" switches to "overpass" user in "rc.dispatcher" script used in the
-system initial and shutdown scripts.
-
-#### Retrieve Change Files:
-
-My "getdiff" program retrieves "Change Files" from Geofabrik **public or internal servers.**
-
-Find ["getdiff" source here](https://github.com/waelhammoudeh/getdiff), the repository has full instructions for compiling and usage.
-
-The program is written in C language, download, compile and place the executable "getdiff" in
-"/usr/local/bin/" directory because that is where a script down below expects to find it.
-(only root can write to this directory - so be root).
-
-modify the example configuration file: "getdiff.conf.example" included with this Guide,
-Set values for KEYS below and save it without the "example" extension please:
-
-  - SOURCE
-  - BEGIN
-  - DIRECTORY
-
-If you use Geofabrik internal server, please fill "USER" value too, we will provide password when we call the program.
-
-Program "getdiff" appends newly downloaded file names to the file 'newerFiles.txt' in its working directory.
-This file is processed by "op_update_db.sh" script to do the updates. The script renames this file when done - emptying
-or hiding the file from "getdiff". We could have deleted / removed altogether, but there is a plan for it!
-
-The 'source' argument is the internet address for your area (region) updates page at geofabrik.de site.
-This ends with an entry formatted as {region}-updates, where region is the name of your area or country.
-
-The argument for 'begin' is the sequence number for the change file to start downloading from.
-
-To ensure that you have the right sequence number, start with fresh downloaded OSM data file, then
-your change files will be generated the very next day by geofabrik.de servers. Easy is better.
-The sequence number is inside the corresponding "state.txt" file at the sequenceNumber line.
-The next day, browse your area updates page for new state.txt files, you will easly find your needed
-sequence number.
+The begin number is the sequence number for the Change File to start downloading from. This is the Change File
+which has a date just AFTER the Last date for your region OSM data file.
 
 The sequence number is 4 to 9 digit long number, never starts with zero. By OSM convention daily change
 files have sequence number of four digits; at geofabrik.de this convention is followed.
 
-If this not possible, then follow the instructions mentioned above under the heading
-"Know last date included in your region OSM data file:" to find your sequence number.
+The easy way to set your begin argument is to start updating right after you download your region OSM data file.
+Change files are generated **daily** at Geofabrik, the first change file for your region will be generated the **very next**
+day from your download day. You just get the sequence number the next day from latest ".state.txt" file.
 
-With all settings filled in configuration file - we need to make sure that all is okay now. Run "getdiff" to download
-your region Change Files to test your settings in one of two ways:
+**Two ways for Last date in your region OSM data file:**
 
-* If you are using Geofabrik **PUBLIC** server:
+ - **From Geofabrik download page:**
+
+  At geofabrik.de website, the date for last included data in the file is stated on the download page.
+  Under "Commonly Used Formats" heading at the line with the download link you will find something like the following:
+  ```
+  This file was last modified 14 hours ago and contains all OSM data up to 2023-07-18T20:21:43Z. File size: 253 MB;
+  ```
+  Under "Other Formats and Auxiliary Files" heading; the line with the download link will say:
+  ```
+  This file was last modified 6 days ago. File size: 439 MB;
+  ```
+  in this case you calculate the date by going back 6 days from today.
+
+  - **From osmium fileinfo -e output:**
+
+  This was what we did to set the version number for initialing database. Here is the line again under the *Data* section:
+  ```
+  Data:
+
+  Timestamps:
+    First:
+    Last: 2023-07-18T19:45:41Z
+  ```
+In this example the last date for data in the region OSM data file is July 18/2023.
+
+Your Change Files and their corresponding ".state.txt" files are listed under your source URL at geofabrik.de website.
+You browse through the ".state.txt" files looking for date just AFTER the above date - your region last date. The hard way
+is to start in the middle then move to upper or lower half, then break that into halves until you find that date.
+
+The easy way is to use the **sequence number** for your region data file. In our "osmium fileinfo -e" output
+this sequence number is list under the *Header* section Options:
 ```
-      $ getdiff -c path/to/your/getdiff.conf
+osmosis_replication_sequence_number=3763
 ```
 
-* If you are using Geofabrik **INTERNAL** server:
+The file number / name is the last THREE digits (763) above, start at "763.state.txt" file in this example. Click this file and you get:
 ```
-     $ getdiff -c path/to/your/getdiff.conf -p xxxxxxxx
+# original OSM minutely replication sequence number 5666845
+timestamp=2023-07-18T20\:21\:43Z
+sequenceNumber=3763
 ```
-replace the "xxxxxxxx" above with your password for your ( openstreetmap.org ) account.
 
-This should download your region (.osc) Change Files AND their (.state.txt) files placing them
-in your "DIRECTORY" setting under "diff" directory entry.
-
-If it does not work as expected, please double check your settings espacially the URL for SOURCE. And
-test your settings again.
-
-As mentioned in the File System Structure section above "getdiff" Work Directory is created under
-"overpass" directory, this makes DIRECTORY setting:
-
+This "timestamp" line gives us the **same last** date for our region OSM data file. What we need is the date just **AFTER** last date in our region OSM data file.
+Look at very next (.state.txt) file; in our example "764.state.txt" then click on that file and we get:
 ```
-DIRECTORY = /var/lib/overpass/getdiff
+# original OSM minutely replication sequence number 5668253
+timestamp=2023-07-19T20\:21\:35Z
+sequenceNumber=3764
 ```
-with this setting, "getdiff" program created "diff" directory is where I find the new dowloaded
-differ files and their state.txt files.
 
-#### Update Overpass Database:
+This "timestamp" line says July **19**/2023. Bingo we hit the jack pot! This the date is just AFTER our region last date.
+From this file "764.state.txt" the sequence number is: **3764**. **This is your begin argument.**
 
-The "op_update_db.sh" bash script is to update the overpass database. The script uses "update_database"
-program provided by overpassAPI. The "dispatcher" must be stopped while "update_database" does its work.
+I did not tell you to just add one to the region sequence number because we match **DATE** not sequence numbers.
+They just happen to be neatly organized at Geofabrik.
 
-The "op_update_db.sh" uses files dowloaded by "getdiff" program, so both share some settings, namely:
+This **begin** argument is only needed for first time use for getdiff program.
 
- * DB_DIR : overpass database directory
- * DIFF_DIR : where to find differ (change) files
+Working directory argument has a default of current user home directory; if run as "overpass" user it will create its
+working directory at the correct place following my File System structure! If you are using the **internal** server
+at Geofabrik, you also need to provide arguments to "user" and "passwd".
 
-Note that "op_update_db.sh" script uses "gunzip" program and does not require osmium - osmium
-is still required to initial databse with "op_initial_db.sh" script.
+Arguments to getdiff program can be entered on the command line or from configuration file; see "getdiff -h" for full usage.
 
-To use the script copy it to "/usr/local/bin/" directory, and make sure it is executable. Only
-change setting if you are NOT using my File System Structure.
-
-With filled settings, you can now update your overpass database using the downloaded (.osc)
-Change Files by running "op_update_db.sh" script as the "overpass" user. This script has "LOGFILE"
-setting, I set this to "logs" directory under OP_DIR:
+I want to change the above source from **internal** server to **public** server at Geofabrik - so I do not worry about user or
+passwd arguments; the to download change files we enter this command:
 ```
-LOGFILE=/var/lib/overpass/logs/op_update_db.log
+overpass@yafa:~/source$ getdiff -s https://download.geofabrik.de/north-america/us/arizona-updates -b 3764
 ```
-Check your log file and your database version file: DB_DIR/osm_base_version. Hope it works for you.
 
-**Area update:**
+With this command above, issued by "overpass" user, change files and their corresponding .state.txt files will be
+downloaded to: "/var/lib/overpass/getdiff/diff/" directory. A mirror of the path from Geofabrik will be created
+under this directory which gives the full path to be: "/var/lib/overpass/getdiff/diff/000/003/" with the last
+2 directory entries created by getdiff depending on the sequence number.
 
-The area update is done in "op_update_db.sh" script with a small loop counter of **ten** iterations,
-a **larger** loop counter is used in "op_update_areas.sh" script. Running "op_update_db.sh" daily
-and "op_update_areas.sh" weekly will keep areas files updated in your database.
+#### Apply Change Files:
 
-The "op_update_areas.sh" script has a loop counter in "IMAX" variable, you can experiment with this
-counter running the script periodically like once a week or even once a month, checking your
-database results for "area" queries. I set the IMAX variable to 50 to update Arizona areas, I had
-used 100 to initial the areas, that is half for area update. I run "op_update_areas.sh" script once
-a week plus the daily "op_update_db.sh" script.
+The second step in the update process is done by my "op_update_db.sh" script. Assuming my File System
+structure was followed, the script we apply all downloaded change files to the database directory without
+any changes or arguments needed. If you did not follow my File System structure then you need to adjust
+"paths" variables in the script. Assumin the former case; the command below will apply downloaded change
+files to your overpass database:
+```
+overpass@yafa:~/source$ op_update_db.sh
+```
 
-The combination of daily area update with small loop counter in "op_update_db.sh" script and
-a larger loop counter in "op_update_areas.sh" will keep areas files updated.
+This script stops the "dispatcher" daemon during the update, so querying your database during this time is
+not possible. This process takes few minutes depending on the size of the change file(s). The "dispatcher" is
+started by the script after the update is complete. This script updates area objects in the database after
+starting the dispatcher daemon.
 
-**NOTE:** Those two scripts should NOT be running at the **same time**.
+After the first time of updating your database, you no longer need provide the "begin", you update your
+database two simple commands in this order:
+```
+overpass@yafa:~/source$ getdiff -s https://download.geofabrik.de/north-america/us/arizona-updates
+overpass@yafa:~/source$
+overpass@yafa:~/source$ op_update_db.sh
+```
+
+Before leaving this section; I have not mentioned log files! Both "getdiff" and "op_update_db.sh" write
+their progress to each own log file placed in my "logs" directory. You should check those files after you
+perform your update. Logging messages need fine tuning! It is a case of TMI (Too Much Information).
+
+**TODO LIST:**
+ - Update this file below this list.
+ - Merge change files; when we have more than 1 of them before updating database.
+ - Write script to update source OSM data file for recovery; use osmium merge & apply_changes.
 
 #### Automate the Process:
 
@@ -752,7 +659,7 @@ find /path/to/diff -mtime +7 -type f -delete
 ```
 
 I remove Change Files daily that are older than 7 days, to do that a new cron entry is added to
-"root" crontab as root of course, the following entry does that:
+"overpass" crontab as "overpass" user of course, the following entry does that:
 ```
 @daily ID=rm_OSM_osc find /var/lib/overpass/getdiff/diff -mtime +7 -type f -delete >/dev/null 2>&1
 ```
@@ -830,6 +737,18 @@ Scripts do not handle shutdown signals. To avoid corrupted database make sure th
 scripts are done and have completed their work before shutting down the system.
 Check log files for all scripts always.
 
+### Backup, Clone, Source:
+
+* Keep your source files
+* Clone DB from time to time with : osm3s_query --clone=$TARGET_DIR
+* Clone does NOT copy areas files - make areas again OR copy area files with:
+```
+    $ cp $DB_DIR/area* $TARGET_DIR/.
+```
+also copy base version number:
+```
+    $ cp $DB_DIR/osm_base_* $TARGET_DIR/.
+```
 
 [^1]:  More about this below.
 
@@ -842,4 +761,4 @@ cp -pR "templates" "db/"
 
 Wael K. Hammoudeh
 
-August 18/2023
+August 20/2023

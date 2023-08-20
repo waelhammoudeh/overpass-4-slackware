@@ -155,7 +155,8 @@ case "$1" in
         $DSPTCHR --areas --terminate
       fi
 
-      sleep 1
+      # increased to 2 seconds; occasionally 1 is not enough!
+      sleep 2
 
       if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
         echo " Error: could not stop dispatcher"

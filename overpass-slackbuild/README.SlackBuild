@@ -23,7 +23,6 @@ This build script installs the following helper scripts into /usr/local/bin/ dir
  * op_initial_db.sh
  * op_ctl.sh
  * op_make_areas.sh
- * op_update_areas.sh
  * op_update_db.sh
 
 Installed to /etc/rc.d/ directory is file below:
