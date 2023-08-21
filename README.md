@@ -13,6 +13,16 @@ Concepts and methods mentioned here can be applied to any Linux distribution not
 
 ### Changes:
 
+August 20/2023
+
+  - SlackBuild builds overpass version "0.7.61.6"
+  - op_make_areas.sh: change IMAX loop counter to 10. Yes again!
+  - op_initial_db.sh: modified; copies "templates" directory to database directory now.
+  - edited README-SETUP.md: sadly still incomplete!
+  - {HOME} directory for overpass user is what we create at "/var/lib/overpass" **OR**
+   link your overpass home directory using this named link. Directory has to be created
+   and ownership set to: "overpass:overpass".
+
 August 18/2023
 
  - op_make_areas.sh: changed IMAX loop counter from 100 down to 2.

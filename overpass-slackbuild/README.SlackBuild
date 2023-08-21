@@ -1,6 +1,6 @@
 This is the "README.SlackBuild" file for overpassAPI SlackBuild script.
 
-This script is part of "overpass-4-slackware" repository found at:
+This file is part of "overpass-4-slackware" repository found at:
  https://github.com/waelhammoudeh/overpass-4-slackware
 
 
@@ -8,13 +8,14 @@ Before building overpass software package you need "overpass" user and group.
 This can be done with the following commands:
 
      # groupadd -g 367 overpass
-     # useradd -u 367 -g 367 -d /path/to/overpass overpass
+     # useradd -u 367 -g 367 -d /path/to/overpass/home overpass
 
 Feel free to use a different uid and gid if desired, but 367 is recommended to
 avoid conflicts with other stuff from SlackBuilds.org.
 
-Please replace "/path/to/overpass" with your actual database directory.
-That is the directory where you plan to initial the database in.
+Please replace "/path/to/overpass/home" with your actual overpass {HOME} directory.
+This is the home {HOME} directory for the "overpass" user; directory needs to be created
+and ownership set for it.
 Please also note the space between that directory path and "overpass" user name
 on the second command line above.
 
@@ -93,4 +94,5 @@ https://github.com/waelhammoudeh/overpass-4-slackware
 READ BEFORE THE UPGRADE PLEASE.
 
 Wael Hammoudeh
-7/31/2023
+
+August 20/2023

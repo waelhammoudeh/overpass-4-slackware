@@ -22,16 +22,18 @@
 #  This is done with the following commands:
 #
 #      # groupadd -g 367 overpass
-#      # useradd -u 367 -g 367 -d /your/database/directory overpass
+#      # useradd -u 367 -g 367 -d /path/to/overpass/home overpass
 #
-#  Replace "/your/database/directory" with your actual database directory; where
-#  you will store your database.
+#  Replace "/path/to/overpass/home" with your actual overpass {HOME} directory.
 #
+#
+# This file is part of the Guide for overpass-4-slackware found on GitHub at:
+# https://github.com/waelhammoudeh/overpass-4-slackware
 #
 
 CWD=$(pwd)
 PKGNAM=overpass
-VERSION=0.7.61.4
+VERSION=0.7.61.6
 SRC_NAM=osm-3s_v
 BUILD=${BUILD:-1}
 TAG=${TAG:-_wh}
@@ -199,7 +201,6 @@ cp $CWD/op_ctl.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/rc.dispatcher $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/op_update_db.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/op_make_areas.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-# cp $CWD/op_update_areas.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/op_logrotate $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/rc.local $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/rc.local_shutdown $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/

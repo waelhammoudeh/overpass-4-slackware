@@ -112,17 +112,14 @@ if [[ $INUSE_DIR != "$DB_DIR/" ]]; then
 fi
 
 #
-# IMAX is to control loop iteration counter - change & check query results
+# IMAX is to control loop iteration counter - THIS IS AN EXPERIMENT
+# change IMAX if you wish
 #
-# to INITIAL area data set IMAX to 100 - 200 iterations. Arizona = 100 & USA = 200
-# to UPDATE area data set IMAX to half number above & run cronjob weekly or monthly
-# script named "op_initial_areas.sh" has {IMAX} loop counter set to double the
-# value of {IMAX} in "op_update_areas.sh" script.
+# area functionality will be available after only ONE iteration is completed.
+# Do not know if more iteration produce more accurate results.
 #
-
-# cut down loop counter from 100 down to 2. maybe once only too?! August 18/2023 W. H.
 # IMAX=100
-IMAX=2
+IMAX=10
 
 echo "Area update started. Loop COUNT is set to: $IMAX"
 echo "`date '+%F %T'`: Area update started. Loop COUNT is set to: $IMAX" >>$LOG_FILE
@@ -135,7 +132,7 @@ for ((i=1; i<=$IMAX; i++)); do
 
   echo "`date '+%F %T'`: update iteration number < $i > done." >>$LOG_FILE
 
-  sleep 1
+  sleep 3
 }; done
 
 echo "Area Update Done After $IMAX Iterations"

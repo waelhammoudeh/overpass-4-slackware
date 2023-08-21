@@ -424,7 +424,6 @@ echo "$(date '+%F %T'): @@@@ updating overpass areas: With Loop Counter = $iCoun
 
 for ((i=1; i<=$iCount; i++)); do
 {
-#   ionice -c 2 -n 7 nice -n 19 osm3s_query --progress --rules < areas.osm3s 2>&1 >/dev/null
    ionice -c 2 -n 7 nice -n 19 $OSM3S_EXEC --progress --rules < $AREA_TEMPLATE 2>&1 >/dev/null
    sleep 3
 }; done

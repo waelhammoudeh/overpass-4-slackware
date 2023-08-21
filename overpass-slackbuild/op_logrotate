@@ -1,10 +1,10 @@
-# logrotate file for overpass logs - FIVE files are handled
+# logrotate file for overpass logs - 4 files are handled: size based, 5 copies are kept
 # compress is global
 
 compress
 nomail
 
-/var/lib/overpass/logs/op_update_db.log  /var/lib/overpass/logs/op_update_areas.log /var/lib/overpass/getdiff/getdiff.log {
+/var/lib/overpass/logs/op_update_db.log /var/lib/overpass/getdiff/getdiff.log {
 
     su overpass overpass
     rotate 5

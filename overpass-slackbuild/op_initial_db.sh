@@ -18,9 +18,6 @@ EXEC_DIR=/usr/local/bin
 UPDATE_EXEC=$EXEC_DIR/update_database
 OSMIUM=$EXEC_DIR/osmium
 
-# set database path ... not always?!
-# CTRL_SCRIPT=$EXEC_DIR/op_ctl.sh
-
 # option to use - recommended is "--meta"
 META=--meta
 
@@ -77,11 +74,16 @@ fi
 
 if [[ -z $VERSION ]]; then
     echo " $0: Error version string is empty"
-    echo " Please use last date in your input file as version number"
+    echo " Please use last date for data in your input file as version number"
     exit 1
 fi
 
 # osmconvert : is an alternative to osmium
+
+# set -o pipefail --> $? get sets if either fails
+set -o pipefail
+
+# commands are run in a pipe:
 
 $OSMIUM cat $INFILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
                                             --version=$VERSION \
@@ -89,5 +91,22 @@ $OSMIUM cat $INFILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
                                             --flush-size=$FLUSH_SIZE \
                                             --compression-method=$COMPRESSION \
                                             --map-compression-method=$COMPRESSION 2>&1 >/dev/null
+
+# Check the exit status of the pipeline
+if [[ $? -ne 0 ]]; then
+    echo "Database initialization failed."
+    exit 1
+else
+    echo "Database initialization successful."
+fi
+
+# To make the custom output feature operational
+# copy templates directory to database directory:
+# this is where overpassAPI expects to them
+TEMPLATES_DIR=/usr/local/templates
+
+if [ -d ${TEMPLATES_DIR} ]; then
+  cp -pR ${TEMPLATES_DIR} ${DB_DIR}
+fi
 
 exit 0
