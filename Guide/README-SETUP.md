@@ -426,7 +426,7 @@ database. I have found that "area" functionality is available in overpass after 
  $ osm3s_query --progress --rules <$RULES_DIR/areas.osm3s
 ```
 
-Because of this new understanding to me, I have changed the loop counter from 100 down to 2. Yes 2 instead of 1 just in case I am wrong.
+Because of this new understanding to me, I have changed the loop counter from 100 down to 10. Yes 2 then back to 10 now!
 I should point out that area creation has changed a lot since I have started using overpass.
 
 The area creation produces more files in your database with "area*" names, mine added nine of them. The
@@ -437,6 +437,7 @@ The area creation produces more files in your database with "area*" names, mine 
  osm3s_query < test-area.op | sort -ub
 ```
 this should result in a sorted list of names for cities and towns in your database.
+Note: if you miss "Denver, Colorado!", it has a COUNTY clasification [admin_level=6] not 8.
 
 With initialed database, areas made and dispatcher daemon running on startup you now have your own running "overpass" server, congratulations.
 
