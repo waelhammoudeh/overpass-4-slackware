@@ -437,6 +437,7 @@ The area creation produces more files in your database with "area*" names, mine 
  osm3s_query < test-area.op | sort -ub
 ```
 this should result in a sorted list of names for cities and towns in your database.
+
 Note: if you miss "Denver, Colorado!", it has a COUNTY classification [admin_level=6] not 8.
 
 With initialed database, areas made and dispatcher daemon running on startup you now have your own running "overpass" server, congratulations.
@@ -550,7 +551,7 @@ at Geofabrik, you also need to provide arguments to "user" and "passwd".
 Arguments to getdiff program can be entered on the command line or from configuration file; see "getdiff -h" for full usage.
 
 I want to change the above source from **internal** server to **public** server at Geofabrik - so I do not worry about user or
-passwd arguments; the to download change files we enter this command:
+passwd arguments; then to download change files we enter this command:
 ```
 overpass@yafa:~/source$ getdiff -s https://download.geofabrik.de/north-america/us/arizona-updates -b 3764
 ```
