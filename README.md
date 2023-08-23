@@ -13,6 +13,12 @@ Concepts and methods mentioned here can be applied to any Linux distribution not
 
 ### Changes:
 
+
+Augut 22/2023
+
+ - Added mergeChanges() function to "op_update_db.sh" script. Now when we have more than one change files;
+   they are merged first before applying the update. This requires *osmium* to be installed.
+
 August 20/2023
 
   - SlackBuild builds overpass version "0.7.61.6"
