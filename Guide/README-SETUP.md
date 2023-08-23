@@ -3,6 +3,11 @@ This is the "README-SETUP.md" file for Overpass Guide.
 
 ### Changes:
 
+**Merge Change Files Before Updating** 8/22/2023
+
+ - Added mergeChanges() function to "op_update_db.sh" script. Now when we have more than one change files;
+   they are merged first before applying the update. This requires *osmium* to be installed.
+
 **Areas Making & Updates**
 
  - In "op_make_areas.sh" script I have changed the IMAX loop counter to 10. Down from 100.
@@ -737,10 +742,10 @@ also copy base version number:
 
 **TODO LIST:**
 
- - Merge change files; when we have more than 1 of them before updating database.
+ - Write a "short story" for this README-SETUP.md file.
  - Write script to update source OSM data file for recovery; use osmium merge & apply_changes.
 
 
 Wael K. Hammoudeh
 
-August 20/2023
+August 22/2023

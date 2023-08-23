@@ -40,6 +40,49 @@
 # This script should NOT run while my "op_update_areas.sh" is running
 # Script needs to run to completion to avoid corrupted database.
 
+# script variables: (most of them!)
+#
+# file system root directory
+SYS_ROOT=/var/lib
+
+# overpass directory
+OP_DIR=$SYS_ROOT/overpass
+
+# overpass database directory
+DB_DIR=$OP_DIR/database
+
+# getdiff Work Directory
+GETDIFF_WD=$OP_DIR/getdiff
+
+# getdiff download directory
+DIFF_DIR=$GETDIFF_WD/diff
+
+# log file directory
+LOG_DIR=$OP_DIR/logs
+
+# script name no path & no extension
+SCRIPT_NAME=$(basename "$0" .sh)
+
+# script log file name
+LOGFILE="$LOG_DIR/$SCRIPT_NAME.log"
+
+# input to script "newerFiles.txt"
+NEWER_FILES=$GETDIFF_WD/newerFiles.txt
+
+# executables directory
+EXEC_DIR=/usr/local/bin
+
+# exectables we use
+OP_CTL=$EXEC_DIR/op_ctl.sh
+DISPATCHER=$EXEC_DIR/dispatcher
+UPDATER=$EXEC_DIR/update_database
+OSM3S_EXEC=$EXEC_DIR/osm3s_query
+
+# area template - path installed by my Slackware package
+AREA_TEMPLATE=/usr/local/rules/areas.osm3s
+
+# functions:
+#
 # function to check database directory
 # directory can be real or a link to directory, directory can not be empty.
 check_database_directory() {
@@ -61,6 +104,99 @@ check_database_directory() {
 #    echo "$0: Directory $DIR checked okay"
     return 0
 }
+# END check_database_directory() function
+
+#
+# function merge-changes() :
+# mergeChanges() - Merge a list of OpenStreetMap change files into a single file.
+# Parameters:
+#   $1: A space-separated list of OpenStreetMap change files to be merged.
+#       The last file name in the list will be used as the output for the merged changes.
+#       Last file in the list is renamed by appending ".original" to its name.
+# Returns:
+#   None
+#
+mergeChanges() {
+
+    input=$1
+
+    # Check if the input list of files is empty
+    if [ -z "$1" ]; then
+        echo "$(date '+%F %T'): mergeChanges() Error: missing required argument" >> $LOGFILE
+        echo "$(date '+%F %T'): mergeChanes(): Argument is a string containing a list of OSM change file names to merge." >> $LOGFILE
+        return 1
+    fi
+
+    # Convert the input string of filenames into an array
+    fileArray=($input)
+
+    # do not allow list with SINGLE file name
+    numFiles=${#fileArray[@]}
+
+    if [ $numFiles -eq 1 ]; then
+        echo "$(date '+%F %T'): Error: Only one file provided. Please provide multiple files for merging." >> $LOGFILE
+        return 1
+    fi
+
+    echo "$(date '+%F %T'): mergeChanges(): Input files: $input" >> $LOGFILE
+
+    # Get the last filename from the array
+    lastFile="${fileArray[-1]}"
+
+    # Extract the directory from last file for output directory
+    toDir=$(dirname "$lastFile")
+
+    # temporary output file
+    outFile="$toDir/combined.osc.gz"
+
+    echo "$(date '+%F %T'): mergeChanges(): Last file in the list: $lastFile" >> $LOGFILE
+
+    echo "$(date '+%F %T'): mergeChanges(): Output directory: $toDir" >> $LOGFILE
+
+   echo "$(date '+%F %T'): mergeChanges(): Temporary Output file: $outFile" >> $LOGFILE
+
+    echo "$(date '+%F %T'): mergeChanges(): Merging input files..." >> $LOGFILE
+
+    # Extract the directory of the last file for output
+    toDir=$(dirname "$lastFile")
+    echo "mergeChanges(): Output directory: $toDir" >> $LOGFILE
+
+    myExec=/usr/local/bin/osmium
+
+    # Create the formatted list
+    fileListFormatted=$(echo "$input" | sed 's/ / \\ \n/g')
+
+    echo "$(date '+%F %T'): mergeChanges(): Formatted argument list is below:" >> $LOGFILE
+    echo "$fileListFormatted" >> $LOGFILE
+    echo "" >> $LOGFILE
+
+    # Run osmium merge-changes to combine input files into the output file -
+    # Notice the lack qoutes around $input
+    $myExec merge-changes --fsync --no-progress -o "$outFile" $input >> "$LOGFILE" 2>&1
+    return_code=$?
+
+    # Check the return code of osmium merge-changes
+    if [ $return_code -ne 0 ]; then
+        echo "$(date '+%F %T'): mergeChanges(): Error: osmium merge-changes failed with exit code $return_code" >> $LOGFILE
+        return $return_code
+    fi
+
+    # Rename the last input file - do not overwrite any original file
+    # do not use it here: osmium overwrite option seems NOT to work!
+    mv "$lastFile" "$lastFile.original"
+
+    # Rename the combined output file to match the last input file
+    mv "$outFile" "$lastFile"
+
+    echo "$(date '+%F %T'): mergeChanges(): Renamed files." >> $LOGFILE
+
+    echo "mergeChanges(): Merging complete." >> $LOGFILE
+
+}
+# END mergeChanges()
+
+#
+#
 
 OP_USR_ID=367
 
@@ -74,42 +210,6 @@ if [[ $EUID -ne $OP_USR_ID ]]; then
 
     exit 1
 fi
-
-# file system root directory
-SYS_ROOT=/var/lib
-
-# overpass directory
-OP_DIR=$SYS_ROOT/overpass
-
-# overpass database directory
-DB_DIR=$OP_DIR/database
-
-# getdiff Work Directory
-GETDIFF_WD=$OP_DIR/getdiff
-
-# getdiff download directory
-DIFF_DIR=$GETDIFF_WD/diff
-
-# log file directory
-LOG_DIR=$OP_DIR/logs
-
-# script log file : TODO: get script name from shell
-LOGFILE=$LOG_DIR/op_update_db.log
-
-# input to script "newerFiles.txt"
-NEWER_FILES=$GETDIFF_WD/newerFiles.txt
-
-# executables directory
-EXEC_DIR=/usr/local/bin
-
-# exectables we use
-OP_CTL=$EXEC_DIR/op_ctl.sh
-DISPATCHER=$EXEC_DIR/dispatcher
-UPDATER=$EXEC_DIR/update_database
-OSM3S_EXEC=$EXEC_DIR/osm3s_query
-
-# area template - path installed by my Slackware package
-AREA_TEMPLATE=/usr/local/rules/areas.osm3s
 
 # call check_database_directory() function to verify database directory
 check_database_directory "$DB_DIR"
@@ -312,7 +412,72 @@ done
 
 # done checking
 
-# wait for op_update_areas.sh script to finish if running
+# merge change files when array has more than 1 of them
+if [ $length -gt 2 ]; then
+  echo "$(date '+%F %T'): Array has more than one change files, combining them ..." >> $LOGFILE
+  echo "$(date '+%F %T'): Making file list string ..." >> $LOGFILE
+
+  i=0
+
+  # maximum number of files to merge at one time
+  max=4
+
+  # use same number of files in each batch - last file from previous batch is included in next batch
+  adjustMax=1
+
+  while [[ $i -lt $length ]]; do
+  {
+
+    for (( j = 0;  j < max  ; j++ )); do
+
+      changeFileName=${newFilesArray[$i]}
+
+      changeFile=$DIFF_DIR$changeFileName
+
+      # insert file name into list
+      fileList="$fileList $changeFile"
+
+      # next change file - skip .state.txt file
+      i=$((i+2))
+
+      if [ $i -eq $length ]; then
+        break
+      fi
+
+    done;
+
+    echo "fileList has: $fileList"
+    echo ""
+
+    # remove leading space from fileList
+    fileList=$(echo "$fileList" | sed 's/^ //')
+
+    echo "Calling function mergeChanges() with : $fileList" >> $LOGFILE
+
+    mergeChanges "${fileList}"
+    return_code=$?
+
+    # Check the return code of osmium merge-changes
+    if [ $return_code -ne 0 ]; then
+       echo "$(date '+%F %T'): Error: function mergeChanges() failed with exit code $return_code" >> $LOGFILE
+       exit $return_code
+    fi
+
+    # current change file (last one inserted) is set as head of list for next loop
+    lastFile=$changeFile
+    fileList="$lastFile"
+
+    if [ $adjustMax -eq 1 ]; then
+      max=$((max-1))
+      adjustMax=0
+    fi
+
+  }; done
+
+fi
+
+
+# wait for op_update_areas.sh script to finish if running - code block to be REMOVED
 SLEEP_FLAG=TRUE
 AREA_UPDATE_SCRIPT=op_update_areas*
 
@@ -329,6 +494,23 @@ while [[ $SLEEP_FLAG = "TRUE" ]]; do
 
 }; done
 
+# apply changes from LAST change file
+
+changeFileName=${newFilesArray[length - 2]}
+stateFileName=${newFilesArray[length - 1]}
+
+changeFile=$DIFF_DIR$changeFileName
+stateFile=$DIFF_DIR$stateFileName
+
+# get date string "YYYY-MM-DD" from state.txt & use as version number
+
+VERSION=`cat $stateFile | grep timestamp | cut -d 'T' -f -1 | cut -d '=' -f 2`
+
+# update_database changable options
+META=--meta
+FLUSH_SIZE=4
+COMPRESSION=no
+
 # dispatcher can not be running when using overpass "update_database" program
 # stop dispatcher before updating
 $OP_CTL stop 2>&1 >/dev/null
@@ -344,57 +526,31 @@ fi
 echo "$(date '+%F %T'): stopped dispatcher daemon" >>$LOGFILE
 echo "stopped dispatcher daemon"
 
-# update_database changable options
-META=--meta
-FLUSH_SIZE=4
-COMPRESSION=no
+echo "$(date '+%F %T'): applying update from:" >>$LOGFILE
+echo "                   Change File: <$changeFile>" >>$LOGFILE
+echo "                   File Dated: <$VERSION>" >>$LOGFILE
 
-i=0
-j=0
+echo " applying update from Change File: <$changeFile> Dated: <$VERSION>"
 
-while [ $i -lt $length ]
-do
-    j=$((i+1))
-    changeFileName=${newFilesArray[$i]}
-    stateFileName=${newFilesArray[$j]}
+# Usage: update_database [--db-dir=DIR] [--version=VER] [--meta|--keep-attic] [--flush_size=FLUSH_SIZE] [--compression-method=(no|gz|lz4)] [--map-compression-method=(no|gz|lz4)]
 
-    changeFile=$DIFF_DIR$changeFileName
-    stateFile=$DIFF_DIR$stateFileName
+gunzip <$changeFile | $UPDATER \
+               --db-dir=$DB_DIR \
+               --version=$VERSION \
+               $META \
+               --flush-size=$FLUSH_SIZE \
+               --compression-method=$COMPRESSION \
+               --map-compression-method=$COMPRESSION 2>&1 >/dev/null
 
-    # get date string "YYYY-MM-DD" from state.txt & use as version number
-    VERSION=`cat $stateFile | grep timestamp | cut -d 'T' -f -1 | cut -d '=' -f 2`
+if [[  ! $? -eq 0 ]]; then
+  # set -e ????
+  echo "$(date '+%F %T'): Failed to update from file $changeFile" >>$LOGFILE
+  echo $ERR_FOOTER >>$LOGFILE
+  exit 1
+fi
 
-    echo "$(date '+%F %T'): applying update from:" >>$LOGFILE
-    echo "                   Change File: <$changeFile>" >>$LOGFILE
-    echo "                   File Dated: <$VERSION>" >>$LOGFILE
-
-    echo " applying update from Change File: <$changeFile> Dated: <$VERSION>"
-
-    # Usage: update_database [--db-dir=DIR] [--version=VER] [--meta|--keep-attic] [--flush_size=FLUSH_SIZE] [--compression-method=(no|gz|lz4)] [--map-compression-method=(no|gz|lz4)]
-
-    gunzip <$changeFile | $UPDATER --db-dir=$DB_DIR \
-                                   --version=$VERSION \
-                                   $META \
-                                   --flush-size=$FLUSH_SIZE \
-                                   --compression-method=$COMPRESSION \
-                                   --map-compression-method=$COMPRESSION 2>&1 >/dev/null
-
-    if [[  ! $? -eq 0 ]]; then
-        # set -e ????
-        echo "$(date '+%F %T'): Failed to update from file $changeFile" >>$LOGFILE
-        echo $ERR_FOOTER >>$LOGFILE
-        exit 1
-    fi
-
-    echo "$(date '+%F %T'): done update from file $changeFile" >>$LOGFILE
-    echo "done update from file $changeFile"
-
-    # wait 1 seconds to update next changeFile
-    sleep 1
-
-    # move to next pair
-     i=$((j+1))
-done
+echo "$(date '+%F %T'): done update from file $changeFile" >>$LOGFILE
+echo "done update from file $changeFile"
 
 # restart dispatcher
 $OP_CTL start 2>&1 >/dev/null
@@ -420,10 +576,11 @@ sleep 2
 # iCount=10
 iCount=2
 
-echo "$(date '+%F %T'): @@@@ updating overpass areas: With Loop Counter = $iCount" >>$LOGFILE
+echo "$(date '+%F %T'): @@@@ updating overpass areas OBJECTS: With Loop Counter = $iCount" >>$LOGFILE
 
 for ((i=1; i<=$iCount; i++)); do
 {
+#   ionice -c 2 -n 7 nice -n 19 osm3s_query --progress --rules < areas.osm3s 2>&1 >/dev/null
    ionice -c 2 -n 7 nice -n 19 $OSM3S_EXEC --progress --rules < $AREA_TEMPLATE 2>&1 >/dev/null
    sleep 3
 }; done
