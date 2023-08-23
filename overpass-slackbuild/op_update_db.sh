@@ -109,11 +109,12 @@ check_database_directory() {
 #
 # function merge-changes() :
 # mergeChanges() - Merge a list of OpenStreetMap change files into a single file.
+# function calls 'osmium' to do the merging.
 # Parameters:
 #   $1: A space-separated list of OpenStreetMap change files to be merged.
 #       The last file name in the list will be used as the output for the merged changes.
 #       Last file in the list is renamed by appending ".original" to its name.
-# Returns:
+# Returns: 1 on errors; if osmium executable is not found or merge list has a single file.
 #   None
 #
 mergeChanges() {
@@ -125,6 +126,13 @@ mergeChanges() {
         echo "$(date '+%F %T'): mergeChanges() Error: missing required argument" >> $LOGFILE
         echo "$(date '+%F %T'): mergeChanes(): Argument is a string containing a list of OSM change file names to merge." >> $LOGFILE
         return 1
+    fi
+
+    myExec=/usr/local/bin/osmium
+    if [[ ! -x $myExec ]]; then
+      echo "$0: mergeChanges(): Error could not find \"osmium\" executable." >&2
+      echo "$0: mergeChanges(): Error could not find \"osmium\" executable." >> $LOGFILE
+      return 1
     fi
 
     # Convert the input string of filenames into an array
@@ -160,8 +168,6 @@ mergeChanges() {
     # Extract the directory of the last file for output
     toDir=$(dirname "$lastFile")
     echo "mergeChanges(): Output directory: $toDir" >> $LOGFILE
-
-    myExec=/usr/local/bin/osmium
 
     # Create the formatted list
     fileListFormatted=$(echo "$input" | sed 's/ / \\ \n/g')
