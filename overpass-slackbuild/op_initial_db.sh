@@ -44,13 +44,16 @@ if [[ -z $3 ]]; then
 fi
 
 if [[ ! -d $DB_DIR ]]; then
-
     echo "$0: Error could not find destination directory: $DB_DIR"
     echo " Please create the directory and change ownership to overpass."
     exit 1
 fi
 
-# directory MUST be empty TODO
+if [[ -n "$(ls -A $DB_DIR)" ]]; then
+    echo "$0: Error destination directory is not empty: $DB_DIR"
+    echo " Please specify an empty directory."
+    exit 1
+fi
 
 if [[ ! -s $INFILE ]]; then
 

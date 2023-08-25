@@ -3,7 +3,11 @@ This is the "README-SETUP.md" file for Overpass Guide.
 
 ### Changes:
 
-**Merge Change Files Before Updating** 8/22/2023
+Added empty directory test in "op_initial_db.sh"
+  8/24/2023
+
+**Merge Change Files Before Updating**
+  8/22/2023
 
  - Added mergeChanges() function to "op_update_db.sh" script. Now when we have more than one change files;
    they are merged first before applying the update. This requires *osmium* to be installed.
