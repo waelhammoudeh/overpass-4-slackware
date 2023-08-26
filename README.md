@@ -13,6 +13,11 @@ Concepts and methods mentioned here can be applied to any Linux distribution not
 
 ### Changes:
 
+August 26/2023
+
+  - Use full timestamp as version number.
+  - Updated "op_initial_db.sh" script; version argument is not required.
+  - Updated "op_update_db.sh"; writes full timestamp as version number.
 
 Augut 22/2023
 

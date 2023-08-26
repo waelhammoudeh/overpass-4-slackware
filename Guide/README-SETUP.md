@@ -109,9 +109,9 @@ then create the three directories mentioned above. Note: if you need to change o
 ### Version number (database & area):
 
 Among the files created in the overpass database directory at initialisation is "osm_base_version" file, and with areas creation
-"area_version" file. It is customarily to use last date for included OSM data in the database as the version number with "YYYY-MM-DD"
-formated string. My "op_initial_db.sh" script second parameter is for this version number. This number will get replaced with each
-update applied to the database by my update script. The same version number is used for the "area_version" (created / updated from same data).
+"area_version" file. It is customarily to use the timestamp for last included data as the version number. I use 'osmium fileinfo'
+to get the last timestamp from the input file (your region OSM data file) then use that as first version. Furthermore; my database
+update script "op_update_db.sh" uses the full timestamp from the ".state.txt" file corresponding to the Change file being applied.
 
 Note that the "timestamp" program in "cgi-bin" directory outputs the contents of "osm_base_version" file. See README-WEB.md file.
 
@@ -243,15 +243,15 @@ To use "op_initial_db.sh" script:
 The script assumes that you installed my overpassAPI package using my SlackBuild script
 and that you also installed *osmium*. I also assume you already created "database" directory.
 
-The script takes THREE arguments; input file name, version number as date string
-and destination directory for database.
+The script takes TWO arguments; input file name and destination directory for database.
 
 - Input file name is your region OSM data file in any format supported by "osmium".
   If the file is not in your current directory, then include the path with file name.
-- Date is the last date contained in that input file in "YYYY-MM-DD" format. This date will be
-  used as the version number for the database.
-- Destination directory is overpass database directory and must exist (DB_DIR). If you used
-  the File System Structure above, then this will be "/var/lib/overpass/database"
+- Destination directory is database directory and must exist (DB_DIR) AND be empty to initial.
+  If you used the File System Structure above, then this will be "/var/lib/overpass/database"
+
+
+ **Changed on 8/26/2023: the version number is automatically set by op_initial_db.sh script**
 
   **version number from osmium output:**
   The output from "osmium fileinfo" above includes 2 timestamp lines labeled (timestamp + Timestamps):
@@ -265,10 +265,10 @@ and destination directory for database.
   Bounding box: (-115.7133191,30.9030825,-108.218831,38.8430606)
   Timestamps:
     First: 2007-08-10T17:38:36Z
-    Last: <b>2023-07-18</b>T19:45:41Z
+    <b>Last: 2023-07-18T19:45:41Z</b>
 </pre>
 
-the version number we will use is from the **Last:** line above in "YYYY-MM-DD" format. It is **2023-07-18** from this file.
+the version number we will use is from the **Last:** line above.
 
 As everything run this as the "overpass" user, move to the directory where you have your
 source file and assuming that "op_initial_db.sh" script is in your path "/usr/local/bin/" and
@@ -276,12 +276,15 @@ your region source file name is "sourcefile.osm.pbf" with last date "2023-07-18"
 using the above mentioned File System layout ( DB_DIR is: /var/lib/overpass/database ):
 
 ```
- overpass@yafa:/source$ nohup op_initial_db.sh sourcefile.osm.pbf 2023-07-18  "/var/lib/overpass/database" &
+ overpass@yafa:/source$ nohup op_initial_db.sh sourcefile.osm.pbf "/var/lib/overpass/database" &
 ```
 
 By default "op_initial_db.sh" passes (--meta) option to "update_database" program. Edit the script to change that.
 
 This process will take some time to complete; depending on your region data file size and your hardware.
+
+This "op_initial_db.sh" writes the input OSM data file Replication Sequence Number to file "replicate_id" in the
+destination database directory.
 
 With those steps so far, you can query your database on the command line using the "test-first.op"
 example file provided in the root directory in this Guide; the example uses bounding box for "Arizona",

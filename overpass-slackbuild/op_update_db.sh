@@ -181,6 +181,10 @@ mergeChanges() {
     $myExec merge-changes --fsync --no-progress -o "$outFile" $input >> "$LOGFILE" 2>&1
     return_code=$?
 
+    #
+    # Note to self :::: try "${fileArray[@]}" for $input - used fileArray to get numbers in.
+    #
+
     # Check the return code of osmium merge-changes
     if [ $return_code -ne 0 ]; then
         echo "$(date '+%F %T'): mergeChanges(): Error: osmium merge-changes failed with exit code $return_code" >> $LOGFILE
@@ -512,6 +516,12 @@ stateFile=$DIFF_DIR$stateFileName
 
 VERSION=`cat $stateFile | grep timestamp | cut -d 'T' -f -1 | cut -d '=' -f 2`
 
+TIMESTAMP_LINE=`cat $stateFile | grep timestamp`
+FULL_VERSION=${TIMESTAMP_LINE:10}
+
+# update_database does not remove slashes; maybe "update_from_dir" does?
+FULL_VERSION=$(echo "$FULL_VERSION" | sed 's/\\//g')
+
 # update_database changable options
 META=--meta
 FLUSH_SIZE=4
@@ -534,15 +544,15 @@ echo "stopped dispatcher daemon"
 
 echo "$(date '+%F %T'): applying update from:" >>$LOGFILE
 echo "                   Change File: <$changeFile>" >>$LOGFILE
-echo "                   File Dated: <$VERSION>" >>$LOGFILE
+echo "                   File Dated: <$FULL_VERSION>" >>$LOGFILE
 
-echo " applying update from Change File: <$changeFile> Dated: <$VERSION>"
+echo " applying update from Change File: <$changeFile> Dated: <$FULL_VERSION>"
 
 # Usage: update_database [--db-dir=DIR] [--version=VER] [--meta|--keep-attic] [--flush_size=FLUSH_SIZE] [--compression-method=(no|gz|lz4)] [--map-compression-method=(no|gz|lz4)]
 
 gunzip <$changeFile | $UPDATER \
                --db-dir=$DB_DIR \
-               --version=$VERSION \
+               --version=$FULL_VERSION \
                $META \
                --flush-size=$FLUSH_SIZE \
                --compression-method=$COMPRESSION \
