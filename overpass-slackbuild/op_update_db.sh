@@ -37,8 +37,8 @@
 #
 # Notes & warnings:
 # script will NOT work to update database initialed with "--keep-attic" switch
-# This script should NOT run while my "op_update_areas.sh" is running
 # Script needs to run to completion to avoid corrupted database.
+#
 
 # script variables: (most of them!)
 #
@@ -93,7 +93,7 @@ check_database_directory() {
     if [ -L "$DIR" ] || [ -d "$DIR" ] && [ -n "$(ls -A "$DIR")" ]; then
         for file in "${REQUIRED_FILES[@]}"; do
             if [ ! -e "$DIR/$file" ]; then
-                echo "Error: Required file: ($file) not found in the database directory."
+                echo "$SCRIPT_NAME: Error; Missin essential database file: ($file) not found in the database directory."
                 return 1
             fi
         done
@@ -130,8 +130,8 @@ mergeChanges() {
 
     myExec=/usr/local/bin/osmium
     if [[ ! -x $myExec ]]; then
-      echo "$0: mergeChanges(): Error could not find \"osmium\" executable." >&2
-      echo "$0: mergeChanges(): Error could not find \"osmium\" executable." >> $LOGFILE
+      echo "mergeChanges(): Error could not find \"osmium\" executable." >&2
+      echo "mergeChanges(): Error could not find \"osmium\" executable." >> $LOGFILE
       return 1
     fi
 
@@ -211,7 +211,7 @@ mergeChanges() {
 OP_USR_ID=367
 
 if [[ $EUID -ne $OP_USR_ID ]]; then
-    echo "$0: ERROR Not overpass user! You must run this script as the \"overpass\" user."
+    echo "$SCRIPT_NAME: ERROR Not overpass user! You must run this script as the \"overpass\" user."
     echo ""
     echo " This script is part of the Guide for \"overpassAPI\" installation and setup on"
     echo "Linux Slackware system. The Guide repository can be found here:"
@@ -224,8 +224,8 @@ fi
 # call check_database_directory() function to verify database directory
 check_database_directory "$DB_DIR"
 if [[ ! $? -eq 0 ]]; then
-    echo "$0: Error failed check_database_directory() function!"
-#    echo "$(date '+%F %T'): Error failed check_database_directory() function" >>$LOGFILE
+    echo "$SCRIPT_NAME: Error failed check_database_directory() function!"
+    echo "$(date '+%F %T'): Error failed check_database_directory() function" >>$LOGFILE
     exit 1
 fi
 
@@ -237,7 +237,7 @@ fi
 touch $LOGFILE
 
 if [[ ! $? -eq 0 ]]; then
-    echo "$0: Error failed to create log file"
+    echo "$SCRIPT_NAME: Error failed to create log file"
     exit 1
 fi
 
@@ -249,8 +249,8 @@ ERR_FOOTER="x=x=x=x=x=x=x=x=x=x=x=x= Exiting with ERROR =x=x=x=x=x=x=x=x=x=x=x=x
 
 # check input file - it is NOT an error when file is empty or not found
 if [[ ! -s $NEWER_FILES ]]; then
-   echo "$0: NEWER_FILES: \"$NEWER_FILES\" not found or empty."
-   echo "$0: Nothing to do with no new change files. Exiting"
+   echo "$SCRIPT_NAME: NEWER_FILES: \"$NEWER_FILES\" not found or empty."
+   echo "$SCRIPT_NAME: Nothing to do with no new change files. Exiting"
    echo "$(date '+%F %T'): No new change files to update. Exiting." >>$LOGFILE
    echo "++++++++++++++++++++++++++ No New Change Files Found +++++++++++++++++++++++++++" >>$LOGFILE
    exit 0
@@ -259,7 +259,7 @@ fi
 # check for executables we use
 
 if [[ ! -x $OP_CTL ]]; then
-    echo "$0: Error could not find \"op_ctl.sh\" control script"
+    echo "$SCRIPT_NAME: Error could not find \"op_ctl.sh\" control script"
     echo " Please install / reinstall overpass package"
     echo "$(date '+%F %T'): Error could not find \"op_ctl.sh\" control script" >>$LOGFILE
     echo $ERR_FOOTER >>$LOGFILE
@@ -267,7 +267,7 @@ if [[ ! -x $OP_CTL ]]; then
 fi
 
 if [[ ! -x $DISPATCHER ]]; then
-    echo "$0: Error could not find \"dispatcher\" executable"
+    echo "$SCRIPT_NAME: Error could not find \"dispatcher\" executable"
     echo " Please install / reinstall overpass package"
     echo "$(date '+%F %T'): Error could not find \"dispatcher\" executable" >>$LOGFILE
     echo $ERR_FOOTER >>$LOGFILE
@@ -275,7 +275,7 @@ if [[ ! -x $DISPATCHER ]]; then
 fi
 
 if [[ ! -x $UPDATER ]]; then
-    echo "$0: Error could not find \"update_database\" executable"
+    echo "$SCRIPT_NAME: Error could not find \"update_database\" executable"
     echo " Please install or reinstall overpassAPI package"
     echo "$(date '+%F %T'): Error could not find \"update_database\" executable" >>$LOGFILE
     echo $ERR_FOOTER >>$LOGFILE
@@ -283,7 +283,7 @@ if [[ ! -x $UPDATER ]]; then
 fi
 
 if [[ ! -x $OSM3S_EXEC ]]; then
-    echo "$0: Error could not find \"osm3s_query\" executable"
+    echo "$SCRIPT_NAME: Error could not find \"osm3s_query\" executable"
     echo " Please install / reinstall overpass package"
     echo "$(date '+%F %T'): Error could not find \"osm3s_query\" executable" >>$LOGFILE
     echo $ERR_FOOTER >>$LOGFILE
@@ -292,7 +292,7 @@ fi
 
 # check for areas.osm3s template; needed to update areas
 if [[ ! -s $AREA_TEMPLATE ]]; then
-   echo "$0: Error: Areas template \"areas.osm3s\" not found or empty"
+   echo "$SCRIPT_NAME: Error: Areas template \"areas.osm3s\" not found or empty"
    echo "$(date '+%F %T'): Error: Areas template \"areas.osm3s\" not found or empty" >>$LOGFILE
    echo $ERR_FOOTER >>$LOGFILE
    exit 1
@@ -304,7 +304,7 @@ fi
 
 # dispatcher needs to be running to get database directory {INUSE_DIR}
 if (! pgrep -f $DISPATCHER 2>&1 > /dev/null) ; then
-   echo " Error: overpass dispatcher program is not running !!!"
+   echo " $SCRIPT_NAME: Error: overpass dispatcher program is not running !!!"
    echo "$(date '+%F %T'): Error dispatcher is not running " >>$LOGFILE
    echo $ERR_FOOTER >>$LOGFILE
    exit 1
@@ -314,7 +314,7 @@ fi
 INUSE_DIR=$($DISPATCHER --show-dir)
 
 if [[ $INUSE_DIR != "$DB_DIR/" ]]; then
-   echo "Error: Not same INUSE_DIR and DB_DIR"
+   echo "$SCRIPT_NAME: Error: Not same INUSE_DIR and DB_DIR"
    echo "$(date '+%F %T'): Error dispatcher manages different database than destination" >>$LOGFILE
    echo $ERR_FOOTER >>$LOGFILE
    exit 1
@@ -339,7 +339,7 @@ done < "$NEWER_FILES"
 length=${#newFilesArray[@]}
 
 if [[ $length -lt 2 ]]; then
-   echo "$0: Error number of lines is less than 2"
+   echo "$SCRIPT_NAME: Error number of lines in newer file is less than 2"
    echo "$(date '+%F %T'): Error number of lines in newer file is less than 2" >>$LOGFILE
    echo $ERR_FOOTER >>$LOGFILE
    exit 1
@@ -350,8 +350,8 @@ echo "$(date '+%F %T'): Read input file with number of lines: $length" >>$LOGFIL
 # is number EVEN?
 rem=$(( $length % 2 ))
 if [[ $rem -ne 0 ]]; then
-   echo "$0: Error found ODD number of lines"
-   echo "$(date '+%F %T'): Error found ODD number of lines in input file." >>$LOGFILE
+   echo "$SCRIPT_NAME: Error found ODD number of lines in newer file"
+   echo "$(date '+%F %T'): Error found ODD number of lines in newer file." >>$LOGFILE
    echo $ERR_FOOTER >>$LOGFILE
    exit 1
 fi
@@ -391,7 +391,7 @@ do
 
     # they better be the same numbers
     if [[ $changeFileNumber -ne $stateFileNumber ]]; then
-        echo "$0: Error Not same files; change and state!"
+        echo "$SCRIPT_NAME: Error Not same files; mismatched change and state files!"
         echo "changeFileName : $changeFileName"
         echo "stateFileName : $stateFileName"
         echo "$(date '+%F %T'): Error changeFileName and stateFileName do NOT match" >>$LOGFILE
@@ -403,14 +403,14 @@ do
     changeFile=$DIFF_DIR$changeFileName
     stateFile=$DIFF_DIR$stateFileName
     if [[ ! -s $changeFile ]]; then
-        echo "$0: Error missing or empty changeFile $changeFile"
+        echo "$SCRIPT_NAME: Error missing or empty changeFile $changeFile"
         echo "$(date '+%F %T'): Error missing or empty changeFile" >>$LOGFILE
         echo $ERR_FOOTER >>$LOGFILE
         exit 1
     fi
 
     if [[ ! -s $stateFile ]]; then
-        echo "$0: Error missing or empty stateFile $stateFile"
+        echo "$SCRIPT_NAME: Error missing or empty stateFile $stateFile"
         echo "$(date '+%F %T'): Error missing or empty stateFile" >>$LOGFILE
         echo $ERR_FOOTER >>$LOGFILE
         exit 1
@@ -422,6 +422,10 @@ done
 
 # done checking
 
+# log PRE_UPDATE_VERSION number
+PRE_UPDATE_VERSION=$(cat "$DB_DIR/osm_base_version")
+echo "$(date '+%F %T'): PRE_UPDATE_VERSION number is: $PRE_UPDATE_VERSION" >> $LOGFILE
+
 # merge change files when array has more than 1 of them
 if [ $length -gt 2 ]; then
   echo "$(date '+%F %T'): Array has more than one change files, combining them ..." >> $LOGFILE
@@ -430,15 +434,16 @@ if [ $length -gt 2 ]; then
   i=0
 
   # maximum number of files to merge at one time
-  max=4
+  # adjust batchMax if you want to merge more at a time.
+  batchMax=4
 
   # use same number of files in each batch - last file from previous batch is included in next batch
-  adjustMax=1
+  adjustBatchMax=1
 
   while [[ $i -lt $length ]]; do
   {
 
-    for (( j = 0;  j < max  ; j++ )); do
+    for (( j = 0;  j < batchMax  ; j++ )); do
 
       changeFileName=${newFilesArray[$i]}
 
@@ -477,34 +482,17 @@ if [ $length -gt 2 ]; then
     lastFile=$changeFile
     fileList="$lastFile"
 
-    if [ $adjustMax -eq 1 ]; then
-      max=$((max-1))
-      adjustMax=0
+    # decrement batchMax; we just inserted lastFile from previous batch into new batch list
+    if [ $adjustBatchMax -eq 1 ]; then
+      batchMax=$((batchMax-1))
+      adjustBatchMax=0
     fi
 
   }; done
 
 fi
 
-
-# wait for op_update_areas.sh script to finish if running - code block to be REMOVED
-SLEEP_FLAG=TRUE
-AREA_UPDATE_SCRIPT=op_update_areas*
-
-while [[ $SLEEP_FLAG = "TRUE" ]]; do
-{
-    # do NOT use -f switch as we are looking for process name & use quotes
-    if ( pgrep "$AREA_UPDATE_SCRIPT"  2>&1 > /dev/null) ; then
-        echo "$(date '+%F %T'): Areas are being updated; running \"op_update_areas.sh\" found" >>$LOGFILE
-        echo "$(date '+%F %T'): Waiting 5 minutes; for \"Area Update\" script to finish!" >>$LOGFILE
-        sleep 300
-    else
-        SLEEP_FLAG=FALSE
-    fi
-
-}; done
-
-# apply changes from LAST change file
+# apply changes from LAST change / merged file
 
 changeFileName=${newFilesArray[length - 2]}
 stateFileName=${newFilesArray[length - 1]}
@@ -532,7 +520,7 @@ COMPRESSION=no
 $OP_CTL stop 2>&1 >/dev/null
 
 if [[ ! $? -eq 0 ]]; then
-    echo "$0: Error could not stop dispatcher!"
+    echo "$SCRIPT_NAME: Error could not stop dispatcher!"
     echo "$(date '+%F %T'): Error could not stop dispatcher! I think we are dead already?" >>$LOGFILE
     echo $ERR_FOOTER >>$LOGFILE
     exit 1
@@ -549,6 +537,9 @@ echo "                   File Dated: <$FULL_VERSION>" >>$LOGFILE
 echo " applying update from Change File: <$changeFile> Dated: <$FULL_VERSION>"
 
 # Usage: update_database [--db-dir=DIR] [--version=VER] [--meta|--keep-attic] [--flush_size=FLUSH_SIZE] [--compression-method=(no|gz|lz4)] [--map-compression-method=(no|gz|lz4)]
+
+# set -o pipefail --> $? get sets if either command fails
+set -o pipefail
 
 gunzip <$changeFile | $UPDATER \
                --db-dir=$DB_DIR \
@@ -571,7 +562,7 @@ echo "done update from file $changeFile"
 # restart dispatcher
 $OP_CTL start 2>&1 >/dev/null
 if [[ ! $? -eq 0 ]]; then
-    echo "$0: Error failed to restart dispatcher!"
+    echo "$SCRIPT_NAME: Error failed to restart dispatcher!"
     echo "$(date '+%F %T'): Error failed to restart dispatcher!" >>$LOGFILE
     echo $ERR_FOOTER >>$LOGFILE
     exit 1
@@ -583,8 +574,13 @@ echo "started dispatcher daemon again"
 # make sure dispatcher started
 sleep 2
 
-# update areas data - we apply ALL changeFile(s) then use ONE area update call
+# log POST_UPDATE_VERSION number
+POST_UPDATE_VERSION=$(cat "$DB_DIR/osm_base_version")
+echo "$(date '+%F %T'): POST_UPDATE_VERSION number is: $POST_UPDATE_VERSION" >> $LOGFILE
+echo "" >> $LOGFILE
 
+# update areas data - we apply ALL changeFile(s) then use ONE area update call
+#
 # this is an experiment
 #
 # cut down loop counter from 10 down to 2. 8/18/2023 W. H.
@@ -612,6 +608,6 @@ mv $NEWER_FILES $NEWER_FILES.$RENAME_TAG
 echo "$(date '+%F %T'): Moved $NEWER_FILES TO: $NEWER_FILES.$RENAME_TAG" >>$LOGFILE
 
 echo "$(date '+%F %T'): ---------------------------------------- DONE --------------------------------------" >>$LOGFILE
-echo "$0: All Done."
+echo "$SCRIPT_NAME: All Done."
 
 exit 0

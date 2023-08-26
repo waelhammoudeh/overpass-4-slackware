@@ -16,8 +16,10 @@ Concepts and methods mentioned here can be applied to any Linux distribution not
 August 26/2023
 
   - Use full timestamp as version number.
-  - Updated "op_initial_db.sh" script; version argument is not required.
+  - Updated "op_initial_db.sh" script; no longer requires version argument.
+  - On success "op_initial_db.sh" script outputs info needed by "getdiff".
   - Updated "op_update_db.sh"; writes full timestamp as version number.
+  - Updated "op_make_areas.sh"; uses SCRIPT_NAME now for output and log file name.
 
 Augut 22/2023
 
@@ -64,18 +66,11 @@ Read the [blog here](https://dev.overpass-api.de/blog/version_0_7_60.html)
  Scripts have been moved to SlackBuild directory and are included in the package; you still
  need to copy "op_logrotate" to "/etc/logrotate.d/" if you use it.
 
- The old "op_area_update.sh" script gets two new names; op_make_areas.sh and op_update_areas.sh,
- the first has the {IMAX} loop counter set to twice the value found in the second for this {IMAX},
- the first is run to make areas in a new database and the second is run once a week from a cron job
- to keep areas updated. Note that they both still write to the same log file, we have too many of them!
- Log files names have changed; the two we have now are: "op_update_db.log" and "op_update_areas.log"
-
  ```
     Old Name                     New Name
   ------------------------------------------------------------
   initial_op_db.sh           op_initial_db.sh
   op_area_update.sh          op_make_areas.sh
-  op_area_update.sh          op_update_areas.sh
   update_op_db.sh            op_update_db.sh
 ```
 
@@ -100,7 +95,7 @@ Read the [blog here](https://dev.overpass-api.de/blog/version_0_7_60.html)
 
 **SlackBuild**
 
-  - Updated to overpass version 0.7.61.4
+  - Updated script to build overpass version 0.7.61.4
   - Dropped the 'new' file name extension from '/etc/rc.d/rc.dispatcher'
   - Scripts from the Guide are installed by the package build script.
   - The op_logrotate file has been moved to the package build directory.

@@ -91,13 +91,15 @@ fi
 
 SEQ_NUM=$($OSMIUM fileinfo --no-progress -e -g header.option.osmosis_replication_sequence_number $INFILE)
 
+URL_REGION=$($OSMIUM fileinfo --no-progress -e -g header.option.osmosis_replication_base_url $INFILE)
+
 TIMESTAMP=$($OSMIUM fileinfo --no-progress -e -g data.timestamp.last $INFILE)
 
 REPLICATE_ID="replicate_id"
 
 # osmconvert : is an alternative to osmium
 
-# set -o pipefail --> $? get sets if either fails
+# set -o pipefail --> $? get sets if either command fails
 set -o pipefail
 
 # commands are run in a pipe:
@@ -115,8 +117,10 @@ if [[ $? -ne 0 ]]; then
     exit 1
 else
     echo "$SCRIPT_NAME: Database initialization successful."
-    echo "  Timestamp Last Date: $TIMESTAMP"
-    echo "  Input OSM data file Replication Sequence Number: $SEQ_NUM"
+    echo "  OSM data file Timestamp Last Date: $TIMESTAMP"
+    echo "  OSM data file URL for {region}-updates: $URL_REGION"
+    echo "  OSM data file Replication Sequence Number: $SEQ_NUM"
+    echo ""
     echo "  Finishing up ..."
 fi
 

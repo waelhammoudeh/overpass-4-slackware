@@ -47,15 +47,18 @@ DB_DIR=$OP_DIR/database
 
 LOG_DIR=$OP_DIR/logs
 
+# script name no path & no extension
+SCRIPT_NAME=$(basename "$0" .sh)
+
 EXEC_DIR=/usr/local/bin
 DSPTCHR=$EXEC_DIR/dispatcher
 RULES_DIR=/usr/local/rules
-LOG_FILE=$LOG_DIR/op_update_areas.log
+LOG_FILE=$LOG_DIR/$SCRIPT_NAME.log
 
 touch $LOG_FILE
 
 if [[ $EUID -ne $OP_USR_ID ]]; then
-    echo "$0: ERROR Not overpass user! You must run this script as the \"overpass\" user."
+    echo "$SCRIPT_NAME: ERROR Not overpass user! You must run this script as the \"overpass\" user."
     echo ""
     echo " This script is part of the Guide for \"overpassAPI\" installation and setup on"
     echo "Linux Slackware system. The Guide repository can be found here:"
@@ -67,36 +70,16 @@ fi
 
 set -e
 
-# when doing areas update, this script should NOT run while database is being
-# updated. Wait for "update_op_db.sh" to finish first.
-# UPDATE_DB_SCRIPT=$EXEC_DIR/update_op_db.sh
-
-SLP_FLAG=TRUE
-UPDATE_DB_SCRIPT=op_update_db.sh
-
-while [[ $SLP_FLAG = "TRUE" ]]; do
-{
-    # do NOT use -f switch as we are looking for process name & use quotation marks
-    if ( pgrep "$UPDATE_DB_SCRIPT"  2>&1 > /dev/null) ; then
-        echo "$(date '+%F %T'): Found running \"update_op_db.sh\" script." >>$LOG_FILE
-        echo "$(date '+%F %T'): Waiting 5 minutes; for \"Update Overpass Database\" script to finish!" >>$LOG_FILE
-        sleep 300
-    else
-        SLP_FLAG=FALSE
-    fi
-
-}; done
-
 # dispatcher must be running with --areas option
 if ( ! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
-    echo "Error: dispatcher is NOT running!"
+    echo "$SCRIPT_NAME: Error: dispatcher is NOT running!"
     echo "Areas dispatcher must be running to update areas. Exiting."
     echo "$(date '+%F %T'): Areas dispatcher must be running to update areas. Exiting." >>$LOG_FILE
     exit 1
 fi
 
 if [ ! -S ${DB_DIR}/osm3s_areas ]; then
-    echo "Error: Areas dispatcher is not running. Exiting"
+    echo "$SCRIPT_NAME: Error: Areas dispatcher is not running. Exiting"
     echo "$(date '+%F %T'): Areas dispatcher is not running. Exiting" >>$LOG_FILE
     exit 1
 fi
@@ -106,7 +89,7 @@ INUSE_DIR=$($DSPTCHR --show-dir)
 
 if [[ $INUSE_DIR != "$DB_DIR/" ]]; then
 
-   echo "Error: Not same INUSE_DIR and DB_DIR"
+   echo "$SCRIPT_NAME: Error: Not same INUSE_DIR and DB_DIR"
    echo "$(date '+%F %T'): Error dispatcher manages different database than destination" >>$LOG_FILE
    exit 1
 fi
@@ -121,7 +104,7 @@ fi
 # IMAX=100
 IMAX=10
 
-echo "Area update started. Loop COUNT is set to: $IMAX"
+echo "$SCRIPT_NAME: Area update started with Loop COUNT set to: $IMAX"
 echo "`date '+%F %T'`: Area update started. Loop COUNT is set to: $IMAX" >>$LOG_FILE
 
 for ((i=1; i<=$IMAX; i++)); do
