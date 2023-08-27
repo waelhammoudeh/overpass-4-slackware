@@ -85,7 +85,7 @@ SYS_ROOT=/var/lib
 
 The Overpass Directory is the overpass user home directory, this can be a link or real
 directory on your system - it must end with "overpass" entry name.
-OP_DIR=$SYS_ROOT/overpass
+OP_HOME=$SYS_ROOT/overpass
 
 Database Directory is where we initial the overpass database.
 DB_DIR=$OP_DIR/database
@@ -98,8 +98,8 @@ LOG_DIR=$OP_DIR/logs
 Log Directory is where we write log files to and link ones we can not redirect / move.
 ```
 
-The {OP_HOME} directory was created when "overpass" user was created. Create a link to your "overpass"
-home directory under "/var/lib/" directory:
+The {OP_HOME} directory was created when "overpass" user was created. If you have the free space on the "root"
+partition; set that to "var/lib/overpass", if not then create a link to your "overpass" home directory under "/var/lib/" directory:
 
 ```
     root@yafa:/var/lib# ln -s /path/to/your/overpass /var/lib/overpass
@@ -272,19 +272,36 @@ the version number we will use is from the **Last:** line above.
 
 As everything run this as the "overpass" user, move to the directory where you have your
 source file and assuming that "op_initial_db.sh" script is in your path "/usr/local/bin/" and
-your region source file name is "sourcefile.osm.pbf" with last date "2023-07-18" and you are
-using the above mentioned File System layout ( DB_DIR is: /var/lib/overpass/database ):
+your region source file name is "sourcefile.osm.pbf" and that the database destination
+is "/var/lib/overpass/database" directory, the following command will initial overpass database:
 
 ```
  overpass@yafa:/source$ nohup op_initial_db.sh sourcefile.osm.pbf "/var/lib/overpass/database" &
 ```
 
-By default "op_initial_db.sh" passes (--meta) option to "update_database" program. Edit the script to change that.
+To view the output from "nohup", still in your "source" directory use:
+```
+  $ tail -f nohup.out
+```
+
+By default "op_initial_db.sh" passes (--meta) option to "update_database" program.
 
 This process will take some time to complete; depending on your region data file size and your hardware.
 
+When database is successfully initialized, "op_initial_db.sh" outputs something like this:
+```
+Update complete.
+op_initial_db_gpt: Database initialization successful.
+  OSM data file Timestamp Last Date: 2023-07-18T19:45:41Z
+  OSM data file URL for {region}-updates: https://osm-internal.download.geofabrik.de/north-america/us/arizona-updates
+  OSM data file Replication Sequence Number: 3763
+
+  Finishing up ...
+op_initial_db_gpt is done.
+```
+
 This "op_initial_db.sh" writes the input OSM data file Replication Sequence Number to file "replicate_id" in the
-destination database directory.
+destination database directory. This file is used by the developer database update scripts which we do not use here.
 
 With those steps so far, you can query your database on the command line using the "test-first.op"
 example file provided in the root directory in this Guide; the example uses bounding box for "Arizona",
