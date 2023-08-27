@@ -16,16 +16,14 @@
 # DB_DIR setting below; set it to your actual overpass database directory.
 #
 
-OP_USR_ID=367
-
 SYS_ROOT=/var/lib
 
 # this can be a link to any directory on your system - "overpass" name should stay.
-OP_DIR=$SYS_ROOT/overpass
+OP_HOME=$SYS_ROOT/overpass
 
 # DB_DIR : overpass database directory
 # DB_DIR=/path/to/your/database
-DB_DIR=$OP_DIR/database
+DB_DIR=$OP_HOME/database
 
 EXEC_DIR=/usr/local/bin
 DSPTCHR=$EXEC_DIR/dispatcher
@@ -34,38 +32,40 @@ DIS_MODE="normal mode"
 unset META
 
 if ! grep ^overpass: /etc/passwd 2>&1 > /dev/null; then
-    echo "$0:"
+    echo "$SCRIPT_NAME: Error"
     echo " You must have overpass user and group to run this script."
     echo " Please see the main \"README\" file included with build script"
     exit 1
 fi
 
-if [[ $EUID -ne $OP_USR_ID ]]; then
-    echo "$0: ERROR Not overpass user! Run this script as the \"overpass\" user."
+OP_USER_NAME="overpass"
+
+if [[ $(id -u -n) != $OP_USER_NAME ]]; then
+    echo "$SCRIPT_NAME: ERROR Not overpass user! You must run this script as the \"$OP_USER_NAME\" user."
     echo ""
-    echo " This script is part of the Guide for \"overpassAPI\" installation and"
-    echo " setup on Linux Slackware64 system. The Guide repository can be"
-    echo " found here:"
-    echo " https://github.com/waelhammoudeh/overpass-4-slackware"
+    echo "This script is part of the Guide for \"overpassAPI\" installation and setup on"
+    echo "Linux Slackware system. The Guide repository can be found here:"
+    echo "https://github.com/waelhammoudeh/overpass-4-slackware"
     echo ""
+
     exit 1
 fi
 
 # always show database directory in use
 echo ""
-echo "$0: Database directory is set to: ${DB_DIR}"
+echo "$SCRIPT_NAME: Database directory is set to: ${DB_DIR}"
 echo ""
 
 # test for database directory - directory can not be empty
 if [ ! -d $DB_DIR ]; then
-    echo " Could not find database directory"
+    echo "$SCRIPT_NAME: Error Could not find database directory"
     echo ""
-    echo "DB_DIR variable should have been edited, was that done?"
+    echo "Check 'DB_DIR' variable please."
     exit 2
 fi
 
 if [ ! "$(ls -A $DB_DIR)" ]; then
-    echo "  Seems like database directory is empty! Overpass database must be initialed first."
+    echo "$SCRIPT_NAME: Seems like database directory is empty! Overpass database must be initialed first."
     echo "  Please see the \"README-SETUP.md\" file included in the Guide directory."
     exit 2
 fi
@@ -84,7 +84,7 @@ fi
 
 # check dispatcher executable
 if [ ! -x $DSPTCHR ]; then
-    echo " Could not find dispatcher executable file!"
+    echo " $SCRIPT_NAME: Error could not find dispatcher executable file!"
     exit 2
 fi
 
@@ -183,8 +183,8 @@ case "$1" in
     *)
       # something else - show usage
     echo ""
-    echo " $0: Error: missing argument or unkown command."
-    echo "  Usage: $0 ACTION"
+    echo " $SCRIPT_NAME: Error: missing argument or unkown command."
+    echo "  Usage: $SCRIPT_NAME.sh ACTION"
     echo "  where ACTION is one of: { start | stop | status }"
     echo ""
     echo "  Please note they are all lower case letters!"

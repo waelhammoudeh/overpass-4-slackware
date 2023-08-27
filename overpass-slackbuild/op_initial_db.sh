@@ -6,12 +6,12 @@
 #
 # Scripts requires "osmium" to be installed.
 
-SCRIPT_NAME=$(basename $0)
+SCRIPT_NAME=$(basename $0 .sh)
 
-OP_USR_ID=367
+OP_USER_NAME="overpass"
 
-if [[ $EUID -ne $OP_USR_ID ]]; then
-    echo "$SCRIPT_NAME: ERROR Not overpass user! You must run this script as the \"overpass\" user."
+if [[ $(id -u -n) != $OP_USER_NAME ]]; then
+    echo "$SCRIPT_NAME: ERROR Not overpass user! You must run this script as the \"$OP_USER_NAME\" user."
     echo ""
     echo "This script is part of the Guide for \"overpassAPI\" installation and setup on"
     echo "Linux Slackware system. The Guide repository can be found here:"
@@ -21,7 +21,7 @@ if [[ $EUID -ne $OP_USR_ID ]]; then
     exit 1
 fi
 
-INFILE=$1
+IN_FILE=$1
 DB_DIR=$2
 
 # EXEC_DIR : overpass bin directory from Slackware package
@@ -48,7 +48,8 @@ set -e
 
 if [[ -z $2 ]]; then
     echo "$SCRIPT_NAME: Error missing argument(s); 2 are required"
-    echo "usage: $SCRIPT_NAME inputfile db_dir"
+    echo
+    echo "usage: $SCRIPT_NAME.sh inputfile db_dir"
     echo "        where"
     echo " inputfile: OSM data file in any osmium supported file format"
     echo " db_dir: destination directory for Overpass database"
@@ -72,8 +73,8 @@ if [[ -n "$(ls -A $DB_DIR)" ]]; then
     exit 1
 fi
 
-if [[ ! -s $INFILE ]]; then
-    echo "$SCRIPT_NAME: Error could not find input file (maybe empty): $INFILE"
+if [[ ! -s $IN_FILE ]]; then
+    echo "$SCRIPT_NAME: Error could not find input file (maybe empty): $IN_FILE"
     exit 1
 fi
 
@@ -89,11 +90,11 @@ if [[ ! -x $UPDATE_EXEC ]]; then
     exit 1
 fi
 
-SEQ_NUM=$($OSMIUM fileinfo --no-progress -e -g header.option.osmosis_replication_sequence_number $INFILE)
+SEQ_NUM=$($OSMIUM fileinfo --no-progress -e -g header.option.osmosis_replication_sequence_number $IN_FILE)
 
-URL_REGION=$($OSMIUM fileinfo --no-progress -e -g header.option.osmosis_replication_base_url $INFILE)
+URL_REGION=$($OSMIUM fileinfo --no-progress -e -g header.option.osmosis_replication_base_url $IN_FILE)
 
-TIMESTAMP=$($OSMIUM fileinfo --no-progress -e -g data.timestamp.last $INFILE)
+TIMESTAMP=$($OSMIUM fileinfo --no-progress -e -g data.timestamp.last $IN_FILE)
 
 REPLICATE_ID="replicate_id"
 
@@ -104,7 +105,7 @@ set -o pipefail
 
 # commands are run in a pipe:
 
-$OSMIUM cat $INFILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
+$OSMIUM cat $IN_FILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
                                                 --version=$TIMESTAMP \
                                                 $META \
                                                 --flush-size=$FLUSH_SIZE \
@@ -117,18 +118,36 @@ if [[ $? -ne 0 ]]; then
     exit 1
 else
     echo "$SCRIPT_NAME: Database initialization successful."
-    echo "  OSM data file Timestamp Last Date: $TIMESTAMP"
-    echo "  OSM data file URL for {region}-updates: $URL_REGION"
-    echo "  OSM data file Replication Sequence Number: $SEQ_NUM"
-    echo ""
-    echo "  Finishing up ..."
 fi
+
+if [[ -z $TIMESTAMP ]]; then
+    echo "$SCRIPT_NAME: Warning - could not retrieve Timestamp Last Date from OSM data file."
+else
+    echo "  OSM data file Timestamp Last Date: $TIMESTAMP"
+fi
+
+if [[ -z $URL_REGION ]]; then
+    echo "$SCRIPT_NAME: Warning - could not retrieve URL for {region}-updates from OSM data file."
+else
+    echo "  OSM data file URL for {region}-updates: $URL_REGION"
+fi
+
+if [[ -z $SEQ_NUM ]]; then
+    echo "$SCRIPT_NAME: Warning - could not retrieve Replication Sequence Number from OSM data file."
+else
+    echo "  OSM data file Replication Sequence Number: $SEQ_NUM"
+fi
+
+echo ""
+echo "  Finishing up ..."
 
 # Write SEQ_NUM to replicate_id file - we do NOT use this!?
 # somebody might need hourly or minutely updates ...
 # Geofabrik has the files to trim "planet" .osc Change Files.
 # I absolutely have no plans to do that, good luck.
-echo "$SEQ_NUM" > "$DB_DIR$REPLICATE_ID"
+if [[ -n $SEQ_NUM ]]; then
+    echo "$SEQ_NUM" > "$DB_DIR$REPLICATE_ID"
+fi
 
 # To make the custom output feature operational
 # copy templates directory to database directory:
@@ -136,7 +155,7 @@ echo "$SEQ_NUM" > "$DB_DIR$REPLICATE_ID"
 TEMPLATES_DIR=/usr/local/templates
 
 if [ -d ${TEMPLATES_DIR} ]; then
-  cp -pR ${TEMPLATES_DIR} ${DB_DIR}
+    cp -pR ${TEMPLATES_DIR} ${DB_DIR}
 fi
 
 echo "$SCRIPT_NAME is done."

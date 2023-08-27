@@ -45,20 +45,20 @@
 # file system root directory
 SYS_ROOT=/var/lib
 
-# overpass directory
-OP_DIR=$SYS_ROOT/overpass
+# overpass home directory
+OP_HOME=$SYS_ROOT/overpass
 
 # overpass database directory
-DB_DIR=$OP_DIR/database
+DB_DIR=$OP_HOME/database
+
+# log file directory
+LOG_DIR=$OP_HOME/logs
 
 # getdiff Work Directory
-GETDIFF_WD=$OP_DIR/getdiff
+GETDIFF_WD=$OP_HOME/getdiff
 
 # getdiff download directory
 DIFF_DIR=$GETDIFF_WD/diff
-
-# log file directory
-LOG_DIR=$OP_DIR/logs
 
 # script name no path & no extension
 SCRIPT_NAME=$(basename "$0" .sh)
@@ -88,12 +88,12 @@ AREA_TEMPLATE=/usr/local/rules/areas.osm3s
 check_database_directory() {
     local DIR=$1
     # we check for just few files
-    local REQUIRED_FILES=("node_keys.bin" "relation_keys.bin" "way_keys.bin" "transactions.log")
+    local REQUIRED_FILES=("node_keys.bin" "relation_keys.bin" "way_keys.bin" "osm_base_version")
 
     if [ -L "$DIR" ] || [ -d "$DIR" ] && [ -n "$(ls -A "$DIR")" ]; then
         for file in "${REQUIRED_FILES[@]}"; do
             if [ ! -e "$DIR/$file" ]; then
-                echo "$SCRIPT_NAME: Error; Missin essential database file: ($file) not found in the database directory."
+                echo "$SCRIPT_NAME: Error; Missing essential database file: ($file) not found in the database directory."
                 return 1
             fi
         done
@@ -208,10 +208,10 @@ mergeChanges() {
 #
 #
 
-OP_USR_ID=367
+OP_USER_NAME="overpass"
 
-if [[ $EUID -ne $OP_USR_ID ]]; then
-    echo "$SCRIPT_NAME: ERROR Not overpass user! You must run this script as the \"overpass\" user."
+if [[ $(id -u -n) != $OP_USER_NAME ]]; then
+    echo "$SCRIPT_NAME: ERROR Not $OP_USER_NAME user! You must run this script as the \"$OP_USER_NAME\" user."
     echo ""
     echo " This script is part of the Guide for \"overpassAPI\" installation and setup on"
     echo "Linux Slackware system. The Guide repository can be found here:"
@@ -422,10 +422,6 @@ done
 
 # done checking
 
-# log PRE_UPDATE_VERSION number
-PRE_UPDATE_VERSION=$(cat "$DB_DIR/osm_base_version")
-echo "$(date '+%F %T'): PRE_UPDATE_VERSION number is: $PRE_UPDATE_VERSION" >> $LOGFILE
-
 # merge change files when array has more than 1 of them
 if [ $length -gt 2 ]; then
   echo "$(date '+%F %T'): Array has more than one change files, combining them ..." >> $LOGFILE
@@ -514,6 +510,10 @@ FULL_VERSION=$(echo "$FULL_VERSION" | sed 's/\\//g')
 META=--meta
 FLUSH_SIZE=4
 COMPRESSION=no
+
+# log PRE_UPDATE_VERSION number
+PRE_UPDATE_VERSION=$(cat "$DB_DIR/osm_base_version")
+echo "$(date '+%F %T'): PRE_UPDATE_VERSION number is: $PRE_UPDATE_VERSION" >> $LOGFILE
 
 # dispatcher can not be running when using overpass "update_database" program
 # stop dispatcher before updating
