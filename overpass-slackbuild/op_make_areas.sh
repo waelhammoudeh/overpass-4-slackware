@@ -33,19 +33,17 @@
 # WARNING: Script needs to run to completion to avoid corrupted database.
 
 # only overpass user can run this
-# this is a WRONG way to check user, we must look in passwd & goup files
-OP_USR_ID=367
 
 SYS_ROOT=/var/lib
 
 # this can be a link to any directory on your system - "overpass" name should stay.
-OP_DIR=$SYS_ROOT/overpass
+OP_HOME=$SYS_ROOT/overpass
 
 # DB_DIR : overpass database directory
 # DB_DIR=/path/to/your/database
-DB_DIR=$OP_DIR/database
+DB_DIR=$OP_HOME/database
 
-LOG_DIR=$OP_DIR/logs
+LOG_DIR=$OP_HOME/logs
 
 # script name no path & no extension
 SCRIPT_NAME=$(basename "$0" .sh)
@@ -57,10 +55,12 @@ LOG_FILE=$LOG_DIR/$SCRIPT_NAME.log
 
 touch $LOG_FILE
 
-if [[ $EUID -ne $OP_USR_ID ]]; then
-    echo "$SCRIPT_NAME: ERROR Not overpass user! You must run this script as the \"overpass\" user."
+OP_USER_NAME="overpass"
+
+if [[ $(id -u -n) != $OP_USER_NAME ]]; then
+    echo "$SCRIPT_NAME: ERROR Not overpass user! You must run this script as the \"$OP_USER_NAME\" user."
     echo ""
-    echo " This script is part of the Guide for \"overpassAPI\" installation and setup on"
+    echo "This script is part of the Guide for \"overpassAPI\" installation and setup on"
     echo "Linux Slackware system. The Guide repository can be found here:"
     echo "https://github.com/waelhammoudeh/overpass-4-slackware"
     echo ""
