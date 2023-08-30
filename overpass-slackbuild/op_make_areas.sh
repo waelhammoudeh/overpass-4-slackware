@@ -70,7 +70,15 @@ fi
 
 set -e
 
-# we all need to be on the same page
+# dispatcher must be running to make area
+if ( ! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
+    echo "$SCRIPT_NAME: Error: dispatcher is NOT running!"
+    echo "Dispatcher must be running to make areas objects. Exiting."
+    echo "$(date '+%F %T'): Error dispatcher must be running to make areas. Exiting." >>$LOG_FILE
+    exit 1
+fi
+
+# get the database dispatcher manages - INUSE_DIR
 INUSE_DIR=$($DSPTCHR --show-dir)
 
 if [[ $INUSE_DIR != "$DB_DIR/" ]]; then
@@ -80,16 +88,9 @@ if [[ $INUSE_DIR != "$DB_DIR/" ]]; then
    exit 1
 fi
 
-# dispatcher must be running with --areas option
-if ( ! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
-    echo "$SCRIPT_NAME: Error: dispatcher is NOT running!"
-    echo "Areas dispatcher must be running to update areas. Exiting."
-    echo "$(date '+%F %T'): Areas dispatcher must be running to update areas. Exiting." >>$LOG_FILE
-    exit 1
-fi
-
+# check dispatcher area socket
 if [ ! -S ${DB_DIR}/osm3s_areas ]; then
-    echo "$SCRIPT_NAME: Error: Areas dispatcher is not running. Exiting"
+    echo "$SCRIPT_NAME: Error: Dispatcher is not running with area support. Exiting"
     echo "$(date '+%F %T'): Areas dispatcher is not running. Exiting" >>$LOG_FILE
     exit 1
 fi
