@@ -70,11 +70,14 @@ if [ ! "$(ls -A $DB_DIR)" ]; then
     exit 2
 fi
 
-# set META depending on files in db
+# set META depending on files in db -- dispatcher auto sets this meta!
+# those 2 tests are pointless.
 if [ -f ${DB_DIR}/nodes_meta.bin ]; then
     META=--meta
     DIS_MODE="meta data support"
 fi
+
+# do NOT start dispatcher with --attic support
 
 # keep this if after if [ -f ${DB_DIR}/nodes_meta.bin ]; above
 if [ -f ${DB_DIR}/nodes_attic.bin ]; then

@@ -70,6 +70,16 @@ fi
 
 set -e
 
+# we all need to be on the same page
+INUSE_DIR=$($DSPTCHR --show-dir)
+
+if [[ $INUSE_DIR != "$DB_DIR/" ]]; then
+
+   echo "$SCRIPT_NAME: Error: Not same INUSE_DIR and DB_DIR; dispatcher manages different database"
+   echo "$(date '+%F %T'): Error dispatcher manages different database than destination" >>$LOG_FILE
+   exit 1
+fi
+
 # dispatcher must be running with --areas option
 if ( ! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
     echo "$SCRIPT_NAME: Error: dispatcher is NOT running!"
@@ -82,16 +92,6 @@ if [ ! -S ${DB_DIR}/osm3s_areas ]; then
     echo "$SCRIPT_NAME: Error: Areas dispatcher is not running. Exiting"
     echo "$(date '+%F %T'): Areas dispatcher is not running. Exiting" >>$LOG_FILE
     exit 1
-fi
-
-# we all need to be on the same page
-INUSE_DIR=$($DSPTCHR --show-dir)
-
-if [[ $INUSE_DIR != "$DB_DIR/" ]]; then
-
-   echo "$SCRIPT_NAME: Error: Not same INUSE_DIR and DB_DIR"
-   echo "$(date '+%F %T'): Error dispatcher manages different database than destination" >>$LOG_FILE
-   exit 1
 fi
 
 #
