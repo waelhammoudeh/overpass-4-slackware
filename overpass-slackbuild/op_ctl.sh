@@ -72,9 +72,8 @@ fi
 
 # set META depending on files in db -- dispatcher auto detects this meta! 8/29/2023
 # no 'force' option!
-# those 2 tests are pointless.
+
 if [ -f ${DB_DIR}/nodes_meta.bin ]; then
-    META=--meta
     DIS_MODE="meta data support"
 fi
 
@@ -82,7 +81,6 @@ fi
 
 # keep this if after if [ -f ${DB_DIR}/nodes_meta.bin ]; above
 if [ -f ${DB_DIR}/nodes_attic.bin ]; then
-    META=--attic
     DIS_MODE="attic data support"
 fi
 
@@ -117,7 +115,7 @@ case "$1" in
     # start base dispatcher
     echo " Starting base dispatcher with ${DIS_MODE} ..."
 
-# removed ${META} - dispatcher auto detects this.
+# removed ${META} - dispatcher auto detects & sets this option.
 #    $DSPTCHR --osm-base --db-dir=${DB_DIR} ${META} &
     $DSPTCHR --osm-base --db-dir=${DB_DIR} &
     sleep 1

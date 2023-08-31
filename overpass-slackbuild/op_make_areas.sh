@@ -68,6 +68,8 @@ if [[ $(id -u -n) != $OP_USER_NAME ]]; then
     exit 1
 fi
 
+echo "`date '+%F %T'`: $SCRIPT_NAME.sh just started with destination database set to: $DB_DIR" >>$LOG_FILE
+
 set -e
 
 # dispatcher must be running to make area

@@ -297,7 +297,7 @@ op_initial_db_gpt: Database initialization successful.
   OSM data file Replication Sequence Number: 3763
 
   Finishing up ...
-op_initial_db_gpt is done.
+op_initial_db.sh is done.
 ```
 
 This "op_initial_db.sh" writes the input OSM data file Replication Sequence Number to file "replicate_id" in the
@@ -589,6 +589,18 @@ With this command above, issued by "overpass" user, change files and their corre
 downloaded to: "/var/lib/overpass/getdiff/diff/" directory. A mirror of the path from Geofabrik will be created
 under this directory which gives the full path to be: "/var/lib/overpass/getdiff/diff/000/003/" with the last
 2 directory entries created by getdiff depending on the sequence number.
+
+My "op_initial_db.sh" script after successful database initialization, outputs the information from your
+region OSM data file as mentioned in the "Initial Overpass Database:" section above. If you used "nohup"
+to initial your database, find that output in the bottom of your "nohup.out" file.
+
+Another related note; this "op_initial_db.sh" writes the sequence number to "replicate_id" file in your
+database directory. This file enables you to use the developer database update mechanism - if you wish.
+
+One of the files available for all extracts from Geofabrik is the ".poly" file; planet Change File can be
+trimmed or cut to your region with "osmium" program using this ".poly" file. Applying this to "hourly"
+or "minutely" planet Change File, you can implement hourly or minutely updates to your limited area database.
+
 
 #### Apply Change Files:
 

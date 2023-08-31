@@ -158,6 +158,6 @@ if [ -d ${TEMPLATES_DIR} ]; then
     cp -pR ${TEMPLATES_DIR} ${DB_DIR}
 fi
 
-echo "$SCRIPT_NAME is done."
+echo "$SCRIPT_NAME.sh is done."
 
 exit 0

@@ -60,6 +60,9 @@ GETDIFF_WD=$OP_HOME/getdiff
 # getdiff download directory
 DIFF_DIR=$GETDIFF_WD/diff
 
+# "combined" merged change files only
+COMBINED_DIR=$DIFF_DIR/combined
+
 # script name no path & no extension
 SCRIPT_NAME=$(basename "$0" .sh)
 
@@ -115,7 +118,6 @@ check_database_directory() {
 #       The last file name in the list will be used as the output for the merged changes.
 #       Last file in the list is renamed by appending ".original" to its name.
 # Returns: 1 on errors; if osmium executable is not found or merge list has a single file.
-#   None
 #
 mergeChanges() {
 
@@ -142,7 +144,7 @@ mergeChanges() {
     numFiles=${#fileArray[@]}
 
     if [ $numFiles -eq 1 ]; then
-        echo "$(date '+%F %T'): Error: Only one file provided. Please provide multiple files for merging." >> $LOGFILE
+        echo "$(date '+%F %T'): Error: Only one file provided. Please provide 2 or more files for merging." >> $LOGFILE
         return 1
     fi
 
@@ -206,7 +208,89 @@ mergeChanges() {
 # END mergeChanges()
 
 #
+# function merge-changes2() :
+# like mergeChanges() function but take 2 arguments; the second is for output file name.
+# merged (combined) file is written to argument specified by $2.
+# mergeChanges2() - Merge a list of OpenStreetMap change files into a single file.
+# function calls 'osmium' to do the merging.
+# Parameters:
+#   $1: A space-separated list of OpenStreetMap change files to be merged.
+#       The last file name in the list will be used as the output for the merged changes.
+#       Last file in the list is renamed by appending ".original" to its name.
+#   $2: destination file name for output; string includes path + filename.
+# Returns: 1 on errors; if osmium executable is not found or merge list has a single file.
 #
+#
+mergeChanges2() {
+
+    input=$1
+    output=$2
+
+    # Check if the input list of files is empty
+    if [ -z "$1" ]; then
+        echo "$(date '+%F %T'): mergeChanges2() Error: missing required first argument" >> $LOGFILE
+        echo "$(date '+%F %T'): mergeChanes2(): Argument is a string containing a list of OSM change file names to merge." >> $LOGFILE
+        return 1
+    fi
+
+    # Check for second argument - destination combined file (path + name)
+    if [ -z "$1" ]; then
+        echo "$(date '+%F %T'): mergeChanges2() Error: missing required second argument for destination" >> $LOGFILE
+        return 1
+    fi
+
+    myExec=/usr/local/bin/osmium
+    if [[ ! -x $myExec ]]; then
+      echo "mergeChanges2(): Error could not find \"osmium\" executable." >&2
+      echo "mergeChanges2(): Error could not find \"osmium\" executable." >> $LOGFILE
+      return 1
+    fi
+
+    # Convert the input string of filenames into an array
+    fileArray=($input)
+
+    # do not allow list with SINGLE file name
+    numFiles=${#fileArray[@]}
+
+    if [ $numFiles -eq 1 ]; then
+        echo "$(date '+%F %T'): mergeChanges2() Error: Only one file provided. Please provide 2 or more files for merging." >> $LOGFILE
+        return 1
+    fi
+
+    echo "$(date '+%F %T'): mergeChanges2(): Input files: $input" >> $LOGFILE
+
+        # Create the formatted list
+    fileListFormatted=$(echo "$input" | sed 's/ / \\ \n/g')
+
+    echo "$(date '+%F %T'): mergeChanges2(): Formatted argument list is below:" >> $LOGFILE
+    echo "$fileListFormatted" >> $LOGFILE
+    echo "" >> $LOGFILE
+
+    echo "$(date '+%F %T'): mergeChanges2(): Output File is: $output" >> $LOGFILE
+    echo "" >> $LOGFILE
+
+    # Run osmium merge-changes to combine input files into the output file -
+    # Notice the lack qoutes around $input
+    #
+    # use "${fileArray[@]}" instead of $input - used fileArray to get numbers in.
+    ## $myExec merge-changes --fsync --no-progress -o "$output" $input >> "$LOGFILE" 2>&1
+
+    $myExec merge-changes --fsync --no-progress -o "$output" "${fileArray[@]}" >> "$LOGFILE" 2>&1
+    return_code=$?
+
+    # Check the return code of osmium merge-changes
+    if [ $return_code -ne 0 ]; then
+        echo "$(date '+%F %T'): mergeChanges2(): Error: osmium merge-changes failed with exit code $return_code" >> $LOGFILE
+        return $return_code
+    fi
+
+    echo "mergeChanges2(): Merging complete." >> $LOGFILE
+    echo "" >> $LOGFILE
+
+    return 0
+
+}
+# END mergeChanges2()
 
 OP_USER_NAME="overpass"
 
@@ -241,7 +325,8 @@ if [[ ! $? -eq 0 ]]; then
     exit 1
 fi
 
-echo "$(date '+%F %T'): op_update_db.sh started ..." >>$LOGFILE
+echo "============================================================================" >> $LOGFILE
+echo "$(date '+%F %T'): $SCRIPT_NAME.sh started ..." >>$LOGFILE
 echo "$(date '+%F %T'): database directory to update: $DB_DIR" >>$LOGFILE
 
 # need error exit function maybe ... code & log msg?
@@ -314,7 +399,7 @@ fi
 INUSE_DIR=$($DISPATCHER --show-dir)
 
 if [[ $INUSE_DIR != "$DB_DIR/" ]]; then
-   echo "$SCRIPT_NAME: Error: Not same INUSE_DIR and DB_DIR"
+   echo "$SCRIPT_NAME: Error: Not same INUSE_DIR and DB_DIR; dispatcher manages different database than destination!"
    echo "$(date '+%F %T'): Error dispatcher manages different database than destination" >>$LOGFILE
    echo $ERR_FOOTER >>$LOGFILE
    exit 1
@@ -358,7 +443,7 @@ fi
 
 # check that change file matches the very next state file
 # checking ALL file pairs - it is ALL or NOTHING deal
-# assumes list is sorted
+# assumes list is sorted - getdiff produces sorted list.
 
 # Note about variable names below:
 #
@@ -420,7 +505,12 @@ do
      i=$((j+1))
 done
 
-# done checking
+# done checking - all good to go.
+
+# ensure merged files directory exists
+if [[ ! -d $COMBINED_DIR ]]; then
+   mkdir -p $COMBINED_DIR
+fi
 
 # merge change files when array has more than 1 of them
 if [ $length -gt 2 ]; then
@@ -460,23 +550,38 @@ if [ $length -gt 2 ]; then
     echo "fileList has: $fileList"
     echo ""
 
+    # set destination file for combined output
+    FILE_NAME=$(basename "$changeFile")
+    COMBINED_FILE=$COMBINED_DIR/$FILE_NAME
+
     # remove leading space from fileList
     fileList=$(echo "$fileList" | sed 's/^ //')
 
-    echo "Calling function mergeChanges() with : $fileList" >> $LOGFILE
+    echo "Calling function mergeChanges2() with 2 arguments:" >> $LOGFILE
+    echo "    fileList: $fileList" >> $LOGFILE
+    echo "    output: $COMBINED_FILE" >> $LOGFILE
+    echo "" >> $LOGFILE
 
-    mergeChanges "${fileList}"
+    mergeChanges2 "${fileList}" $COMBINED_FILE
     return_code=$?
 
-    # Check the return code of osmium merge-changes
+    # Check the return code from mergeChanges2() function
     if [ $return_code -ne 0 ]; then
-       echo "$(date '+%F %T'): Error: function mergeChanges() failed with exit code $return_code" >> $LOGFILE
+       echo "$(date '+%F %T'): Error: function mergeChanges2() failed with exit code $return_code" >> $LOGFILE
        exit $return_code
     fi
 
-    # current change file (last one inserted) is set as head of list for next loop
-    lastFile=$changeFile
-    fileList="$lastFile"
+    # write state.txt file corresponding to COMBINED_FILE - copy state.txt for last change file in the list
+    # i was already moved to next change file - state file is BEFORE the one we are pointing at with i
+    stateFileName=${newFilesArray[$((i-1))]}
+    stateFile=$DIFF_DIR$stateFileName
+    stateName=$(basename $stateFile)
+    stateFileCopy=$COMBINED_DIR/$stateName
+
+    cp $stateFile $stateFileCopy
+
+    # start next "fileList" with "COMBINED_FILE"
+    fileList="$COMBINED_FILE"
 
     # decrement batchMax; we just inserted lastFile from previous batch into new batch list
     if [ $adjustBatchMax -eq 1 ]; then
@@ -488,17 +593,26 @@ if [ $length -gt 2 ]; then
 
 fi
 
-# apply changes from LAST change / merged file
+# use merged file when it was done
+if [ $length -gt 2 ]; then
+   changeFile=$COMBINED_FILE
+   stateFile=$stateFileCopy
+else
+  changeFileName=${newFilesArray[0]}
+  stateFileName=${newFilesArray[1]}
 
-changeFileName=${newFilesArray[length - 2]}
-stateFileName=${newFilesArray[length - 1]}
+  changeFile=$DIFF_DIR$changeFileName
+  stateFile=$DIFF_DIR$stateFileName
+fi
 
-changeFile=$DIFF_DIR$changeFileName
-stateFile=$DIFF_DIR$stateFileName
+echo "$(date '+%F %T'): Using Change File: $changeFile" >> $LOGFILE
+echo "$(date '+%F %T'): Using State File: $stateFile" >> $LOGFILE
+echo "" >> $LOGFILE
 
 # get date string "YYYY-MM-DD" from state.txt & use as version number
-
-VERSION=`cat $stateFile | grep timestamp | cut -d 'T' -f -1 | cut -d '=' -f 2`
+# VERSION is to be used in file name for region OSM data file;;;
+# when we merge changes into region OSM data file for recovery?
+# VERSION=`cat $stateFile | grep timestamp | cut -d 'T' -f -1 | cut -d '=' -f 2`
 
 TIMESTAMP_LINE=`cat $stateFile | grep timestamp`
 FULL_VERSION=${TIMESTAMP_LINE:10}
