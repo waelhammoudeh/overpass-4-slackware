@@ -183,6 +183,13 @@ The **pbf** file format is the recommended file format to use (smaller size and 
 overpass database initialed from a regional extract OSM data file.
 When downloading your regional OSM data file, keep a record of the most recent **DATE** included in that file. (It is on the same line with the link).
 
+**History data files at Geofabrik:**
+
+Those files have the extension ".osh.pb". Those are generated **about** once a week, the download page lists the date the
+file was generated - not last date for data in the file. Use *osmium fileinfo --extended* to get last date. Do not assume anything
+about last date in those files.
+
+
 Wael Hammoudeh
 
-Update: August 9th / 2023
+Update: August 31 / 2023
