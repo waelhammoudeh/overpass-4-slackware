@@ -3,6 +3,15 @@ This is the "README-SETUP.md" file for Overpass Guide.
 
 ### Changes:
 
+ - September 11/2023
+
+   Added "update_osm_file.sh" script.
+
+   Updated: cron4op.sh, op_initial_db.sh, op_update_db.sh and SlackBuild
+
+   Updated this README-SETUP file.
+
+ - 8/24/2023
 Added empty directory test in "op_initial_db.sh"
   8/24/2023
 
@@ -61,6 +70,7 @@ All scripts and configuration files here assume the following File System layout
       |--- database/
       |--- getdiff/
       |--- logs/
+      |--- sources   ---> this is optional
 </pre>
 
 in addition {OP_HOME} is assumed to have this path "/var/lib/overpass". This "overpass"
@@ -72,6 +82,7 @@ directory entry can be a real directory or a link to another directory - but mus
       |--- database/
       |--- getdiff/
       |--- logs/
+      |--- sources
 </pre>
 
 where database, getdiff and logs are directories for the indicated name created by the
@@ -776,12 +787,65 @@ also copy base version number:
     $ cp $DB_DIR/osm_base_* $TARGET_DIR/.
 ```
 
+#### Update OSM Data Using update_osm_file.sh:
+
+This script is designed to update OpenStreetMap (OSM) data file by applying OpenStreetMap Change (OSC) files.
+Follow these steps to use the script and create an up-to-date OSM data file:
+
+Step 1: Installation (Already Done)
+
+The update_osm_file.sh script is automatically installed in the system directory (/usr/local/bin) when you build and install the Overpass package using your "overpass.SlackBuild" script.
+
+Step 2: Initial Setup
+
+Open a terminal window.
+
+Create a directory named "sources" under the Overpass home directory. This directory will be used to store OSM data files and configuration files.
+Use the following command to create the directory as the overpass user:
+```
+mkdir -p ~/sources
+```
+Create a text file named update_osm_file.target in the "sources" directory. This file should contain the desired OSM data file name.
+Use the following command to create the file:
+
+```
+echo "target=yourfilename-YYYY-MM-DD.osm.pbf" > ~/sources/update_osm_file.target
+```
+
+Replace yourfilename-YYYY-MM-DD.osm.pbf with the actual name of your OSM data file in the specified format.
+
+Step 3: Copy and rename your region OSM data file
+
+Copy your region OSM data file you want to update to the new created directory "sources". Use only alphabets in
+the copied file name followed by the the date.
+
+Step 4: Copy the updated "cron4op.sh" script; this is NOT installed by SlackBuild. You may also need to edit this.
+
+This script is called from my "cron4op.sh" script. The "op_update_db.sh" generates oscList file if "sources" directory
+is found in the system. This "update_osm_file.sh" will automatically run when the "target" text file and your region
+OSM data file are found in "sources" directory.
+
+The produced OSM data file can be used to initial a new database with up to date data without having to download
+new region OSM data file.
+
+To ensure data safety and facilitate disaster recovery, consider the following backup options:
+
+Copy to Another Machine: Periodically copy the produced OSM data file to another machine or server as an off-site backup.
+
+Secondary Storage: Use an external hard drive, USB stick, or another hard disk to create backup copies of the OSM data file. Store these backups securely.
+
+Regular Backups: Implement a regular backup schedule, automated or manual, to keep recent and usable copies of the OSM data file.
+
+Data Encryption: Depending on data sensitivity, consider encrypting the backups to protect them from unauthorized access.
+
+By following these practices, you can enhance data protection and ensure that you have reliable recovery options in case of software or hardware failures.
+
+
 **TODO LIST:**
 
  - Write a "short story" for this README-SETUP.md file.
- - Write script to update source OSM data file for recovery; use osmium merge & apply_changes.
-
+ - How to use "osm3s_query clone" option / command for backup.
 
 Wael K. Hammoudeh
 
-August 22/2023
+September 11/2023

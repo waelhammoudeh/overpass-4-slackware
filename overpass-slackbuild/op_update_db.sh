@@ -110,104 +110,6 @@ check_database_directory() {
 # END check_database_directory() function
 
 #
-# function merge-changes() :
-# mergeChanges() - Merge a list of OpenStreetMap change files into a single file.
-# function calls 'osmium' to do the merging.
-# Parameters:
-#   $1: A space-separated list of OpenStreetMap change files to be merged.
-#       The last file name in the list will be used as the output for the merged changes.
-#       Last file in the list is renamed by appending ".original" to its name.
-# Returns: 1 on errors; if osmium executable is not found or merge list has a single file.
-#
-mergeChanges() {
-
-    input=$1
-
-    # Check if the input list of files is empty
-    if [ -z "$1" ]; then
-        echo "$(date '+%F %T'): mergeChanges() Error: missing required argument" >> $LOGFILE
-        echo "$(date '+%F %T'): mergeChanes(): Argument is a string containing a list of OSM change file names to merge." >> $LOGFILE
-        return 1
-    fi
-
-    myExec=/usr/local/bin/osmium
-    if [[ ! -x $myExec ]]; then
-      echo "mergeChanges(): Error could not find \"osmium\" executable." >&2
-      echo "mergeChanges(): Error could not find \"osmium\" executable." >> $LOGFILE
-      return 1
-    fi
-
-    # Convert the input string of filenames into an array
-    fileArray=($input)
-
-    # do not allow list with SINGLE file name
-    numFiles=${#fileArray[@]}
-
-    if [ $numFiles -eq 1 ]; then
-        echo "$(date '+%F %T'): Error: Only one file provided. Please provide 2 or more files for merging." >> $LOGFILE
-        return 1
-    fi
-
-    echo "$(date '+%F %T'): mergeChanges(): Input files: $input" >> $LOGFILE
-
-    # Get the last filename from the array
-    lastFile="${fileArray[-1]}"
-
-    # Extract the directory from last file for output directory
-    toDir=$(dirname "$lastFile")
-
-    # temporary output file
-    outFile="$toDir/combined.osc.gz"
-
-    echo "$(date '+%F %T'): mergeChanges(): Last file in the list: $lastFile" >> $LOGFILE
-
-    echo "$(date '+%F %T'): mergeChanges(): Output directory: $toDir" >> $LOGFILE
-
-   echo "$(date '+%F %T'): mergeChanges(): Temporary Output file: $outFile" >> $LOGFILE
-
-    echo "$(date '+%F %T'): mergeChanges(): Merging input files..." >> $LOGFILE
-
-    # Extract the directory of the last file for output
-    toDir=$(dirname "$lastFile")
-    echo "mergeChanges(): Output directory: $toDir" >> $LOGFILE
-
-    # Create the formatted list
-    fileListFormatted=$(echo "$input" | sed 's/ / \\ \n/g')
-
-    echo "$(date '+%F %T'): mergeChanges(): Formatted argument list is below:" >> $LOGFILE
-    echo "$fileListFormatted" >> $LOGFILE
-    echo "" >> $LOGFILE
-
-    # Run osmium merge-changes to combine input files into the output file -
-    # Notice the lack qoutes around $input
-    $myExec merge-changes --fsync --no-progress -o "$outFile" $input >> "$LOGFILE" 2>&1
-    return_code=$?
-
-    #
-    # Note to self :::: try "${fileArray[@]}" for $input - used fileArray to get numbers in.
-    #
-
-    # Check the return code of osmium merge-changes
-    if [ $return_code -ne 0 ]; then
-        echo "$(date '+%F %T'): mergeChanges(): Error: osmium merge-changes failed with exit code $return_code" >> $LOGFILE
-        return $return_code
-    fi
-
-    # Rename the last input file - do not overwrite any original file
-    # do not use it here: osmium overwrite option seems NOT to work!
-    mv "$lastFile" "$lastFile.original"
-
-    # Rename the combined output file to match the last input file
-    mv "$outFile" "$lastFile"
-
-    echo "$(date '+%F %T'): mergeChanges(): Renamed files." >> $LOGFILE
-
-    echo "mergeChanges(): Merging complete." >> $LOGFILE
-
-}
-# END mergeChanges()
-
-#
 # function merge-changes2() :
 # like mergeChanges() function but take 2 arguments; the second is for output file name.
 # merged (combined) file is written to argument specified by $2.
@@ -572,7 +474,8 @@ if [ $length -gt 2 ]; then
     fi
 
     # write state.txt file corresponding to COMBINED_FILE - copy state.txt for last change file in the list
-    # i was already moved to next change file - state file is BEFORE the one we are pointing at with i
+    # index 'i' was already moved to next change file - state file is BEFORE the one we are pointing at with i
+    # this is bad? we have PARTIAL path in 2 places ...
     stateFileName=${newFilesArray[$((i-1))]}
     stateFile=$DIFF_DIR$stateFileName
     stateName=$(basename $stateFile)
@@ -613,12 +516,19 @@ echo "" >> $LOGFILE
 # VERSION is to be used in file name for region OSM data file;;;
 # when we merge changes into region OSM data file for recovery?
 # VERSION=`cat $stateFile | grep timestamp | cut -d 'T' -f -1 | cut -d '=' -f 2`
+# greped line from state.txt file:
+# timestamp=2023-09-03T20\:21\:30Z
+#
 
 TIMESTAMP_LINE=`cat $stateFile | grep timestamp`
 FULL_VERSION=${TIMESTAMP_LINE:10}
 
 # update_database does not remove slashes; maybe "update_from_dir" does?
 FULL_VERSION=$(echo "$FULL_VERSION" | sed 's/\\//g')
+
+# get sequence number from state.txt file, on successful update; it is "replicate_id"
+SEQ_LINE=`cat $stateFile | grep sequenceNumber`
+SEQ_NUMBER=`echo $SEQ_LINE | cut -d '=' -f 2`
 
 # update_database changable options
 META=--meta
@@ -673,6 +583,9 @@ fi
 echo "$(date '+%F %T'): done update from file $changeFile" >>$LOGFILE
 echo "done update from file $changeFile"
 
+# update replicate_id in database directory with new sequence number
+echo "$SEQ_NUMBER" >$DB_DIR/replicate_id
+
 # restart dispatcher
 $OP_CTL start 2>&1 >/dev/null
 if [[ ! $? -eq 0 ]]; then
@@ -715,11 +628,33 @@ echo "$(date '+%F %T'): @@@@ Done areas update; Loop Counter: $iCount" >>$LOGFIL
 echo " @@@@ Done areas update; Loop Counter: $iCount"
 
 # empty input file; rename using RENAME_TAG
-RENAME_TAG=updated_op_db
+# RENAME_TAG=updated_op_db
 
-mv $NEWER_FILES $NEWER_FILES.$RENAME_TAG
+# mv $NEWER_FILES $NEWER_FILES.$RENAME_TAG
 
-echo "$(date '+%F %T'): Moved $NEWER_FILES TO: $NEWER_FILES.$RENAME_TAG" >>$LOGFILE
+# remove $NEWER_FILES - change on September/10/2023
+rm $NEWER_FILES
+
+echo "$(date '+%F %T'): Removed $NEWER_FILES" >>$LOGFILE
+
+# Update OSM data file used to initial database, updated file is used
+# as a backup in case database is compromised.
+# since merging osc files; we have been using ONE file in the update;
+# the same merged osc files can be used to update OSM data file.
+# append used changeFile & stateFile to update_osm_file.oscList file
+# Used Change File: $changeFile
+# Used State File: $stateFile
+
+OSC_LIST_FILE=$OP_HOME/sources/update_osm_file.oscList
+# uncomment to stop appending
+# OSC_LIST_FILE=
+
+if [[ -n $OSC_LIST_FILE && -d $(dirname "$OSC_LIST_FILE") ]]; then
+  echo "$changeFile" >>$OSC_LIST_FILE
+  echo "$stateFile" >>$OSC_LIST_FILE
+  echo "$(date '+%F %T'): Appended Change File: $changeFile to: $OSC_LIST_FILE" >> $LOGFILE
+  echo "$(date '+%F %T'): Appended State File: $stateFile to: $OSC_LIST_FILE" >> $LOGFILE
+fi
 
 echo "$(date '+%F %T'): ---------------------------------------- DONE --------------------------------------" >>$LOGFILE
 echo "$SCRIPT_NAME: All Done."

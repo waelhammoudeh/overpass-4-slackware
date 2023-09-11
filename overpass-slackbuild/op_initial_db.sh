@@ -21,6 +21,13 @@ if [[ $(id -u -n) != $OP_USER_NAME ]]; then
     exit 1
 fi
 
+if pgrep dispatcher >/dev/null ; then
+  dir=`dispatcher --show-dir`
+  echo "$SCRIPT_NAME: ERROR dispatcher is running; using database directory at: \"$dir\""
+  echo "$SCRIPT_NAME: Please stop your \"dispatcher\" before initialling another database."
+  exit 1
+fi
+
 IN_FILE=$1
 DB_DIR=$2
 
@@ -34,7 +41,7 @@ OSMIUM=$EXEC_DIR/osmium
 # option to use - recommended is "--meta"
 META=--meta
 
-# WARNING avoid this option, NOT supported for limited area extract; has multiple issues.
+# WARNING avoid this option, NOT supported for limited area extract.
 # META=--keep-attic
 
 # accepted values are one of [ no| gz | lz4 ]
@@ -151,7 +158,7 @@ fi
 
 # To make the custom output feature operational
 # copy templates directory to database directory:
-# this is where overpassAPI expects to them
+# this is where overpassAPI expects to find them
 TEMPLATES_DIR=/usr/local/templates
 
 if [ -d ${TEMPLATES_DIR} ]; then

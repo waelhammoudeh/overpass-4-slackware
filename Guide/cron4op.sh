@@ -42,6 +42,12 @@ CONF=$GETDIFF_WD/getdiff.conf
 
 NEWER_FILES=$GETDIFF_WD/newerFiles.txt
 
+DATA_FILE_UPDATER=$EXEC_DIR/update_osm_file.sh
+
+DATA_FILE_DIR=$OP_DIR/sources
+
+OSC_LIST_FILE=$DATA_FILE_DIR/$(basename $DATA_FILE_UPDATER .sh).oscList
+
 # password for OpenStreetMap.org user - assumes "USER" is set in "getdiff.conf" file.
 # required for Geofabrik internal server. Leave as is if you use geofabrik.de public server.
 
@@ -58,9 +64,21 @@ $GETDIFF -c $CONF -p $PSWD >/dev/null 2>&1
 
 sleep 2
 
-if [[ -s $NEWER_FILES ]]; then
+# update overpass database
+if [[ -s $NEWER_FILES && -x $UPDATER ]]; then
 
     $UPDATER >/dev/null 2>&1
+fi
+
+sleep 1
+
+# update region OSM data file
+if [[ ! -x $DATA_FILE_UPDATER ]]; then
+    exit 0
+fi
+
+if [[ -d $DATA_FILE_DIR && -s $OSC_LIST_FILE ]]; then
+    $DATA_FILE_UPDATER >/dev/null 2>&1
 fi
 
 exit 0

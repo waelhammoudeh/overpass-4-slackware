@@ -33,7 +33,7 @@
 
 CWD=$(pwd)
 PKGNAM=overpass
-VERSION=0.7.61.6
+VERSION=0.7.61.8
 SRC_NAM=osm-3s_v
 BUILD=${BUILD:-1}
 TAG=${TAG:-_wh}
@@ -179,9 +179,8 @@ chmod 755 $PKGDEST/$MYPREFIX/bin/op_update_db.sh
 cp $CWD/op_make_areas.sh $PKGDEST/$MYPREFIX/bin/
 chmod 755 $PKGDEST/$MYPREFIX/bin/op_make_areas.sh
 
-# removed on 8/18/2023
-# cp $CWD/op_update_areas.sh $PKGDEST/$MYPREFIX/bin/
-# chmod 755 $PKGDEST/$MYPREFIX/bin/op_update_areas.sh
+cp $CWD/update_osm_file.sh $PKGDEST/$MYPREFIX/bin/
+chmod 755 $PKGDEST/$MYPREFIX/bin/update_osm_file.sh
 
 mkdir -p $PKGDEST/install
 cat $CWD/slack-desc > $PKGDEST/install/slack-desc
@@ -201,6 +200,7 @@ cp $CWD/op_ctl.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/rc.dispatcher $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/op_update_db.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/op_make_areas.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
+cp $CWD/update_osm_file.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/op_logrotate $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/rc.local $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
 cp $CWD/rc.local_shutdown $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
