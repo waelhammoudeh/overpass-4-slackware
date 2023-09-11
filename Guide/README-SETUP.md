@@ -822,7 +822,10 @@ is found in the system. This "update_osm_file.sh" will automatically run when th
 OSM data file are found in "sources" directory.
 
 The produced OSM data file can be used to initial a new database with up-to-date data without having to download
-new region OSM data file, this is providing that the data file is kept up-to-date from the database initialization step.
+new region OSM data file, this is providing that the data file is kept up-to-date since the database initialization step.
+
+Bring your region OSM data file up-to-date with your database by downloading newer region data file or updating
+your old data file using this script and my "getdiff" program to fetch the required (osc) Change Files from Geofabrik.
 
 To ensure data safety and facilitate disaster recovery, consider the following backup options:
 
