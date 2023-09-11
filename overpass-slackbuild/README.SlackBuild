@@ -25,6 +25,7 @@ This build script installs the following helper scripts into /usr/local/bin/ dir
  * op_ctl.sh
  * op_make_areas.sh
  * op_update_db.sh
+ * update_osm_file.sh
 
 Installed to /etc/rc.d/ directory is file below:
  * rc.dispatcher
@@ -48,6 +49,8 @@ File System Structure is assumed as illustrated below:
              |__database
              |
              |__getdiff
+             |
+             |__sources   ---> optional
              |
              |__logs
 
@@ -95,4 +98,4 @@ READ BEFORE THE UPGRADE PLEASE.
 
 Wael Hammoudeh
 
-August 20/2023
+September 11/2023

@@ -461,6 +461,13 @@ newTarget=$fPrefix-$YMD.$ext
 echo "$(date '+%F %T') $scriptName: newTarget name is: $newTarget" >> $logFile
 echo "newTarget name is: $newTarget"
 
+if [[ "$targetName" == "$newTarget" ]]; then
+    echo "$scriptName: Error, output file name is the same as input file name; exiting."
+    echo "$(date '+%F %T') $scriptName: Error, output file name is the same as input file name; exiting." >>$logFile
+    echo "ERR_FOOTER" >>$logFile
+    exit 1
+fi
+
 # outputFile from "osmium" includes path + newTarget name
 outputFile=$workDir/$newTarget
 
