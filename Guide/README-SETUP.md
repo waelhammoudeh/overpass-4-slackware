@@ -1,35 +1,13 @@
 This is the "README-SETUP.md" file for Overpass Guide.
 
 
-### Changes:
+### Recent Changes:
 
  - September 11/2023
 
    Added "update_osm_file.sh" script.
 
    Updated: cron4op.sh, op_initial_db.sh, op_update_db.sh and SlackBuild
-
-   Updated this README-SETUP file.
-
- - 8/24/2023
-Added empty directory test in "op_initial_db.sh"
-  8/24/2023
-
-**Merge Change Files Before Updating**
-  8/22/2023
-
- - Added mergeChanges() function to "op_update_db.sh" script. Now when we have more than one change files;
-   they are merged first before applying the update. This requires *osmium* to be installed.
-
-**Areas Making & Updates**
-
- - In "op_make_areas.sh" script I have changed the IMAX loop counter to 10. Down from 100.
- - Areas update is only done after database update (daily) with loop counter 2 also.
- - Removed overpass crontab entry for opAreaUpade.
- - Removed "op_update_areas.sh" script from SlackBuild script.
- - Cron entry to remove old change files is "overpass" user entry - **no root usage**
- - Modified "op_initial_db.sh" script; "templates" directory is copied to database directory after initialization.
-
 
 In this "README-SETUP.md" file:
   - initial database, make areas and start database manager will result in functional database on local machine.
@@ -85,8 +63,11 @@ directory entry can be a real directory or a link to another directory - but mus
       |--- sources
 </pre>
 
-where database, getdiff and logs are directories for the indicated name created by the
+where database, getdiff, sources and logs are directories for the indicated name created by the
 "overpass" user.
+
+The "sources" directory is optional; I use it to place backup files like the region OSM data file
+used in to initial overpass database. See the "Backup, Clone, Source" section below.
 
 All my scripts use the following paths for indicated purpose:
 
@@ -262,10 +243,11 @@ The script takes TWO arguments; input file name and destination directory for da
   If you used the File System Structure above, then this will be "/var/lib/overpass/database"
 
 
- **Changed on 8/26/2023: the version number is automatically set by op_initial_db.sh script**
+ **Version number is automatically set by op_initial_db.sh script**
 
-  **version number from osmium output:**
-  The output from "osmium fileinfo" above includes 2 timestamp lines labeled (timestamp + Timestamps):
+  Script "op_initial_db.sh" sets the version number using *osmium fileinfo -e* command.
+
+  The output from "osmium fileinfo -e" above includes 2 timestamp lines labeled (timestamp + Timestamps):
 
   - The first is under the "Header" section, this is the file creation time. This is **not** what we want.
 
@@ -279,7 +261,7 @@ The script takes TWO arguments; input file name and destination directory for da
     <b>Last: 2023-07-18T19:45:41Z</b>
 </pre>
 
-the version number we will use is from the **Last:** line above.
+the version number used is extracted from the **Last:** line in Data section above.
 
 As everything run this as the "overpass" user, move to the directory where you have your
 source file and assuming that "op_initial_db.sh" script is in your path "/usr/local/bin/" and
@@ -569,14 +551,14 @@ sequenceNumber=3763
 ```
 
 This "timestamp" line gives us the **same last** date for our region OSM data file. What we need is the date just **AFTER** last date in our region OSM data file.
-Look at very next (.state.txt) file; in our example "764.state.txt" then click on that file and we get:
+Look at the very next (.state.txt) file; in our example "764.state.txt" then click on that file and we get:
 ```
 # original OSM minutely replication sequence number 5668253
 timestamp=2023-07-19T20\:21\:35Z
 sequenceNumber=3764
 ```
 
-This "timestamp" line says July **19**/2023. Bingo we hit the jack pot! This the date is just AFTER our region last date.
+This "timestamp" line says July **19**/2023. Bingo we hit the jack pot! This date is just AFTER our region last date.
 From this file "764.state.txt" the sequence number is: **3764**. **This is your begin argument.**
 
 I did not tell you to just add one to the region sequence number because we match **DATE** not sequence numbers.
@@ -726,13 +708,13 @@ rotate configure file is provided in "op_logrotate" file and shown below. Copy t
 Log rotation configuration file:
 
 ```
-# logrotate file for overpass logs - 4 files are handled
+# logrotate file for overpass logs - 5 files are handled
 # compress is global
 
 compress
 nomail
 
-/var/lib/overpass/logs/op_update_db.log  /var/lib/overpass/getdiff/getdiff.log {
+/var/lib/overpass/logs/op_update_db.log /var/lib/overpass/logs/update_osm_file.log /var/lib/overpass/getdiff/getdiff.log {
 
     su overpass overpass
     rotate 5
@@ -787,7 +769,7 @@ also copy base version number:
     $ cp $DB_DIR/osm_base_* $TARGET_DIR/.
 ```
 
-#### Update OSM Data Using update_osm_file.sh:
+#### Update OSM Data File Using update_osm_file.sh:
 
 This script is designed to update OpenStreetMap (OSM) data file by applying OpenStreetMap Change (OSC) files.
 Follow these steps to use the script and create an up-to-date OSM data file:
@@ -805,7 +787,7 @@ Use the following command to create the directory as the overpass user:
 ```
 mkdir -p ~/sources
 ```
-Create a text file named update_osm_file.target in the "sources" directory. This file should contain the desired OSM data file name.
+Create a text file named "update_osm_file.target" in the "sources" directory. This file should contain the desired OSM data file name.
 Use the following command to create the file:
 
 ```
@@ -813,6 +795,20 @@ echo "target=yourfilename-YYYY-MM-DD.osm.pbf" > ~/sources/update_osm_file.target
 ```
 
 Replace yourfilename-YYYY-MM-DD.osm.pbf with the actual name of your OSM data file in the specified format.
+
+If your extract data file is missing the URL to "region-updates", you can have it set in the updated data file by
+providing it in the "update_osm_file.target" file, replace the above line with:
+
+```
+echo "target=yourfilename-YYYY-MM-DD.osm.pbf" > ~/sources/update_osm_file.target
+echo "url=url-to-region-updates" >> ~/sources/update_osm_file.target
+```
+
+You may create this "target" file with any text editor,  "update_osm_file.target" file format is simple:
+```
+target=yourfilename-YYYY-MM-DD.osm.pbf
+url=url-to-region-updates
+```
 
 Step 3: Copy and rename your region OSM data file
 
@@ -825,8 +821,8 @@ This script is called from my "cron4op.sh" script. The "op_update_db.sh" generat
 is found in the system. This "update_osm_file.sh" will automatically run when the "target" text file and your region
 OSM data file are found in "sources" directory.
 
-The produced OSM data file can be used to initial a new database with up to date data without having to download
-new region OSM data file.
+The produced OSM data file can be used to initial a new database with up-to-date data without having to download
+new region OSM data file, this is providing that the data file is kept up-to-date from the database initialization step.
 
 To ensure data safety and facilitate disaster recovery, consider the following backup options:
 

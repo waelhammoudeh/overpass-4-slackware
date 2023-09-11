@@ -11,37 +11,7 @@ overpass database, script to control the dispatcher and program to retrieve the
 
 Concepts and methods mentioned here can be applied to any Linux distribution not just Slackware.
 
-### Changes:
-
-August 26/2023
-
-  - Use full timestamp as version number.
-  - Updated "op_initial_db.sh" script; no longer requires version argument.
-  - On success "op_initial_db.sh" script outputs info needed by "getdiff".
-  - Updated "op_update_db.sh"; writes full timestamp as version number.
-  - Updated "op_make_areas.sh"; uses SCRIPT_NAME now for output and log file name.
-
-Augut 22/2023
-
- - Added mergeChanges() function to "op_update_db.sh" script. Now when we have more than one change files;
-   they are merged first before applying the update. This requires *osmium* to be installed.
-
-August 20/2023
-
-  - SlackBuild builds overpass version "0.7.61.6"
-  - op_make_areas.sh: change IMAX loop counter to 10. Yes again!
-  - op_initial_db.sh: modified; copies "templates" directory to database directory now.
-  - edited README-SETUP.md: sadly still incomplete!
-  - {HOME} directory for overpass user is what we create at "/var/lib/overpass" **OR**
-   link your overpass home directory using this named link. Directory has to be created
-   and ownership set to: "overpass:overpass".
-
-August 18/2023
-
- - op_make_areas.sh: changed IMAX loop counter from 100 down to 2.
- - op_update_areas.sh: removed script - areas objects are updated daily after database update with iCount = 2.
-
-**Overpass**
+**Overpass News**
 
 On April 25/2023 the Overpass developer made the following announcement in a blog post:
 
@@ -57,48 +27,6 @@ Read the [blog here](https://dev.overpass-api.de/blog/version_0_7_60.html)
   - New migration program from [v0.7.52 - v0.7.59] database format to v0.7.60 database format.
   - New log file in the database directory with file name: 'database.log'
   - Dropped Version Number from socket file names.
-
-**Guide Scripts Renamed And Moved To Package Directory**
-
- Scripts names now start with "op"; scripts for the overpass user, followed by the action - verb,
- then the object each scripts acts upon.
-
- Scripts have been moved to SlackBuild directory and are included in the package; you still
- need to copy "op_logrotate" to "/etc/logrotate.d/" if you use it.
-
- ```
-    Old Name                     New Name
-  ------------------------------------------------------------
-  initial_op_db.sh           op_initial_db.sh
-  op_area_update.sh          op_make_areas.sh
-  update_op_db.sh            op_update_db.sh
-```
-
-**op_ctl.sh**
-
-  - Restructured the script
-  - Removerd Version Number from socket file names
-
-**gediff**
-
-  - Program was upgraded with code improvements and more
-  - The program output file 'newerFiles.txt' format has changed.
-  - For all changes see [my getdiff repository](https://github.com/waelhammoudeh/getdiff)
-
-**op_update_db.sh**
-
-  - Updated the script to process the new format from 'newerFiles.txt' file.
-
-**op_logrotate**
-
-  - The new 'database.log' file is included in this file.
-
-**SlackBuild**
-
-  - Updated script to build overpass version 0.7.61.4
-  - Dropped the 'new' file name extension from '/etc/rc.d/rc.dispatcher'
-  - Scripts from the Guide are installed by the package build script.
-  - The op_logrotate file has been moved to the package build directory.
 
 **Upgrade Instructions:**
 
@@ -119,25 +47,19 @@ areas after the migratation. Please follow the steps below exactly:
   ```
    # /etc/rc.d/rc.dispatcher stop
   ```
-  you could also switch to "overpass" user and use "op_ctl.sh" as follows:
-  ```
-   # su overpass
-   $ op_ctl.sh stop
 
-   go back to "root"
-   $ exit
-   #
-   ```
-   it is important that the dispatcher is stopped, double check with "status" check as follows:
+it is important that the dispatcher is stopped, double check with "status" check as follows:
    ```
    # /etc/rc.d/rc.dispatcher status
    ```
-   the output should be:
-   ```
+
+the output should be:
+
+```
    /usr/local/bin/op_ctl.sh: Database directory is set to: /var/lib/overpass/database
 
    dispatcher stopped
-   ```
+```
 
   - Upgrade with the new built overpass package; as root issue:
   ```
@@ -185,19 +107,17 @@ areas after the migratation. Please follow the steps below exactly:
    ```
    $ op_make_areas.sh
    ```
-   This step will take about an hour for small region database. Test your new area files using
+   This step will take minutes (less than an hour) for small region database. Test your new area files using
    "test-area.op" file in the Guide:
    ```
     $ osm3s_query < test-area.op | sort -u
    ```
   I hope everything was successful for you.
 
-  - Edit "overpass" user crontab entry for areas update to use the new script name.
-
-  - Replace old "op_logrotate" file with the new file in SlackBuild directory.
-
   If this was not successful, new database has to be initialed after insalling the new overpass
   package.
+
+  **Scripts with this Guide** change with time; use latest copies of scripts and configuration files.
 
 ##### This guide is a work in progress!
 
