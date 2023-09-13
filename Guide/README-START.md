@@ -96,8 +96,8 @@ Building the package; assuming you added overpass group and user as outlined abo
    "cgi-bin", "templates" and "rules".
  - Blog directory along with overpass-doc are added to the package in the
    html directory; for educational purposes. Available on the web online too.
- - This build script replaces the tar ball source "index.html" file in the html
-    directory with that used in an earlier version 0.7.55.9.
+ - This build script replaces the "index.html" from the current the tar ball source
+    with that used in an earlier version 0.7.55.9.
  - The build script does NOT setup any web server, however it makes the process
    much easier.
  - Included in the package by my SlackBuild script are those helper scripts:
@@ -106,13 +106,16 @@ Building the package; assuming you added overpass group and user as outlined abo
    3) rc.dispatcher: starts and stops database manager; the "dispatcher" daemon program.
    4) op_make_areas.sh: script to build area objects in the database.
    5) op_update_db.sh: script for updating the overpass database.
-   6) op_update_areas.sh: script to update the area objects.
+   6) update_osm_file.sh: to keep region extract OSM data file updated with latest data.
    In addition a log rotation file is included "op_logrotate".
 
-Next in this Guide is "README-DATA.md".
+   All binaries are installed to "/usr/local/bin/" directory, usually this directory is included
+   in users environment PATH, you may want to add it if it is not.
 
 Thank you very much.
 
 Wael Hammoudeh
 
-August 11/2023
+September 11/2023
+
+Next in this Guide is ["README-DATA.md"](https://github.com/waelhammoudeh/overpass-4-slackware/Guide/README-DATA.md)

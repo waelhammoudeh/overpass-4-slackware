@@ -10,7 +10,7 @@ This is the "README-SETUP.md" file for Overpass Guide.
    Updated: cron4op.sh, op_initial_db.sh, op_update_db.sh and SlackBuild
 
 In this "README-SETUP.md" file:
-  - initial database, make areas and start database manager will result in functional database on local machine.
+  - initial database, make areas and start database manager will result in functional database on your local machine.
   - database manager control, start on boot and stop on shutdown.
   - update database
   - automation & log files handling.
@@ -30,7 +30,7 @@ my overpass Slackware package; my scripts to initial and update overpass databas
 package.
 
 **Osmium**
-[Osmium command line tools](https://github.com/waelhammoudeh/osmium-tool_slackbuild) is required to use my "op_initial_db.sh" script.
+[Osmium command line tools](https://github.com/waelhammoudeh/osmium-tool_slackbuild) is required to use my scripts.
 You will always use osmium when working with OSM data files.
 
 **getdiff**
@@ -67,7 +67,9 @@ where database, getdiff, sources and logs are directories for the indicated name
 "overpass" user.
 
 The "sources" directory is optional; I use it to place backup files like the region OSM data file
-used in to initial overpass database. See the "Backup, Clone, Source" section below.
+used to initial overpass database. See the "Backup, Clone, Source" section below.
+
+You can follow this File System Structure using links; however do not link to NFS mounted disks.
 
 All my scripts use the following paths for indicated purpose:
 
@@ -124,7 +126,7 @@ The database directory size was between (30 - 90) times the size of the respecte
 
 **All commands are to be executed by the overpass user unless specified otherwise**
 
-**All the information about your OSM data file needed for initial and update scripts below can be retrieved with "osmium fileinfo --extended"**
+**All the information about your OSM data file needed by initial and update scripts below can be retrieved with "osmium fileinfo --extended"**
 
 Listed below is "osmium fileinfo --extended" output for my region OSM data file "arizona-latest-internal.osm.pbf";
 I will list the relevant line(s) for script argument when needed - note that the output has four sections (File, Header, Data & Metadata):
@@ -756,18 +758,40 @@ Scripts do not handle shutdown signals. To avoid corrupted database make sure th
 scripts are done and have completed their work before shutting down the system.
 Always check log files from all scripts; best of luck to you.
 
-### Backup, Clone, Source:
+### Database Backup:
 
-* Keep your source files
-* Clone DB from time to time with : osm3s_query --clone=$TARGET_DIR
-* Clone does NOT copy areas files - make areas again OR copy area files with:
+Overpass-API provides a function to clone an initialed database by using "--clone" switch
+with "osm3s_query" with the following syntax:
 ```
-    $ cp $DB_DIR/area* $TARGET_DIR/.
+  ~$ osm3s_query --clone=$TARGET_DIR --clone-compression=$METHOD --clone-map-compression=$METHOD
 ```
-also copy base version number:
+
+where $TARGET_DIR is the destination directory. As I understand; files are copied by blocks
+in this process. The $TARGET_DIR must exist, it should be empty too. Specify the full path
+here; "osm3s_query" does not like relative paths! You need to specify the source directory
+if the "dispatcher" daemon is not running.
+
+Cloning does not copy "area" files, "area" can be remade with op_make_areas.sh script.
+Also missing from the clone directory is "osm_base_version" file.
+
+To create a backup to overpass database, specify an empty directory as the TARGET,
+copy your "osm_base_version" file to it when cloning is done then tar and compress
+the cloned directory. This is accomplished by the following commands:
+
 ```
-    $ cp $DB_DIR/osm_base_* $TARGET_DIR/.
+  overpass@yafa:~$ mkdir ~/op-clone
+  overpass@yafa:~$ osm3s_query --clone=/var/lib/overpass/op-clone/
+  overpass@yafa:~$ cp /var/lib/overpass/database/osm_base_version /var/lib/overpass/op-clone/
+  overpass@yafa:~$ tar czf db-backup-$(date +%Y-%m-%d).tar.gz /var/lib/overpass/op-clone/
 ```
+
+This will create named file with date in it as: "db-backup-YYYY-MM-DD.tar.gz".
+
+You can remove (delete) the cloned directory when done.
+
+For a complete backup strategy, used software needs to be preserved - versions being used;
+this includes overpass-API source code, osmium and "getdiff" program source code.
+The SlackBuild scripts to build sources should also be backed up.
 
 #### Update OSM Data File Using update_osm_file.sh:
 
@@ -843,8 +867,16 @@ By following these practices, you can enhance data protection and ensure that yo
 **TODO LIST:**
 
  - Write a "short story" for this README-SETUP.md file.
- - How to use "osm3s_query clone" option / command for backup.
+
+## Final Thoughts:
+
+This was in no way an attempt to document overpass; that is a job for the developing team.
+I would like to express my great appreciation to Roland Olbricht and the developing team.
+
+This was done just to encourge new users for overpass. I hope somebody found this helpful.
 
 Wael K. Hammoudeh
 
-September 11/2023
+September 12/2023
+
+Next is ["README-WEB"](https://github.com/waelhammoudeh/overpass-4-slackware/blob/master/Guide/README-WEB.md)

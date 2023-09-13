@@ -5,13 +5,13 @@ your database can be queried from remote machines on local network or even throu
 the internet.
 
 I provide simple setup for the Apache Web Server that enables you to query your overpass database through the network.
-The overpass "dispatcher" daemon must be running for the Web access to work.
+The overpass "dispatcher" daemon must be running for the Web interface to work.
 
 **Setup Apatche Web Server:**
 
 The Apache Web Server package is included in Slackware64 and installed with Slackware64
-full installation, install it if you did not do that. This package includes the best software documentation;
-you can find the documentation on your system at this path:
+full installation, install it if you did not do full Slackware64 installation. This package includes
+the best software documentation; you can find the documentation on your system at this path:
 ```
  /var/www/htdocs/manual/index.html
 ```

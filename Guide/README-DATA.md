@@ -189,7 +189,8 @@ Those files have the extension ".osh.pb". Those are generated **about** once a w
 file was generated - not last date for data in the file. Use *osmium fileinfo --extended* to get last date. Do not assume anything
 about last date in those files.
 
-
 Wael Hammoudeh
 
-Update: August 31 / 2023
+September 11/2023
+
+Next is ["README-SETUP"](https://github.com/waelhammoudeh/overpass-4-slackware/blob/master/Guide/README-SETUP.md)
