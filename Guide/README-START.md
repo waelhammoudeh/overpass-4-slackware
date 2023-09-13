@@ -118,4 +118,4 @@ Wael Hammoudeh
 
 September 11/2023
 
-Next in this Guide is ["README-DATA.md"](https://github.com/waelhammoudeh/overpass-4-slackware/Guide/README-DATA.md)
+Next in this Guide is ["README-DATA.md"](README-DATA.md)

@@ -193,4 +193,4 @@ Wael Hammoudeh
 
 September 11/2023
 
-Next is ["README-SETUP"](https://github.com/waelhammoudeh/overpass-4-slackware/blob/master/Guide/README-SETUP.md)
+Next is ["README-SETUP"](README-SETUP.md)
