@@ -874,12 +874,6 @@ By following these practices, you can enhance data protection and ensure that yo
 
  - Write a "short story" for this README-SETUP.md file.
 
-## Final Thoughts:
-
-This was in no way an attempt to document overpass; that is a job for the developing team.
-I would like to express my great appreciation to Roland Olbricht and the developing team.
-
-This was done just to encourge new users for overpass. I hope somebody found this helpful.
 
 Wael K. Hammoudeh
 

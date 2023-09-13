@@ -248,6 +248,17 @@ consist of the following steps:
 ```
 http://overpass-api.de/api/interpreter?data=[out:csv(\"name\";false)];way(33.56090, -111.96920, 33.57510, -111.93470)[highway];out;
 ```
+## Final Thoughts:
+
+I want to make it clear that my intention in sharing this information is not to create documentation
+for Overpass; that task rightfully belongs to the development team led by Roland Olbricht.
+Instead, I would like to express my heartfelt gratitude and appreciation to Roland Olbricht
+and the entire development team for their hard work, dedication and the great software product.
+
+My motivation in sharing this information is solely to encourage and assist new users who may
+be interested in using Overpass. I hope that this information proves to be helpful to someone in
+their journey with Overpass.
+
 
 ### DISCLAIMER:
 I am NOT an expert on "overpassAPI". Information here may not be accurate, use
@@ -255,5 +266,7 @@ at your own risk. I mention other websites, they all have rules and there are la
 to abide by, read the rules and follow the law please. Be in the know.
 
 Wael Hammoudeh
+
+September 12/2023
 
 Next is ["README-START.md"](https://github.com/waelhammoudeh/overpass-4-slackware/blob/master/Guide/README-START.md)
