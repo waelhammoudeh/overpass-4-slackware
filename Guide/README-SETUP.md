@@ -18,7 +18,7 @@ In this "README-SETUP.md" file:
 
 ### Required Reading:
 
-[README-START.md](https://github.com/waelhammoudeh/overpass-4-slackware/Guide/README-START.md)
+[README-START.md](README-START.md)
 
 This file builds on README-START.md, please read that file first if you did not do so.
 
@@ -48,7 +48,7 @@ All scripts and configuration files here assume the following File System layout
       |--- database/
       |--- getdiff/
       |--- logs/
-      |--- sources   ---> this is optional
+      |--- sources/   ---> this is optional
 </pre>
 
 in addition {OP_HOME} is assumed to have this path "/var/lib/overpass". This "overpass"
@@ -60,7 +60,7 @@ directory entry can be a real directory or a link to another directory - but mus
       |--- database/
       |--- getdiff/
       |--- logs/
-      |--- sources
+      |--- sources/
 </pre>
 
 where database, getdiff, sources and logs are directories for the indicated name created by the
