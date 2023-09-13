@@ -767,25 +767,31 @@ with "osm3s_query" with the following syntax:
 ```
 
 where $TARGET_DIR is the destination directory. As I understand; files are copied by blocks
-in this process. The $TARGET_DIR must exist, it should be empty too. Specify the full path
-here; "osm3s_query" does not like relative paths! You need to specify the source directory
-if the "dispatcher" daemon is not running.
+in this process. The $TARGET_DIR must exist, it should be empty too. You need to specify the
+source directory if the "dispatcher" daemon is not running.
 
 Cloning does not copy "area" files, "area" can be remade with op_make_areas.sh script.
 Also missing from the clone directory is "osm_base_version" file.
 
 To create a backup to overpass database, specify an empty directory as the TARGET,
 copy your "osm_base_version" file to it when cloning is done then tar and compress
-the cloned directory. This is accomplished by the following commands:
+the cloned directory. This is accomplished by the following commands executed from
+overpass home directory:
 
 ```
-  overpass@yafa:~$ mkdir ~/op-clone
-  overpass@yafa:~$ osm3s_query --clone=/var/lib/overpass/op-clone/
-  overpass@yafa:~$ cp /var/lib/overpass/database/osm_base_version /var/lib/overpass/op-clone/
-  overpass@yafa:~$ tar czf db-backup-$(date +%Y-%m-%d).tar.gz /var/lib/overpass/op-clone/
+  overpass@yafa:~$ cd ~
+  overpass@yafa:~$ mkdir op-clone
+  overpass@yafa:~$ osm3s_query --clone=op-clone/
+  overpass@yafa:~$ cp database/osm_base_version /op-clone/
+  overpass@yafa:~$ tar czf db-backup-$(date +%Y-%m-%d).tar.gz op-clone/
 ```
 
-This will create named file with date in it as: "db-backup-YYYY-MM-DD.tar.gz".
+This will create named file with date in it as: "db-backup-YYYY-MM-DD.tar.gz". To
+extract / untar:
+
+```
+overpass@yafa:~$ tar xvf db-backup-YYYY-MM-DD.tar.gz
+```
 
 You can remove (delete) the cloned directory when done.
 
