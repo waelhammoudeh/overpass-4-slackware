@@ -96,7 +96,7 @@ Building the package; assuming you added overpass group and user as outlined abo
    "cgi-bin", "templates" and "rules".
  - Blog directory along with overpass-doc are added to the package in the
    html directory; for educational purposes. Available on the web online too.
- - This build script replaces the "index.html" from the current the tar ball source
+ - This build script replaces the "index.html" file from the current source tar ball
     with that used in an earlier version 0.7.55.9.
  - The build script does NOT setup any web server, however it makes the process
    much easier.
@@ -107,10 +107,11 @@ Building the package; assuming you added overpass group and user as outlined abo
    4) op_make_areas.sh: script to build area objects in the database.
    5) op_update_db.sh: script for updating the overpass database.
    6) update_osm_file.sh: to keep region extract OSM data file updated with latest data.
+
    In addition a log rotation file is included "op_logrotate".
 
    All binaries are installed to "/usr/local/bin/" directory, usually this directory is included
-   in users environment PATH, you may want to add it if it is not.
+   in the environment PATH, you may want to add it if it is not.
 
 Thank you very much.
 
