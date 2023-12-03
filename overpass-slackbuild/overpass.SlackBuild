@@ -139,6 +139,15 @@ cp html/* $PKGDEST/$MYPREFIX/html/$PKGNAM/
 mv $PKGDEST/$MYPREFIX/html/$PKGNAM/index.html $PKGDEST/$MYPREFIX/html/$PKGNAM/index.html-$VERSION
 cp $CWD/index.html_v0.7.55.9 $PKGDEST/$MYPREFIX/html/$PKGNAM/index.html
 
+# copy old documentation to html directory
+if [ -f $CWD/command_line.html_v0.7.57.1 ]; then
+  cp $CWD/command_line.html_v0.7.57.1 $PKGDEST/$MYPREFIX/html/$PKGNAM/command_line.html
+fi
+
+if [ -f $CWD/output_formats.html_v0.7.57.1 ]; then
+  cp $CWD/output_formats.html_v0.7.57.1 $PKGDEST/$MYPREFIX/html/$PKGNAM/output_formats.html
+fi
+
 # copy rules directory, needed for area creation and update
 cp -pr $SRC/rules $PKGDEST/$MYPREFIX/
 

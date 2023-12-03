@@ -3,6 +3,10 @@ This is the "README.SlackBuild" file for overpassAPI SlackBuild script.
 This file is part of "overpass-4-slackware" repository found at:
  https://github.com/waelhammoudeh/overpass-4-slackware
 
+This script retains an old front page "index.html" file (from version 0.7.55.9).
+The script also retains old documentation files which have been removed by
+the developer in recent versions. The files are: command_line.html and
+output_formats.html from version 0.7.57.1.
 
 Before building overpass software package you need "overpass" user and group.
 This can be done with the following commands:
@@ -98,4 +102,4 @@ READ BEFORE THE UPGRADE PLEASE.
 
 Wael Hammoudeh
 
-September 11/2023
+November 30/2023
