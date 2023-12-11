@@ -15,6 +15,8 @@
 # If not following my Guide for database directory, you need to change
 # DB_DIR setting below; set it to your actual overpass database directory.
 #
+# added option --allow-duplicate-queries=yes
+# to both base & area dispatcher 12/10/2023
 
 SYS_ROOT=/var/lib
 
@@ -117,7 +119,7 @@ case "$1" in
 
 # removed ${META} - dispatcher auto detects & sets this option.
 #    $DSPTCHR --osm-base --db-dir=${DB_DIR} ${META} &
-    $DSPTCHR --osm-base --db-dir=${DB_DIR} &
+    $DSPTCHR --osm-base --db-dir=${DB_DIR} --allow-duplicate-queries=yes &
     sleep 1
 
     # start areas dispatcher if base started successfully ONLY
@@ -132,7 +134,7 @@ case "$1" in
     # start areas dispatcher if base started successfully ONLY
     echo " Starting areas dispatcher ..."
 
-    $DSPTCHR --areas --db-dir=${DB_DIR} &
+    $DSPTCHR --areas --db-dir=${DB_DIR} --allow-duplicate-queries=yes &
     sleep 1
 
     if [ -S ${DB_DIR}/osm3s_areas ]; then
