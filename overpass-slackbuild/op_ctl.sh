@@ -31,7 +31,9 @@ EXEC_DIR=/usr/local/bin
 DSPTCHR=$EXEC_DIR/dispatcher
 USER=overpass
 DIS_MODE="normal mode"
-unset META
+
+# can not use --attic with limited area extract, always use "--meta"
+META="--meta"
 
 if ! grep ^overpass: /etc/passwd 2>&1 > /dev/null; then
     echo "$SCRIPT_NAME: Error"
@@ -71,9 +73,6 @@ if [ ! "$(ls -A $DB_DIR)" ]; then
     echo "  Please see the \"README-SETUP.md\" file included in the Guide directory."
     exit 2
 fi
-
-# set META depending on files in db -- dispatcher auto detects this meta! 8/29/2023
-# no 'force' option!
 
 if [ -f ${DB_DIR}/nodes_meta.bin ]; then
     DIS_MODE="meta data support"
@@ -117,9 +116,7 @@ case "$1" in
     # start base dispatcher
     echo " Starting base dispatcher with ${DIS_MODE} ..."
 
-# removed ${META} - dispatcher auto detects & sets this option.
-#    $DSPTCHR --osm-base --db-dir=${DB_DIR} ${META} &
-    $DSPTCHR --osm-base --db-dir=${DB_DIR} --allow-duplicate-queries=yes &
+    $DSPTCHR --osm-base --db-dir=${DB_DIR} ${META} --allow-duplicate-queries=yes &
     sleep 1
 
     # start areas dispatcher if base started successfully ONLY

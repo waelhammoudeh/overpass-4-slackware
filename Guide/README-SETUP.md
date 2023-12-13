@@ -71,7 +71,7 @@ used to initial overpass database. See the "Backup, Clone, Source" section below
 
 You can follow this File System Structure using links; however do not link to NFS mounted disks.
 
-All my scripts use the following paths for indicated purpose:
+All my scripts use the following paths for the indicated purpose:
 
 ```
 The System Root is "/var/lib" is a System directory on Slackware - already exist.
@@ -286,7 +286,7 @@ This process will take some time to complete; depending on your region data file
 When database is successfully initialized, "op_initial_db.sh" outputs something like this:
 ```
 Update complete.
-op_initial_db_gpt: Database initialization successful.
+op_initial_db: Database initialization successful.
   OSM data file Timestamp Last Date: 2023-07-18T19:45:41Z
   OSM data file URL for {region}-updates: https://osm-internal.download.geofabrik.de/north-america/us/arizona-updates
   OSM data file Replication Sequence Number: 3763
@@ -317,12 +317,24 @@ If you are new to overpass then "osm3s_query" program is your friend, get to kno
 
 ### Starting the "dispatcher" daemon:
 
-The "dispatcher" program is part of the overpass package, it is the daemon
-which forwards queries to the correct part of overpass. As long as the dispatcher
+The "dispatcher" program is part of the overpass package, it is run in the backgound as
+daemon which forwards queries to the correct part of overpass. As long as the dispatcher
 is running, your queries to overpass will be answered.
 
-The dispatcher program can take a lot of arguments:
+Starting the dispatcher without any argument gives us the following usage statement:
+
 ```
+overpass@yafa:~$ dispatcher
+Usage: dispatcher (--terminate | (--osm-base | --areas | --osm-base (--meta | --attic)) --db-dir=Directory)
+overpass@yafa:~$
+```
+
+Most programs respond to "--help" argument, trying that with dispatcher yields the following:
+
+```
+overpass@yafa:~$ dispatcher --help
+Unknown argument: --help
+
 Accepted arguments are:
   --osm-base: Start or talk to the dispatcher for the osm data.
   --areas: Start or talk to the dispatcher for the areas data.
@@ -330,27 +342,55 @@ Accepted arguments are:
   --attic: When starting the osm data dispatcher, also care for meta and museum data.
   --db-dir=$DB_DIR: The directory where the database resides.
   --terminate: Stop the adressed dispatcher.
-  --status: Let the addressed dispatcher dump its status into
+  --status: Let the adressed dispatcher dump its status into
         $DB_DIR/osm_base_shadow.status or $DB_DIR/areas_shadow.status
-  --my-status: Let the adressed dispatcher return everything known about this client token
   --show-dir: Returns $DB_DIR
   --purge=pid: Let the adressed dispatcher forget everything known about that pid.
   --query_token: Returns the pid of a running query for the same client IP.
   --space=number: Set the memory limit for the total of all running processes to this value in bytes.
   --time=number: Set the time unit  limit for the total of all running processes to this value in bytes.
   --rate-limit=number: Set the maximum allowed number of concurrent accesses from a single IP.
+  --allow-duplicate-queries=(yes|no): Set whether the dispatcher shall block duplicate queries.
+  --server-name: Set the server name used in status and error messages.
+overpass@yafa:~$
+
 ```
-The important arguments for us now are: ( --osm-base,  --areas, --meta and --db-dir ).
+
+As can been seen; the dispatcher takes many arguments. The arguments I use to start
+the dispatcher are the following arguments:
+
  * --osm-base: start basic or main dispatcher.
  * --areas: start areas dispatcher.
- * --meta: must match initialed database option.
+ * --meta: must match initialed database option for main dispatcher only.
  * --db-dir: actual overpass database directory.
+ * --allow-duplicate-queries=yes : tells dispatcher NOT to block duplicate queries.
 
-You start "dispatcher" as the "overpass" user giving it your database directory and how that
-database was initialed, using "&" in the end to make it run as background process:
+Overpass operates with two distinct dispatcher instances: one servicing the main
+database and the other handling "areas" objects and related queries. When initiating
+the dispatcher, the "--osm-base" argument triggers the first instance, often referred
+to as the basic or main dispatcher. Conversely, the "--areas" argument initiates the
+area-specific dispatcher. It's important to note that these two arguments cannot be used
+simultaneously within a single command.
+
+Our database was initialized with "meta" data, which we opt to leverage. By using
+the "--meta" argument, we instruct the dispatcher to handle this meta data appropriately.
+This argument can not be used with "--areas" argument.
+
+To guide the dispatcher to the location of our initialized Overpass database, we utilize the
+"--db-dir" argument, specifying the path to our database.
+
+Regarding the "--allow-duplicate-queries" argument, it accepts values of either "yes" or "no."
+By default, this setting is configured as "no." Opting for "yes" informs the dispatcher not to
+reject duplicate queries. However, it's important to exercise caution when using this setting
+on a public server, as repetitive execution of the same query can be deemed abusive.
+The effect of "yes" setting on a local server is that users are able to execut the same query
+repeatedly without any rejection from overpass.
+
+To start the "dispatcher" as the "overpass" user and enable it to run in the background as a daemon,
+append an ampersand "&" to the command line. Here's an example of starting the base dispatcher:
 
 ```
- overpass@yafa:~/source$ dispatcher --osm-base --db-dir=/var/lib/overpass/database --meta &
+overpass@yafa:~$ dispatcher --osm-base --db-dir="/var/lib/overpass/database" --meta --allow-duplicate-queries=yes &
 ```
 
 With dispatcher running in the background, --db-dir option for "osm3s_query" program is not needed.
