@@ -305,3 +305,14 @@ Next make files from saved geometry file using geometry2wkt program:
  $ ./geometry2wkt ~/op_scripts/skyCrossing/skyCrossing.geom
 ```
 
+Program "geometry2wkt" produces layers to show POINTS and LINESTRINGS.
+
+[See Sky Crossing Bbox](images/skyCrossBbox.png)
+
+[See Sky Crossing Linestring](images/skyCrossLinestring.png)
+
+[See Sky Crossing Points](images/skyCrossPoints.png)
+
+[See Sky Crossing All](images/skyCrossMap.png)
+
+FIRST Draft dated 1/21/2024
