@@ -280,7 +280,7 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
     - start new project in QGIS, then drag and drop the bbox shapefile (tatShea_bbox.shp) into window: [see image](images/seeBbox1.png)
     - bounding box is filled by solid color (default), we change the Fill color to "Transparent" by right-clicking over tatShea_Bbox
        layer in the Layer pan: [see image](images/seeBbox2.png)
-    - the result after changing Fill color is shown in [see image](images/seeBbox3.png) \
+    - the result after changing Fill color is shown in [see image](images/seeBbox3.png)
     - next we drag and drop "tatShea_Point.shp" file to add another layer in QGIS project [see image](images/seePoints.png)
     - add OpenStreetMap as a new layer by double clicking on it in your "browser pan" of QGIS [see image](images/addMap1.png)
     - bounding box and points layer are underneath OpenStreetMap layer, move OpenStreetMap layer to the bottom by
