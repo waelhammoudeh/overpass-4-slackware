@@ -110,7 +110,7 @@ Some examples of Well Known Text format:
 The line above is for GPS point with longitude = -112.2265165 and latitude = 33.6669231.
 
 "LINESTRING(-112.2353197 33.6438651,-112.2371329 33.6396803,-112.2376582 33.6384689)" \
-The line above is for the line with 3 GPS points with (longitude, latitude) pair below:
+The line above is for the line with 3 GPS points with (longitude, latitude) pair below: \
 (-112.2353197, 33.6438651) \
 (-112.2371329, 33.6396803) \
 (-112.2376582, 33.6384689)
@@ -239,29 +239,29 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
   - hit the enter key after checking bbox bounds values [see image](images/tatSheaScript3.png) \
     This creates overpass query template file and bbox WKT file, if ogr2ogr was found, it also creates ESRI shapefile.
 
-3) Open query template file using your text editor [see image](images/tatSheaEditOp1.png) \
+3) Open query template file using your text editor [see image](images/tatSheaEditOp1.png)
     - move back to JOSM editor, Download the area, then zoom to see road names [see image](images/tatSheaTagsView.png) \
       in the map area click on either "North Tatum Boulevard" or "East Shea Boulevard" and note that tags pan
       changes and loads tags and their values for your selected object, one tag named "highway" has a value "primary"
       we use that in our query construct.
-  - we continue with our text editor and write overpass query statements in the three lines shown [see image](images/tatSheaEditOp2.png) \
+  - we continue with our text editor and write overpass query statements in the three lines shown [see image](images/tatSheaEditOp2.png)
 
 4) Query your local overpass server using osm3s_query command line tool ===> [see image](images/tatSheaRunOp1.png) \
     - ensure your query statements are correct and produce the desired result
 
 5) Utilize our second dirty perl script "gps2wkt.perl" to format the result as Well Known Text
-    and make ESRI shapefile for query result [see image](images/tatSheaRunOp1.png) \
+    and make ESRI shapefile for query result [see image](images/tatSheaRunOp1.png)
     - we pipe the result from the query to "gps2wkt.perl" script with filename prefix again here; we use
       the same prefix we used for the query template to have all files in one place.
     - on success, the script tells you what file it wrote.
 
 6) See the result in QGIS using ESRI shapefiles produced from prevoius steps:
-    - start new project in QGIS, then drag and drop the bbox shapefile (tatShea_bbox.shp) into window: [see image](images/seeBbox1.png) \
+    - start new project in QGIS, then drag and drop the bbox shapefile (tatShea_bbox.shp) into window: [see image](images/seeBbox1.png)
     - bounding box is filled by solid color (default), we change the Fill color to "Transparent" by right-clicking over tatShea_Bbox
-       layer in the Layer pan: [see image](images/seeBbox2.png) \
+       layer in the Layer pan: [see image](images/seeBbox2.png)
     - the result after changing Fill color is shown in [see image](images/seeBbox3.png) \
-    - next we drag and drop "tatShea_Point.shp" file to add another layer in QGIS project [see image](images/seePoints.png) \
-    - add OpenStreetMap as a new layer by double clicking on it in your "browser pan" of QGIS [see image](images/addMap1.png) \
+    - next we drag and drop "tatShea_Point.shp" file to add another layer in QGIS project [see image](images/seePoints.png)
+    - add OpenStreetMap as a new layer by double clicking on it in your "browser pan" of QGIS [see image](images/addMap1.png)
     - bounding box and points layer are underneath OpenStreetMap layer, move OpenStreetMap layer to the bottom by
       left-clicking and dragging  [see image](images/addMap2.png)
 
