@@ -1,0 +1,8 @@
+[out:csv(::lon, ::lat,::count)]
+[bbox: 33.5783365,-111.9872904,33.5900273,-111.9686651];
+
+  (way['highway'='primary']['name'~'Tatum Boulevard', i];>;)->.outNS;
+  (way['highway'='primary']['name'~'Shea Boulevard', i];>;)->.outEW;
+  node.outNS.outEW;
+
+out; out count;

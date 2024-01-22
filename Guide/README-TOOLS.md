@@ -246,14 +246,44 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
       we use that in our query construct.
   - we continue with our text editor and write overpass query statements in the three lines shown [see image](images/tatSheaEditOp2.png)
 
-4) Query your local overpass server using osm3s_query command line tool ===> [see image](images/tatSheaRunOp1.png) \
+4) Query your local overpass server using osm3s_query command line tool ===> [see image](images/tatSheaRunOp1.png)
     - ensure your query statements are correct and produce the desired result
 
 5) Utilize our second dirty perl script "gps2wkt.perl" to format the result as Well Known Text
-    and make ESRI shapefile for query result [see image](images/tatSheaRunOp1.png)
-    - we pipe the result from the query to "gps2wkt.perl" script with filename prefix again here; we use
-      the same prefix we used for the query template to have all files in one place.
-    - on success, the script tells you what file it wrote.
+    and make ESRI shapefile for query result.
+    - Script "gps2wkt.perl" formats its input to WKT POINT and outputs the result to the terminal, pipe
+      the query result into "gps2wkt.perl" script as:
+      ```
+       wael@yafa:~/op_scripts/tatShea$ osm3s_query < tatShea.op | ~/perl-scripts/gps2wkt.perl
+      ```
+      If successful, your WKT file will be written to your terminal, as the output below:
+      ```
+      wael@yafa:~/op_scripts/tatShea$ osm3s_query < tatShea.op | ~/perl-scripts/gps2wkt.perl
+      encoding remark: Please enter your query and terminate it with CTRL+D.
+      runtime remark: Timeout is 180 and maxsize is 536870912.
+      wkt;
+     "POINT (-111.9780030 33.5826085)"
+     "POINT (-111.9778160 33.5827762)"
+     "POINT (-111.9778180 33.5826085)"
+     "POINT (-111.9780030 33.5827763)"
+    ```
+    - To have "gps2wkt.perl" script write WKT and shapefile files; we give it a filename prefix as
+       argument with filename, use the same filename prefix used with creating template  (that was "tatShea")
+       to have files written to the same directory. So after a successful run above without the PREFIX, we run
+       the script again with filename PREFIX (tatShea) to have it write files for us.
+       ```
+       wael@yafa:~/op_scripts/tatShea$ osm3s_query < tatShea.op | ~/perl-scripts/gps2wkt.perl tatShea
+       encoding remark: Please enter your query and terminate it with CTRL+D.
+       runtime remark: Timeout is 180 and maxsize is 536870912.
+       wkt;
+       "POINT (-111.9780030 33.5826085)"
+       "POINT (-111.9778160 33.5827762)"
+       "POINT (-111.9778180 33.5826085)"
+       "POINT (-111.9780030 33.5827763)"
+       /home/wael/perl-scripts/gps2wkt.perl: Wrote POINT WKT to file /home/wael/op_scripts/tatShea/tatShea_Point.csv
+       /home/wael/perl-scripts/gps2wkt.perl: Wrote POINT ESRI shapefile to file /home/wael/op_scripts/tatShea/tatShea_Point.shp
+       ```
+    - on success, "gps2wkt.perl" script tells you what file it wrote. The two commands above are run one after another. [see image](images/tatSheaRunOp2.png)
 
 6) See the result in QGIS using ESRI shapefiles produced from prevoius steps:
     - start new project in QGIS, then drag and drop the bbox shapefile (tatShea_bbox.shp) into window: [see image](images/seeBbox1.png)
