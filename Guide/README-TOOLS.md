@@ -256,18 +256,8 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
       ```
        wael@yafa:~/op_scripts/tatShea$ osm3s_query < tatShea.op | ~/perl-scripts/gps2wkt.perl
       ```
-      If successful, your WKT file will be written to your terminal, as the output below:
-      ```
-      wael@yafa:~/op_scripts/tatShea$ osm3s_query < tatShea.op | ~/perl-scripts/gps2wkt.perl
-      encoding remark: Please enter your query and terminate it with CTRL+D.
-      runtime remark: Timeout is 180 and maxsize is 536870912.
-      wkt;
-     "POINT (-111.9780030 33.5826085)"
-     "POINT (-111.9778160 33.5827762)"
-     "POINT (-111.9778180 33.5826085)"
-     "POINT (-111.9780030 33.5827763)"
+      If successful, your WKT file will be written to your terminal.
 
-    ```
     - To have "gps2wkt.perl" script write WKT and shapefile files; we give it a filename prefix as
        argument with filename, use the same filename prefix used with creating template  (that was "tatShea")
        to have files written to the same directory. So after a successful run above without the PREFIX, we run
