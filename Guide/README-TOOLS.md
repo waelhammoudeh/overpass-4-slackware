@@ -113,7 +113,7 @@ The line above is for GPS point with longitude = -112.2265165 and latitude = 33.
 The line above is for the line with 3 GPS points with (longitude, latitude) pair below:
 (-112.2353197, 33.6438651) \
 (-112.2371329, 33.6396803) \
-(-112.2376582, 33.6384689) \
+(-112.2376582, 33.6384689)
 
 "POLYGON((-112.276840  33.573581, -112.276840  33.667354, -112.221565  33.667354, -112.221565  33.573581, -112.276840  33.573581))" \
 The line above is for a Bounding Box. Notice the double parentheses and a Polygon
@@ -121,7 +121,7 @@ is closed with last point is equal to first point. The four corners of the bound
 (-112.276840, 33.573581) \
 (-112.276840, 33.667354) \
 (-112.221565, 33.667354) \
-(-112.221565,  33.573581) \
+(-112.221565,  33.573581)
 
 GIS software support only one geometry type (or entity)  per layer; each WKT file has only one
 geometry type for this reason. We can not mix POINT and LINESTRING in one file.
@@ -209,7 +209,7 @@ to disk with directories and filenames constucted as follows:
 
  $HOME/op_scripts/$PREFIX/$PREFIX.op  ===> overpass query template \
  $HOME/op_scripts/$PREFIX/$PREFIX_Bbox.csv ===> Well Know Text file for bounding box \
- $HOME/op_scripts/$PREFIX/$PREFIX_Bbox.shp ===> ESRI shapefile for Bounding box \
+ $HOME/op_scripts/$PREFIX/$PREFIX_Bbox.shp ===> ESRI shapefile for Bounding box
 
 This file system structure keeps all your overpass scripts in one directory named "op_scripts"
 in your $HOME directory with sub-directory created for each PREFIX you use.
@@ -263,7 +263,7 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
     - next we drag and drop "tatShea_Point.shp" file to add another layer in QGIS project [see image](images/seePoints.png) \
     - add OpenStreetMap as a new layer by double clicking on it in your "browser pan" of QGIS [see image](images/addMap1.png) \
     - bounding box and points layer are underneath OpenStreetMap layer, move OpenStreetMap layer to the bottom by
-      left-clicking and dragging  [see image](images/addMap2.png) \
+      left-clicking and dragging  [see image](images/addMap2.png)
 
 **View Geometry**
 
