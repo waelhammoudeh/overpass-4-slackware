@@ -14,7 +14,7 @@ learning Overpass Query for new users. Helpful programs and concepts to visualiz
 are introducing.
 Workflow explains "Overpass Query" development process with walk-through example(s)!
 
-***Note that this work in progress***
+***Note that this is a work in progress***
 
 Concepts and methods mentioned here can be applied to any Linux distribution not just Slackware.
 
