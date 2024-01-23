@@ -13,6 +13,7 @@ A draft for new section titled "Tools And Workflow" was just added to the Guide.
 learning Overpass Query for new users. Helpful programs and concepts to visualize OSM data
 are introducing.
 Workflow explains "Overpass Query" development process with walk-through example(s)!
+
 ***Note that this work in progress***
 
 Concepts and methods mentioned here can be applied to any Linux distribution not just Slackware.
