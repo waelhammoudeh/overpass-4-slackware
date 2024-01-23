@@ -9,6 +9,12 @@ build a Slackware package for the overpassAPI software, scripts to initial and u
 overpass database, script to control the dispatcher and program to retrieve the
 "Change Files" from Geofabrik servers needed for database updates: ["getdiff"](https://github.com/waelhammoudeh/getdiff).
 
+A draft for new section titled "Tools And Workflow" was just added to the Guide. It aims to ease
+learning Overpass Query for new users. Helpful programs and concepts to visualize OSM data
+are introducing.
+Workflow explains "Overpass Query" development process with walk-through example(s)!
+***Note that this work in progress***
+
 Concepts and methods mentioned here can be applied to any Linux distribution not just Slackware.
 
 **Overpass News**
@@ -17,7 +23,7 @@ On April 25/2023 the Overpass developer made the following announcement in a blo
 
 ```
 Since almost two weeks a new version of the Overpass API is out.
-This version addresses primarly those people that maintain an
+This version addresses primarily those people that maintain an
 instance on a magnetic hard disk. The version has changed the
 data format of the backend such that updates run four times faster.
 ```
