@@ -291,6 +291,14 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
 For geometry viewing; I use my C-program "geometry2wkt", the source code is included in directory "geometry2wkt" along with a makefile.
 To build the program move to that directory and just run make which will produce "geoemtry2wkt" executable in that directory.
 
+Program "geometry2wkt" parses geometry result returned from overpass query, program then formats
+geometry into Well Know Text as LINESTRINGs (segments) . I will have more to say about this soon - I hope.
+The program can read input from terminal or a saved file (or list of files). When reading input from the terminal,
+program writes geometry formatted WKT to the terminal and exits. When reading input from a file, program
+writes geometry formatted WKT to a file in the same directory as its input then call 'ogr2ogr' to convert WKT
+file to ESRI shapefile, also the same directory is used as destination. Program can read a list of files, each input
+file gets its own WKT and shapefile files - input files are NOT combined.
+
 I use this program with saved query result as file. Program writes files to the same directory of its input file.
 
 An example simple query with all generated files are in "example_skyCrossing" directory.
