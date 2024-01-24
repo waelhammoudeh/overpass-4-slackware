@@ -2,15 +2,15 @@
 
 Now you have setup your own overpass server on your own machine, wondering how to
 use it. We assume you want to learn how to write overpass queries, overpass query syntax is not complicated.
-The hard part is acquiring the knowldge of how OSM is structured and stored in a database.
+The hard part is acquiring the knowledge of how OSM is structured and stored in a database.
 
 In this section of the Guide, I list some programs and applications that will aid in working
 with your newly setup local overpass server. Tools include applications to visualize OSM data.
-In the workflow section below; I include couple perl scripts and a C-program which will aid in
-constucting overpass queries.
+In the workflow section below; I include couple Perl scripts and a C-program which will aid in
+constructing overpass queries.
 
 I assume you followed my Guide for setting up OSM overpass server in your system; including the Web interface setup.
-External applications usage is beyound the scope of this document, please seek each application help system.
+External applications usage is beyond the scope of this document, please seek each application help system.
 
 ## Tools
 
@@ -76,7 +76,7 @@ JOSM enables you to see OSM data in details.
 To see those details you work with small area (bounding box). Small as few square street
 blocks, in yards or meters about 200 - 500 maximum. Downloading small area enables
 you to zoom in to the object you are interested in, clicking on the object you can view its
-tags their values. Knowing those tags will help you construct better overpass query.
+tags and their values. Knowing those tags will help you construct better overpass query.
 
 Another great function from JOSM is copying bounds for selected bounding box.
 Under the download function the following tabs are available:
@@ -90,13 +90,13 @@ text editor. The bounding box bounds are formatted as required by overpass.
 
 ### Well Known Text
 
-Well, this is not a program but a standard for writting geometric entities as human
+Well, this is not a program but a standard for writing geometric entities as human
 readable text.
 
 WKT - for short; is an Open Geospatial Consortium (OGC) standard that is used to represent spatial
 data in a textual format.
 
-It is recognized and used by virually all GIS software including QGIS.
+It is recognized and used by virtually all GIS software including QGIS.
 
 Well Known Text format is human readable text format for basic geometric entities.
 The standard is used by many GIS software, data can be shared among different
@@ -154,7 +154,7 @@ This is a required package for QGIS, you will install it before QGIS.
 This library has the program named "ogr2ogr", which converts from one map data format to
 another. You will be able to convert your WKT file to ESRI Shapefile format.
 
-QGIS can open Shapefiles and accepts them in darg-and-drop operation. To add a layer
+QGIS can open Shapefiles and accepts them in drag-and-drop operation. To add a layer
 from a shapefile you just drop it into an open QGIS session. You can also pass shapefiles
 to QGIS on startup; for example:
 ```
@@ -205,7 +205,7 @@ Use the script as follows:
  - Paste your clipboard contents (bbox bounds) into your terminal emulator.
 
 If the script was started with filename 'PREFIX' argument, files will be written
-to disk with directories and filenames constucted as follows:
+to disk with directories and filenames constructed as follows:
 
  $HOME/op_scripts/$PREFIX/$PREFIX.op  ===> overpass query template \
  $HOME/op_scripts/$PREFIX/$PREFIX_Bbox.csv ===> Well Know Text file for bounding box \
@@ -222,7 +222,7 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
 1) Utilize our handy-dandy (and dirty) "bbox2template.perl" script; we first select / set bounding box using JOSM:
     - selected bbox from JOSM: this is accessed through the "Download" function / button in JOSM.
     - from the "Slippy Map" tab, highlight bounding box to include our intersection. ===> [see image](images/tatSheaSelect1.png) \
-      Note values fo selected bounding box is displayed as soon as we let go of the mouse on the status bar: \
+      Note values for selected bounding box is displayed as soon as we let go of the mouse on the status bar: \
       33.5783365,-111.9872904,33.5900273,-111.9686651
 
     - from the "Bounding Box" tab, click on "Copy bounds" button. ===> [see image](images/tatSheaSelect2.png) \
