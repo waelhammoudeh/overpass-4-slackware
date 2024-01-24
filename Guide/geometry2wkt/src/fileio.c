@@ -508,10 +508,12 @@ int writeGeomWkt(char *destFile, GEOMETRY *geom, WKT_ENTITY wktEntity){
 
   closeFile(destFP);
 
-  result = wkt2Shapefile(destFile);
-  if(result != ztSuccess){
-    fprintf(stderr, "writeGeomWkt(): Error failed wkt2Shapefile().\n");
-    return result;
+  if(isExecutableUsable(OGR2OGR_EXEC) == ztSuccess){
+    result = wkt2Shapefile(destFile);
+    if(result != ztSuccess){
+      fprintf(stderr, "writeGeomWkt(): Error failed wkt2Shapefile().\n");
+      return result;
+    }
   }
 
   return ztSuccess;
@@ -749,7 +751,11 @@ int wkt2Shapefile (char *infile){
     fprintf(stderr, "wkt2Shapefile(): Error returned from spawnWait() function call. Failed to convert to shape file!\n");
     return result;
   }
-
+/*  else{
+    fprintf(stdout, "wkt2Shapefile(): WKT file converted successfully; new shapefile:\n"
+    		"  %s\n", outfile);
+  }
+**/
   /* Do not remove .dbf, .prj or .shx files **/
 
   return ztSuccess;

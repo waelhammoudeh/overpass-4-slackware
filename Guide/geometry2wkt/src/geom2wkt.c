@@ -78,8 +78,13 @@ int main(int argc, char* const argv[]) {
       goto CLEANUP;
     }
 
-    /* we could write POINT & LINESTRING to files ... (use progName as prefix)
-     * or write all files as below.
+    /* To print your geometry use:
+     * void fprintGeometry(FILE *toFile, GEOMETRY *geometry);
+     * defined in "primitives.c" source file.
+     *
+     * we could write POINT & LINESTRING to files ...
+     * (use progName as prefix for example)
+     * or write all files as below with named files.
      *
      ********************************************************************/
 
@@ -157,6 +162,15 @@ int main(int argc, char* const argv[]) {
       fprintf(stderr, "%s: Error failed writeGeomWkt() for POINT.\n", progName);
       goto CLEANUP;
     }
+    else{
+      fprintf(stdout, "%s: Wrote geometry POINT WKT file to: %s\n", progName, wktPointFile);
+      if(isExecutableUsable(OGR2OGR_EXEC) == ztSuccess)
+        fprintf(stdout, "%s: Converted WKT file to shapefile: %s.shp\n",
+                progName, dropExtension(wktPointFile));
+      else
+        fprintf(stdout, "%s: Did not find: %s\n No shapefiles for you\n",
+        		progName, OGR2OGR_EXEC);
+    }
 
     /* LINESTRING file gets a different name with "_Linestring.csv" **/
     sprintf(wktLinestringFile, "%s%s", dropExtension(inputfile), linestringSuffix);
@@ -165,6 +179,18 @@ int main(int argc, char* const argv[]) {
     if(result != ztSuccess){
       fprintf(stderr, "%s: Error failed writeGeomWkt() for LINESTRING.\n", progName);
       goto CLEANUP;
+    }
+    else{
+      fprintf(stdout, "%s: Wrote geometry LINESTRING WKT file to: %s\n", progName, wktLinestringFile);
+      if(isExecutableUsable(OGR2OGR_EXEC) == ztSuccess)
+    	fprintf(stdout, "%s: Converted WKT file to shapefile: %s.shp\n",
+    			progName, dropExtension(wktLinestringFile));
+      else
+        fprintf(stdout, "%s: Did NOT find ogr2ogr executable in path: [%s]\n"
+                "Could not convert WKT file to shapefile.\n\n"
+    			"The ogr2ogr program comes with GDAL package, you may want to install GDAL.\n"
+    			"if you have ogr2ogr installed in different location, adjust defined path in 'fileio.h'\n",
+    			progName, OGR2OGR_EXEC);
     }
 
     zapStringList((void **) &geomStrList);
