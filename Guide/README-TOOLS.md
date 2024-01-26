@@ -477,8 +477,8 @@ If you have the program "ogr2ogr" on your system, you will get shapefile and its
   - skyCrossing_Point.shp : ESRI Shapefile for POINT
   - skyCrossing_Linestring.shp : ESRI Shapefile for LINESTRING
 
-Note that I did not list ".dbf", "prj" and "shx" files, they are required if want to
-view your shapefiles with QGIS, so do not delete them yet.
+Note that I did not list ".dbf", "prj" and "shx" files, they are required if you want to
+view your shapefiles with QGIS, so do not delete any of those files yet.
 
 Program "geometry2wkt" produces layers to show POINTS and LINESTRINGS.
 
