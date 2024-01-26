@@ -211,7 +211,7 @@ format, it takes longer to download - it shows if you do not have the bandwidth.
 
 My "op_initial_db.sh" script included in my SlackBuild is a replacement to overpass (init_osm3s.sh) script.
 
-Like "init_osm3s.sh" script my "op_initial_db.sh" script calls the overpass supplied *update_database* program;  update_database usage is:
+Like "init_osm3s.sh" script, my "op_initial_db.sh" script calls the overpass supplied *update_database* program;  update_database usage is:
 ```
 wael@yafa:~$ update_database -h
 Unkown argument: -h

@@ -1,0 +1,10 @@
+/* overpass query uses "area" filter
+   this is one way to find the border for the city of Tempe, Arizona
+*******************************************************/
+
+[out:json];
+
+  area[name="Maricopa County"];
+  relation [name="Tempe"][type="boundary"](area:3600110833);
+
+out geom;

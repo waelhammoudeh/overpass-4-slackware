@@ -18,31 +18,96 @@ External applications usage is beyond the scope of this document, please seek ea
 
  **osm3s_query:**
 
-This program was mentioned in README-SETUP.md file - section:
+This program was mentioned in README-SETUP.md file - section; this is the most important
+tool you have in your tool box, it is the most direct connection to your overpass server.
+
+To get the program full usage pass it an '-h' as argument:
 
 ```
- - Interactive mode: you enter your query statements in the terminal and end your input with "Ctrl D".
- - Batch mode: you write your query in a text file; like the example above then use shell redirection for input.
- - You can use c-programming comment style in your input file in batch mode - please see "test-first.op" and "test-area.op" files in the Guide.
- - You avoid network code / translation by using "osm3s_query" directly.
+wael@yafa:~$ osm3s_query -h
+Unknown argument: -h
+
+Accepted arguments are:
+  --db-dir=$DB_DIR: The directory where the database resides. If you set this parameter
+        then osm3s_query will read from the database without using the dispatcher management.
+  --dump-xml: Don't execute the query but only dump the query in XML format.
+  --dump-pretty-ql: Don't execute the query but only dump the query in pretty QL format.
+  --dump-compact-ql: Don't execute the query but only dump the query in compact QL format.
+  --dump-bbox-ql: Don't execute the query but only dump the query in a suitable form
+        for an OpenLayers slippy map.
+  --clone=$TARGET_DIR: Write a consistent copy of the entire database to the given $TARGET_DIR.
+  --clone-compression=$METHOD: Use a specific compression method $METHOD for clone bin files
+  --clone-map-compression=$METHOD: Use a specific compression method $METHOD for clone map files
+  --clone-file=$FILENAME: Restrict cloning to the given file name (provided without directories).
+  --rules: Ignore all time limits and allow area creation by this query.
+  --request=$QL: Use $QL instead of standard input as the request text.
+  --quiet: Don't print anything on stderr.
+  --concise: Print concise information on stderr.
+  --progress: Print also progress information on stderr.
+  --verbose: Print everything that happens on stderr.
+  --version: Print version and exit.
+wael@yafa:~$
 ```
 
-Write your query in a text file using your favorite text editor then save it to a file.
-Assuming you have a query in a file named "myscript.op", query your server with "osm3s_query" command
-using the following syntax:
-```
- $ osm3s_query < myscript.op
-```
-
-The program will output query result to your terminal. Of course you can redirect that to a file as:
+As you can see there are a lot of commands and options for this program. Our main usage
+for "osm3s_query" is to query overpass server, if started with no argument, it will prompt
+the user for their query:
 
 ```
- $ osm3s_query < myscript.op > myscript_result.txt
+wael@yafa:~$ osm3s_query
+encoding remark: Please enter your query and terminate it with CTRL+D.
+
+```
+You may enter your query line by line here and terminate your query with Ctrl D. I call this
+the "interactive mode".
+
+There is also a "patch mode", where you type your whole query in a text file with your
+favorite text editor then pass the name of your saved file to it using shell redirection.
+So lets assume you entered this query and saved in a file named "tempeBorder.op":
+
+```
+[out:json];
+
+  area[name="Maricopa County"];
+  relation [name="Tempe"][type="boundary"](area:3600110833);
+
+out geom;
 ```
 
-The query result will be written to "myscript_result.txt" in your current directory.
+assuming your "tempeBorder.op" file is in your current directory, you can query your
+local overpass server with this command:
 
-Feel free to experiment with both modes of this program.
+```
+ $ osm3s_query < tempeBorder.op
+
+```
+the less than character '<' is a shell redirection, this changes "osm3s_query" input
+from standard in (terminal) to your named file.
+
+You then hit the "Enter" key on your keyboard to execute the query script.
+
+The program "osm3s_query" will look for what you asked it for in you database, then answers
+you on your terminal. This script will output almost 700 lines to your terminal which you can
+use your "pager" to see one screen-full at a time as:
+
+```
+ $ osm3s_query < tempeBorder.op | more
+
+```
+My preferred way is to save the output to a file using shell redirection as:
+
+```
+ $ osm3s_query < tempeBorder.op > tempeBorder.raw
+
+```
+we use the greater than sign '>' to redirect the standard output to a named file; in
+this case "tempeBorder.raw".
+
+**Note** that I use the extension ".op" for overpass query script files and ".raw" extension
+for the unmodified (untreated or unaltered) query result. Those extensions are not required
+but keep thing clear to myself - you may use whatever you want.
+
+Feel free to experiment with other commands for this program.
 
  **Query Form:**
 I mentioned in README.SlackBuild file that I keep the "index.html" from an old version
@@ -54,7 +119,8 @@ In the "Query" form, you can type your overpass query and submit it to your own 
 The query answer will be stored in your "Downloads" directory in file named "interpreter" which gets an incremental number for each new query.
 
  **Transactions.log file:**
-Your queries are saved in this file; if you forget or misplace a query you wrote, look for it in this file.
+ This log file can be qualified as a tool, your queries are saved in this file; if you
+ forget or misplace a query you wrote, look for it in this file.
 
 
 ### Overpass Turbo
@@ -62,6 +128,9 @@ Your queries are saved in this file; if you forget or misplace a query you wrote
 let me start by thanking all developers for their great product, that was a lot
 of efforts. Probably most of you have used this web application already. The help
 pages are great.
+
+The "Data" tab next to the "Map" tab in the upper-right corner gives access to query
+result.
 
 One thing I would like to mention here is that under the "Settings" you can set
 it to query your local server; use this URL for Server:  "http://localhost/api/"
@@ -288,22 +357,87 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
 
 **View Geometry**
 
-For geometry viewing; I use my C-program "geometry2wkt", the source code is included in directory "geometry2wkt" along with a makefile.
-To build the program move to that directory and just run make which will produce "geoemtry2wkt" executable in that directory.
+For geometry viewing; I use my C-program "geometry2wkt", the source code is included in
+the "Guide" directory in sub-directory named "geometry2wkt" along with a makefile.
+To build the program move to that directory and just run make which will produce
+"geoemtry2wkt" executable in that directory.
 
-Program "geometry2wkt" parses geometry result returned from overpass query, program then formats
-geometry into Well Know Text (in segments as LINESTRING). I will have more to say about this soon - I hope.
-The program can read input from terminal or a saved file (or list of files). When reading input from the terminal,
-program writes geometry formatted WKT to the terminal and exits. When reading input from a file, program
-writes geometry formatted WKT to a file in the same directory as its input then calls 'ogr2ogr' to convert WKT
-file to ESRI shapefile, the same input file directory is used as destination also. Program can read a list of files, each input
-file gets its own WKT and shapefile files - input files are NOT combined.
+Program usage:
+```
+ $ geoemtry2wkt [file ...]
+```
 
-I use this program with saved query result as file. Program writes files to the same directory of its input file.
+Program description:
+Program reads its 'file' argument (or a list of files) for geometry result returned by
+overpass query.  Program parses query result, formats geometry into Well Known
+Text as POINT and as LINESTRING then writes those to two separate files.  WKT file
+names are formed from the 'file' argument by first dropping its extension - when present -
+then appending "_Point.csv" for WKT file with POINT  and "_Linestring.csv" for WKT file
+with LINESTRING. Program calls "ogr2ogr" to convert WKT files to ESRI shapefile if it is
+found in the usual path "/usr/bin/ogr2ogr", those will be named as WKT files but with
+".shp" file name extension.
 
-An example simple query with all generated files are in "example_skyCrossing" directory.
+When given a file list as arguments, each file gets its own set of output files.
 
-Overpass query used is this simple query below: (this is file: skyCrossing.op)
+If 'file' argument was omitted, program reads its standard input and writes formatted
+WKT for LINESTRING only to standard output and exits.
+
+End program description.
+
+Lets talk about this program for just a little bit. It reads a text file, parses this text
+into a GEOMETRY structure, then formats this GEOMETRY structure as Well Known Text
+once as POINT and once more as LINESTRING. Program then writes those files to
+disk in the same directory where its input file came from. Afterword it calls on
+another program in the system - if present - to convert WKT files it has just wrote
+into ESRI shapefiles. That is a lot of work! You don't need to concern yourself
+about how hard the poor little thing works! It must like what it does.
+
+What you need to know is that it produces a whole lot of files that will
+eat up your disk space, the sneaky little thing is wasting your hard disk space.
+But you want to use it anyway because you like to see the curved lines, rectangles
+triangles and circles it can produce.
+
+Program "geometry2wkt" will read its standard input when started with no argument.
+This means it can be used in combination with other programs in a pipe. We used
+pipe when we first initialed Overpass database, piping is used also in "op_update_db.sh"
+script, pipe usage is very common in Unix / Linux world.
+
+To save your disk space and yourself some grief, use "geometry2wkt" program
+in a pipe along with your query for one thing, another thing is stay organized by using
+sensible file names for your queries, notice all related files will be placed in one
+directory for easier maintenance - delete unwanted files very often.
+
+To demonstrate pipe usage for "geometry2wkt" program; we will use the query in file "skyCrossing.op"
+found in "example_skyCrossing" directory and assuming "geometry2wkt" is in our current directory:
+
+```
+ $  osm3s_query <  ../example_skyCrossing/skyCrossing.op | ./geoemtry2wkt
+```
+
+this command will produce the file with Well Known Text for LINESTRING only, the file will be
+written to the terminal. We then use redirection to save this to a disk file:
+```
+ $  osm3s_query <  ../example_skyCrossing/skyCrossing.op | ./geoemtry2wkt > ../example_skyCrossing/skyCrossing.csv
+```
+this will write "skyCross.csv" file with WKT for LINESTRING to our specified directory.
+
+You can use this file to add a new layer in QGIS to view your result as mentioned in QGIS
+section above. Add a layer in QGIS start from the top menu:
+```
+ Layer --> Add Layer --> Add Delimited Text Layer ...
+```
+and use "skyCrossing.csv" as the source file. Or you can use "ogr2ogr" to convert this
+file to shapefile. But you need to practice adding a layer in QGIS from WKT files, a skill
+you need to acquire, besides QGIS is good at dealing with WKT files. One more thing,
+do not moan about a long command! This is redirection and pipe, use your shell
+"tab completion" to write the long command line.
+
+Make all files with geometry2wkt:
+
+The program "geometry2wkt" will write WKT files for POINT and LINESTRING and their
+corresponding shapefiles when given the file name with geometry query result.
+
+We will use the same query we used above, here is the source for the query:
 
 ```
 [out:json]
@@ -314,25 +448,37 @@ Overpass query used is this simple query below: (this is file: skyCrossing.op)
 out qt geom;
 ```
 
-To make bounding box file, use "bbox2template.perl" script; start script in a terminal then copy
-the line below as its input:
-```
-33.6832823,-112.0239615,33.6917275,-112.0028257
-```
+Note that in the setting - first line - and in our "out" statement - last line, we
+request geometry output from overpass server.
 
-Run query and save its result in "skyCrossing.geom" file:
-```
- $ osm3s_query < ~/op_scripts/skyCrossing/skyCrossing.op > ~/op_scripts/skyCrossing/skyCrossing.geom
-```
-
-Move to the directory where you built "geoemtry2wkt" program; where the executable is in your system.
-
-Next make files from saved geometry file using geometry2wkt program:
+We save the query result in a file first. Change directory to that of query source
+file; that is "Guide/example_skyCrossing/skyCrossing/" and then run the query with
+redirection for output as:
 
 ```
- $ cd ~/tools_workflow/geometry2wkt/    --- this is where geoemtry2wkt executable is found
- $ ./geometry2wkt ~/op_scripts/skyCrossing/skyCrossing.geom
+ $ osm3s_query < skyCrossing.op > skyCrossing.raw
 ```
+
+this command will write the query result to file "skyCrossing.raw". We pass this file
+as argument when calling "geometry2wkt" program.
+
+This program is not in our environment PATH, we need to use full path to the program
+to use it, or change directory to where it is at, assume we decided on the later and
+have moved to its directory:
+```
+ $ ./geoemtry2wkt ../example_skyCrossing/skyCrossing.raw
+```
+
+Now this program will produce files in the same directory of its argument as follows:
+  - skyCrossing_Point.csv : Well Known Text for POINT
+  - skyCrossing_Linestring.csv : Well Known Text for LINESTRING
+
+If you have the program "ogr2ogr" on your system, you will get shapefile and its related files also:
+  - skyCrossing_Point.shp : ESRI Shapefile for POINT
+  - skyCrossing_Linestring.shp : ESRI Shapefile for LINESTRING
+
+Note that I did not list ".dbf", "prj" and "shx" files, they are required if want to
+view your shapefiles with QGIS, so do not delete them yet.
 
 Program "geometry2wkt" produces layers to show POINTS and LINESTRINGS.
 
@@ -344,4 +490,4 @@ Program "geometry2wkt" produces layers to show POINTS and LINESTRINGS.
 
 [See Sky Crossing All](images/skyCrossMap.png)
 
-FIRST Draft dated 1/21/2024
+Edited 1/25/2024
