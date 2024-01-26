@@ -321,7 +321,8 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
 
 4) Query your local overpass server using osm3s_query command line tool ===> [see image](images/tatSheaRunOp1.png)
     - ensure your query statements are correct and produce the desired result as shown below:
-    ```
+
+```
     wael@yafa:~/overpass-4-slackware/Guide/examples/tatShea$ osm3s_query < tatShea.op
     encoding remark: Please enter your query and terminate it with CTRL+D.
     runtime remark: Timeout is 180 and maxsize is 536870912.
@@ -332,7 +333,8 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
     -111.9780030	33.5827763
     		4
     wael@yafa:~/overpass-4-slackware/Guide/examples/tatShea$
-  ```
+```
+
   This result starts with the line: "@lon	@lat	@count" that is the header we specified
   in our query setting. This header line is followed by formatted longitude and latitude
   values for found nodes and the last line shows the number 4 which is the "count" we
