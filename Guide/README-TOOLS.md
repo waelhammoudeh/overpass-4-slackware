@@ -283,6 +283,10 @@ to disk with directories and filenames constructed as follows:
 This file system structure keeps all your overpass scripts in one directory named "op_scripts"
 in your $HOME directory with sub-directory created for each PREFIX you use.
 
+This script does not do any error checking, if you use it, it is your responsibility to hand it the correct
+input, for this "bbox2template.perl" the correct input is the well formatted bounding box bounds.
+It is crucial to check what you paste in your terminal as input for this script.
+
 **View Nodes Walk-through:**
 
 Let us try to find the intersection of Tatum & Shea Boulevards in north Phoenix.
@@ -316,7 +320,28 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
   - we continue with our text editor and write overpass query statements in the three lines shown [see image](images/tatSheaEditOp2.png)
 
 4) Query your local overpass server using osm3s_query command line tool ===> [see image](images/tatSheaRunOp1.png)
-    - ensure your query statements are correct and produce the desired result
+    - ensure your query statements are correct and produce the desired result as shown below:
+    ```
+    wael@yafa:~/overpass-4-slackware/Guide/examples/tatShea$ osm3s_query < tatShea.op
+    encoding remark: Please enter your query and terminate it with CTRL+D.
+    runtime remark: Timeout is 180 and maxsize is 536870912.
+    @lon	@lat	@count
+    -111.9780030	33.5826085
+    -111.9778160	33.5827762
+    -111.9778180	33.5826085
+    -111.9780030	33.5827763
+    		4
+    wael@yafa:~/overpass-4-slackware/Guide/examples/tatShea$
+  ```
+  This result starts with the line: "@lon	@lat	@count" that is the header we specified
+  in our query setting. This header line is followed by formatted longitude and latitude
+  values for found nodes and the last line shows the number 4 which is the "count" we
+  asked for to be included in the output.
+
+  Like any program or script, developing overpass script will require editing and trying
+  multiple times to get the desired result.
+
+  Before you continue to the next step, ensure you have the result shown above.
 
 5) Utilize our second dirty perl script "gps2wkt.perl" to format the result as Well Known Text
     and make ESRI shapefile for query result.
@@ -344,6 +369,9 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
        /home/wael/perl-scripts/gps2wkt.perl: Wrote POINT ESRI shapefile to file /home/wael/op_scripts/tatShea/tatShea_Point.shp
        ```
     - on success, "gps2wkt.perl" script tells you what file it wrote. The two commands above are run one after another. [see image](images/tatSheaRunOp2.png)
+
+    This "gps2wkt.perl" script, does not perform any error checking, it is your responsibility
+    to check for the correct input for this script. This is why I called both Perl scripts "dirty".
 
 6) See the result in QGIS using ESRI shapefiles produced from prevoius steps:
     - start new project in QGIS, then drag and drop the bbox shapefile (tatShea_bbox.shp) into window: [see image](images/seeBbox1.png)
@@ -489,5 +517,11 @@ Program "geometry2wkt" produces layers to show POINTS and LINESTRINGS.
 [See Sky Crossing Points](images/skyCrossPoints.png)
 
 [See Sky Crossing All](images/skyCrossMap.png)
+
+
+TODO: explain this
+geometry2wkt: Error failed parseGeometry()
+ Returned code: <ztNoGeometryFound>
+
 
 Edited 1/25/2024
