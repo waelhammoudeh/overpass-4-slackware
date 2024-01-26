@@ -419,7 +419,7 @@ written to the terminal. We then use redirection to save this to a disk file:
 ```
  $  osm3s_query <  ../example_skyCrossing/skyCrossing.op | ./geoemtry2wkt > ../example_skyCrossing/skyCrossing.csv
 ```
-this will write "skyCross.csv" file with WKT for LINESTRING to our specified directory.
+this will write "skyCrossing.csv" file with WKT for LINESTRING to our specified directory.
 
 You can use this file to add a new layer in QGIS to view your result as mentioned in QGIS
 section above. Add a layer in QGIS start from the top menu:
