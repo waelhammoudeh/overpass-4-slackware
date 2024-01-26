@@ -63,7 +63,7 @@ the "interactive mode".
 
 There is also a "patch mode", where you type your whole query in a text file with your
 favorite text editor then pass the name of your saved file to it using shell redirection.
-So lets assume you entered this query and saved in a file named "tempeBorder.op":
+So lets assume you entered this query and saved it in a file named "tempeBorder.op":
 
 ```
 [out:json];
@@ -86,7 +86,7 @@ from standard in (terminal) to your named file.
 
 You then hit the "Enter" key on your keyboard to execute the query script.
 
-The program "osm3s_query" will look for what you asked it for in you database, then answers
+The program "osm3s_query" will look for what you asked it for in your database, then answers
 you on your terminal. This script will output almost 700 lines to your terminal which you can
 use your "pager" to see one screen-full at a time as:
 
@@ -105,7 +105,7 @@ this case "tempeBorder.raw".
 
 **Note** that I use the extension ".op" for overpass query script files and ".raw" extension
 for the unmodified (untreated or unaltered) query result. Those extensions are not required
-but keep thing clear to myself - you may use whatever you want.
+but keep things clear to myself - you may use whatever you want.
 
 Feel free to experiment with other commands for this program.
 
