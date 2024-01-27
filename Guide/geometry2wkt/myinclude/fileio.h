@@ -54,5 +54,9 @@ int wkt2Shapefile (char *infile);
 
 int writeSegmentWktByNum(GEOMETRY *geometry, int segNum, char *toDir, char *fPrefix);
 
+int getHeadStrList(STRING_LIST *hdStrList, STRING_LIST *srcStrList);
+
+int isGeometryStrList(STRING_LIST *srcStrList);
+
 
 #endif /* FILEIO_H_ */

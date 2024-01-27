@@ -817,3 +817,32 @@ int numChrStr(char letter, const char *str){
   return count;
 
 } /* END numChrStr() **/
+
+int isOkResponse (char *responseStr, char *header){
+
+  ASSERTARGS (responseStr && header);
+
+  int retCode;
+
+  if (strncmp (responseStr, header, strlen(header)) == 0){
+
+    retCode = ztSuccess;
+  }
+  else {
+    /**
+    fprintf (stderr, "isOkResponse(): parameter 'header' did not match first part of response text.\n"
+             " Parameter 'header' has: <%s>\n", header);
+    fprintf (stderr, "isOkResponse(): Error: Not a valid response. Server may responded "
+	     "with an error message! The server response was:\n\n");
+    fprintf (stderr, " Start server response below >>>>:\n\n");
+    fprintf (stderr, "%s\n\n", responseStr);
+    fprintf (stderr, " >>>> End server response This line is NOT included.\n\n");
+    **/
+
+    retCode = ztStringUnknown;
+  }
+
+  return retCode;
+
+} /* END isOkResponse() */
+

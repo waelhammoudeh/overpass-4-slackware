@@ -51,7 +51,7 @@ wael@yafa:~$
 
 As you can see there are a lot of commands and options for this program. Our main usage
 for "osm3s_query" is to query overpass server, if started with no argument, it will prompt
-the user for their query:
+the user for her / his query:
 
 ```
 wael@yafa:~$ osm3s_query
@@ -102,6 +102,17 @@ My preferred way is to save the output to a file using shell redirection as:
 ```
 we use the greater than sign '>' to redirect the standard output to a named file; in
 this case "tempeBorder.raw".
+
+In the examples above - and ones that follow - we do not use any of "osm3s_query"
+options. But lets look at the the description for its "--db-dir" option:
+```
+  --db-dir=$DB_DIR: The directory where the database resides. If you set this parameter
+        then osm3s_query will read from the database without using the dispatcher management.
+```
+This means you are allowed to have more than one database on one system, and be able
+to query any one of them at anytime as long as you specify the database directory.
+This opens up possibilities and options for overpass databases initialed from an extract
+for limited area or region. This is powerful my friends.
 
 **Note** that I use the extension ".op" for overpass query script files and ".raw" extension
 for the unmodified (untreated or unaltered) query result. Those extensions are not required
@@ -521,9 +532,13 @@ Program "geometry2wkt" produces layers to show POINTS and LINESTRINGS.
 [See Sky Crossing All](images/skyCrossMap.png)
 
 
-TODO: explain this
-geometry2wkt: Error failed parseGeometry()
- Returned code: <ztNoGeometryFound>
+Unlike my "dirty" Perl scripts, program "geometry2wkt" does some error checking,
+it is not perfect, but program will let you know the reason it failed when it does fail.
 
+TODO:
+
+Failed query:
+
+Conclusion:
 
 Edited 1/25/2024

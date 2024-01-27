@@ -22,7 +22,7 @@ ZT_ERROR_ENTRY    ztErrorTable[] = {
 
   {ztInvalidArg,
    "ztInvalidArg",
-   "Invalid argument for specified option."},
+   "Invalid argument or option for function or program."},
 
   {ztUnknownOption,
    "ztUnknownOption",
@@ -350,7 +350,7 @@ ZT_ERROR_ENTRY    ztErrorTable[] = {
 
   {ztNoGeometryFound,
    "ztNoGeometryFound",
-   "Function query4Path() may return this value when server response has zero geometry."},
+   "Query result has zero geometry. No geometry was found by query script."},
 
   {ztBadSegment,
    "ztBadSegment",

@@ -63,6 +63,12 @@ int main(int argc, char* const argv[]) {
       goto CLEANUP;
     }
 
+    if(isGeometryStrList(geomStrList) != TRUE){
+      fprintf(stderr, "%s: Error query result is NOT for geometry string list!\n", progName);
+      result = ztInvalidArg;
+      goto CLEANUP;
+    }
+
     /* we need GEOMETRY (list) to parse geometry into **/
     geometry = initialGeometry();
     if(!geometry){
@@ -119,6 +125,7 @@ int main(int argc, char* const argv[]) {
 
   char  wktPointFile[PATH_MAX] = {0};
   char  wktLinestringFile[PATH_MAX] = {0};
+  char  shapeFile[PATH_MAX] = {0};
 
   //int writeGeomWkt(char *destFile, GEOMETRY *geom, WKT_ENTITY wktEntity)
 
@@ -136,6 +143,12 @@ int main(int argc, char* const argv[]) {
     result = file2StringList(geomStrList, inputfile);
     if(result != ztSuccess){
       fprintf(stderr, "%s: Error failed file2StringList()\n", progName);
+      goto CLEANUP;
+    }
+
+    if(isGeometryStrList(geomStrList) != TRUE){
+      fprintf(stderr, "%s: Error 'inputfile' is NOT for geometry string list!\n", progName);
+      result = ztInvalidArg;
       goto CLEANUP;
     }
 
@@ -164,9 +177,14 @@ int main(int argc, char* const argv[]) {
     }
     else{
       fprintf(stdout, "%s: Wrote geometry POINT WKT file to: %s\n", progName, wktPointFile);
-      if(isExecutableUsable(OGR2OGR_EXEC) == ztSuccess)
-        fprintf(stdout, "%s: Converted WKT file to shapefile: %s.shp\n",
-                progName, dropExtension(wktPointFile));
+
+      sprintf(shapeFile, "%s.shp",dropExtension(wktPointFile));
+
+      if((isExecutableUsable(OGR2OGR_EXEC) == ztSuccess) &&
+    	 (isFileUsable(shapeFile) == ztSuccess))
+
+        fprintf(stdout, "%s: Converted WKT file to shapefile: %s\n",
+                progName, shapeFile);
       else
         fprintf(stdout, "%s: Did not find: %s\n No shapefiles for you\n",
         		progName, OGR2OGR_EXEC);
@@ -182,9 +200,14 @@ int main(int argc, char* const argv[]) {
     }
     else{
       fprintf(stdout, "%s: Wrote geometry LINESTRING WKT file to: %s\n", progName, wktLinestringFile);
-      if(isExecutableUsable(OGR2OGR_EXEC) == ztSuccess)
-    	fprintf(stdout, "%s: Converted WKT file to shapefile: %s.shp\n",
-    			progName, dropExtension(wktLinestringFile));
+
+      sprintf(shapeFile, "%s.shp",dropExtension(wktLinestringFile));
+
+      if((isExecutableUsable(OGR2OGR_EXEC) == ztSuccess)&&
+    	 (isFileUsable(shapeFile) == ztSuccess))
+
+    	fprintf(stdout, "%s: Converted WKT file to shapefile: %s\n",
+    			progName, shapeFile);
       else
         fprintf(stdout, "%s: Did NOT find ogr2ogr executable in path: [%s]\n"
                 "Could not convert WKT file to shapefile.\n\n"
@@ -209,6 +232,10 @@ int main(int argc, char* const argv[]) {
 
   if(listListStr)
 	zapListStrList((void **) &listListStr);
+
+  if(result != ztSuccess)
+    fprintf(stderr, "%s: Program is exiting with error code: <%s>\n This code is for: <%s>\n",
+                     progName, ztCode2ErrorStr(result), ztCode2Msg(result));
 
   return result;
 }

@@ -406,10 +406,12 @@ int writeGpsWkt(char *file, GPS *gps){
 
   free(wktStr);
 
-  result = wkt2Shapefile(file);
-  if(result != ztSuccess){
-    fprintf(stderr, "writeGpsWkt(): Error failed wkt2Shapefile().\n");
-    return result;
+  if(isExecutableUsable(OGR2OGR_EXEC) == ztSuccess){
+    result = wkt2Shapefile(file);
+    if(result != ztSuccess){
+      fprintf(stderr, "writeGpsWkt(): Error failed wkt2Shapefile().\n");
+      return result;
+    }
   }
 
   return ztSuccess;
@@ -456,10 +458,12 @@ int writeWktStrList(char *file, DLIST *list, int strListFun(STRING_LIST *, DLIST
 
   closeFile(destFP);
 
-  result = wkt2Shapefile(file);
-  if(result != ztSuccess){
-    fprintf(stderr, "writeWktStrList(): Error failed wkt2Shapefile().\n");
-    return result;
+  if(isExecutableUsable(OGR2OGR_EXEC) == ztSuccess){
+    result = wkt2Shapefile(file);
+    if(result != ztSuccess){
+      fprintf(stderr, "writeWktStrList(): Error failed wkt2Shapefile().\n");
+      return result;
+    }
   }
 
   return ztSuccess;
@@ -549,10 +553,12 @@ int writeBboxWktPolygon(char *toFile, BBOX *bbox){
 
   closeFile(filePtr);
 
-  result = wkt2Shapefile(toFile);
-  if(result != ztSuccess){
-    fprintf(stderr, "writeBboxWktPolygon(): Error failed wkt2Shapefile().\n");
-    return result;
+  if(isExecutableUsable(OGR2OGR_EXEC) == ztSuccess){
+    result = wkt2Shapefile(toFile);
+    if(result != ztSuccess){
+      fprintf(stderr, "writeBboxWktPolygon(): Error failed wkt2Shapefile().\n");
+      return result;
+    }
   }
 
   return ztSuccess;
@@ -667,10 +673,12 @@ int writeSegmentWktByNum(GEOMETRY *geometry, int segNum, char *toDir, char *fPre
   }
 
   /* convert WKT to shapefile **/
-  result = wkt2Shapefile(filefull);
-  if(result != ztSuccess){
-    fprintf(stderr, "writeSegmentWktByNum(): Error failed wkt2Shapefile() function for POINT.\n");
-    return result;
+  if(isExecutableUsable(OGR2OGR_EXEC) == ztSuccess){
+    result = wkt2Shapefile(filefull);
+    if(result != ztSuccess){
+      fprintf(stderr, "writeSegmentWktByNum(): Error failed wkt2Shapefile() function for POINT.\n");
+      return result;
+    }
   }
 
   return ztSuccess;
@@ -761,4 +769,138 @@ int wkt2Shapefile (char *infile){
   return ztSuccess;
 
 } /* END wkt2Shapefile() */
+
+/* getHeadStrList():
+ * get head from geometry string list,
+ * to verify it is geometry result from overpass
+ *
+ ****************************************************/
+
+int getHeadStrList(STRING_LIST *hdStrList, STRING_LIST *srcStrList){
+
+  ASSERTARGS(hdStrList && srcStrList);
+
+  if(DL_SIZE(hdStrList) != 0){
+
+    fprintf(stderr, "getHeadStrList(): Error argument 'hdStrList' is not empty.\n");
+    return ztListNotEmpty;
+  }
+
+  if(hdStrList->listType != STRING_LT){
+    fprintf(stderr, "getHeadStrList(): Error argument 'hdStrList' is not STRLIG_LT.\n");
+    return ztInvalidArg;
+  }
+
+  if(DL_SIZE(srcStrList) < 10){
+
+    fprintf(stderr, "getHeadStrList(): Error argument 'srcStrList' size is too small.\n");
+    return ztInvalidArg;
+  }
+
+  if(srcStrList->listType != STRING_LT){
+    fprintf(stderr, "getHeadStrList(): Error argument 'srcStrList' is not STRLIG_LT.\n");
+    return ztInvalidArg;
+  }
+
+  ELEM  *elem;
+  char  *str;
+  char  *strCpy;
+  int   result;
+
+  elem = DL_HEAD(srcStrList);
+
+  for(int i = 0; i < 10; i++){
+    str = (char *) DL_DATA(elem);
+    strCpy = STRDUP(str);
+
+    result = insertNextDL(hdStrList, DL_TAIL(hdStrList), (void *) strCpy);
+    if(result != ztSuccess){
+      fprintf(stderr, "getHeadStrList(): Error failed insertNextDL() function.\n");
+      return result;
+    }
+
+    elem = DL_NEXT(elem);
+  }
+
+  return ztSuccess;
+
+} /* END getHeadStrList() **/
+
+/* the head WITH & WITHOUT area filter:
+ * {
+  "version": 0.6,
+  "generator": "Overpass API 0.7.61.8 b1080abd",
+  "osm3s": {
+    "timestamp_osm_base": "2024-01-25T21:20:40Z",
+    "timestamp_areas_base": "2024-01-25T21:20:40Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+  {
+  "version": 0.6,
+  "generator": "Overpass API 0.7.61.8 b1080abd",
+  "osm3s": {
+    "timestamp_osm_base": "2024-01-21T21:21:06Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+ *
+ *
+ */
+
+int isGeometryStrList(STRING_LIST *srcStrList){
+
+  int  result;
+
+  ASSERTARGS(srcStrList);
+
+  if(DL_SIZE(srcStrList) < 10){
+    fprintf(stderr, "isGeometryStrList(): Error argument 'srcStrList' size is too small.\n");
+    return FALSE;
+  }
+
+  if(srcStrList->listType != STRING_LT){
+    fprintf(stderr, "isGeometryStrList(): Error argument 'srcStrList' is not STRLIG_LT.\n");
+    return FALSE;
+  }
+
+  STRING_LIST  *myHdStrList;
+
+  myHdStrList = initialStringList();
+  if(! myHdStrList){
+    fprintf(stderr, "isGeometryStrList(): Error failed initialStringList().\n");
+    return FALSE;
+  }
+
+  result = getHeadStrList(myHdStrList, srcStrList);
+  if(result != ztSuccess){
+    fprintf(stderr, "isGeometryStrList(): Error failed getHeadStrList().\n");
+    return FALSE;
+  }
+
+  char *hdStrings[6] = {"\"version\": 0.6,",
+                        "\"generator\": \"Overpass API",
+			"\"osm3s\": {",
+			"\"timestamp_osm_base\":",
+			"\"elements\": [",
+			NULL};
+
+  char  **mover;
+  ELEM  *elem;
+
+  for(mover = hdStrings; *mover; mover++){
+
+    elem = findElemSubString(myHdStrList, *mover);
+    if( ! elem)
+      return FALSE;
+  }
+
+  zapStringList((void **) &myHdStrList);
+
+  return TRUE;
+
+} /* END isGeometryStrList() **/
+
 

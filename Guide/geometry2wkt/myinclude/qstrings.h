@@ -19,6 +19,22 @@
 #define GEOM_TAG "\"geometry\": ["
 #define GEOM_TAG_END "]"
 
+/* those are defined in qcore.h file
+ *
+ * CSV header is set with overpass output setting:
+ *   - [out:csv(::lon, ::lat,::count)]
+ *   - [out:json]
+ * overpass default response is with geometry output format
+ * header strings are used to verify server response to queries
+ ***********************************************************/
+#ifndef CSV_HEADER_SIGNITURE
+#define CSV_HEADER_SIGNITURE "@lon	@lat	@count"
+#endif
+
+#ifndef JSON_HEADER_SIGNITURE
+#define JSON_HEADER_SIGNITURE  "{\n  \"version\": 0.6,"
+#endif
+
 
 /* functions prototypes **/
 
