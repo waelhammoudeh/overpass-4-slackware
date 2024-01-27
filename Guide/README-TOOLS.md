@@ -541,4 +541,6 @@ Failed query:
 
 Conclusion:
 
-Edited 1/25/2024
+With only 2 commands, see city border ...
+
+Edited 1/27/2024
