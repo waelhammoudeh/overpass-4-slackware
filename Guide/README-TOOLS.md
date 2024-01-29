@@ -527,8 +527,9 @@ If you have the program "ogr2ogr" on your system, you will get shapefile and its
   - skyCrossing_Point.shp : ESRI Shapefile for POINT
   - skyCrossing_Linestring.shp : ESRI Shapefile for LINESTRING
 
-Note that I did not list produced ".dbf", "prj" and "shx" files, they are required if you want to
-view your shapefiles with QGIS, so do not delete any of those files yet.
+Note that I did not list ".dbf", ".prj" and ".shx" produced files in shapefile ".shp" convesion
+call to "ogr2ogr" program, those files are required if you want to view your shapefiles with
+QGIS, so do not delete any of those files yet.
 
 Program "geometry2wkt" produced layers to show POINTS and LINESTRINGS are illustrated in the following images:
 
@@ -541,16 +542,101 @@ Program "geometry2wkt" produced layers to show POINTS and LINESTRINGS are illust
 [See Sky Crossing All](images/skyCrossMap.png)
 
 Unlike my "dirty" Perl scripts, program "geometry2wkt" does some error checking,
-it is not perfect, but program will let you know the reason it failed when it does.
+it is not perfect, but program will let you know the reason it failed when it does. For
+example if given non-geometry file, "geometry2wkt" will let you know that the input
+file was not for geometry file. Another common error is a query result that does not
+include any geometry, to show this case I have included an overpass query with an
+error - to force this situation - in the "alameda" sub-directory under "examples". The
+query in file "alameda-NoGeometry.op" is the trouble query; when run it produces
+zero geometry result as shown below:
+
+```
+wael@yafa:~$ cd ~/overpass-4-slackware/Guide/examples/alameda/
+wael@yafa:~/overpass-4-slackware/Guide/examples/alameda$ osm3s_query < alameda-NoGeometry.op
+encoding remark: Please enter your query and terminate it with CTRL+D.
+runtime remark: Timeout is 180 and maxsize is 536870912.
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.61.8 b1080abd",
+  "osm3s": {
+    "timestamp_osm_base": "2024-01-27T21:21:15Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
 
 
 
-TODO:
+  ]
+}
+wael@yafa:~/overpass-4-slackware/Guide/examples/alameda$
 
-Failed query:
+```
+
+Piping this result to "geometry2wkt" program will produce:
+
+```
+wael@yafa:~/overpass-4-slackware/Guide/examples/alameda$ osm3s_query < alameda-NoGeometry.op | geometry2wkt
+encoding remark: Please enter your query and terminate it with CTRL+D.
+runtime remark: Timeout is 180 and maxsize is 536870912.
+geometry2wkt: Error failed parseGeometry()
+ Returned code: <ztNoGeometryFound>
+geometry2wkt: Program is exiting with error code: <ztNoGeometryFound>
+ This code is for: <Query result has zero geometry. No geometry was found by query script.>
+wael@yafa:~/overpass-4-slackware/Guide/examples/alameda$
+```
+
+As shown above, the program returned "ztNoGeometryFound" error code on exit. The error
+code is also explaied in the program output above with line starting "This code is for:".
+
+A lot can be added about this program, but this is not the time for that now. You can use it
+on your own to understand OSM data structures, try to use "writeSegmentWktByNum" function
+with small geometry return - use "alameda.op" query example.
 
 Conclusion:
 
-With only 2 commands, see city border ...
+We showed many tools to use with local installed overpass server, in summary we note:
 
-Edited 1/27/2024
+  - The main tool is "osm3s_query" which comes from the developers of the software.
+
+  - Free and well advanced tools are available to use. Some packages installation is not
+    easy, but worth the effort.
+
+  - Knowledge of standards for Geographic Computer Information is helpful.
+
+  - A certain knowledge level for Linux / Unix usage is required; not advanced but include:
+
+    1) Input / output redirection
+    2) Piping, use output from one program as input for another
+    3) Disk usage to keep an eye on ones hard disk space.
+
+  - Silly and simple scripts can be used as tools.
+
+  - Program "geometry2wkt" was introduced to view query result.
+
+To close, we will use our "tools" to see the result for the query we opened this document
+with to visualize the city boundary for Tempe, Arizona. The images are produced with two
+commands; first get query result in a file (tempeBorder.raw):
+
+```
+wael@yafa:~/overpass-4-slackware/Guide/examples/tempeBorder$ osm3s_query < tempeBorder.op > tempeBorder.raw
+encoding remark: Please enter your query and terminate it with CTRL+D.
+runtime remark: Timeout is 180 and maxsize is 536870912.
+wael@yafa:~/overpass-4-slackware/Guide/examples/tempeBorder$
+```
+
+the second command is to turn this "tempeBorder.raw" into WKT and shapefiles with:
+
+```
+wael@yafa:~/overpass-4-slackware/Guide/examples/tempeBorder$ geometry2wkt tempeBorder.raw
+geometry2wkt: Wrote geometry POINT WKT file to: /home/wael/overpass-4-slackware/Guide/examples/tempeBorder/tempeBorder_Point.csv
+geometry2wkt: Converted WKT file to shapefile: /home/wael/overpass-4-slackware/Guide/examples/tempeBorder/tempeBorder_Point.shp
+geometry2wkt: Wrote geometry LINESTRING WKT file to: /home/wael/overpass-4-slackware/Guide/examples/tempeBorder/tempeBorder_Linestring.csv
+geometry2wkt: Converted WKT file to shapefile: /home/wael/overpass-4-slackware/Guide/examples/tempeBorder/tempeBorder_Linestring.shp
+wael@yafa:~/overpass-4-slackware/Guide/examples/tempeBorder$
+```
+
+Enjoy.
+
+Wael Hammoudeh
+
+Edited 1/29/2024
