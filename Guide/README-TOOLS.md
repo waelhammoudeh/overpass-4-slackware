@@ -586,7 +586,7 @@ wael@yafa:~/overpass-4-slackware/Guide/examples/alameda$
 ```
 
 As shown above, the program returned "ztNoGeometryFound" error code on exit. The error
-code is also explaied in the program output above with line starting "This code is for:".
+code is also explained in the program output above with line starting "This code is for:".
 
 A lot can be added about this program, but this is not the time for that now. You can use it
 on your own to understand OSM data structures, try to use "writeSegmentWktByNum" function
