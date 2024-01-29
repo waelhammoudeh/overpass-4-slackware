@@ -609,7 +609,7 @@ We showed many tools to use with local installed overpass server, in summary we 
     2) Piping, use output from one program as input for another
     3) Disk usage to keep an eye on ones hard disk space.
 
-  - Silly and simple scripts can be used as tools.
+  - Shorten query development time with JOSM and silly scripts is possible.
 
   - Program "geometry2wkt" was introduced to view query result.
 
