@@ -1,6 +1,0 @@
-[out:json]
-[bbox: 33.6832823,-112.0239615,33.6917275,-112.0028257];
-
- way[highway][name~"East Sky Crossing Way", i];
-
-out qt geom;

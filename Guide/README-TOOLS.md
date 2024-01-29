@@ -103,7 +103,7 @@ My preferred way is to save the output to a file using shell redirection as:
 we use the greater than sign '>' to redirect the standard output to a named file; in
 this case "tempeBorder.raw".
 
-In the examples above - and ones that follow - we do not use any of "osm3s_query"
+In the example above - and ones that follow - we do not use any of "osm3s_query"
 options. But lets look at the the description for its "--db-dir" option:
 ```
   --db-dir=$DB_DIR: The directory where the database resides. If you set this parameter
@@ -449,16 +449,16 @@ sensible file names for your queries, notice all related files will be placed in
 directory for easier maintenance - delete unwanted files very often.
 
 To demonstrate pipe usage for "geometry2wkt" program; we will use the query in file "skyCrossing.op"
-found in "example_skyCrossing" directory and assuming "geometry2wkt" is in our current directory:
+found in "examples/skyCrossing/" directory and assuming "geometry2wkt" is in our current directory:
 
 ```
- $  osm3s_query <  ../example_skyCrossing/skyCrossing.op | ./geoemtry2wkt
+ $  osm3s_query <  ../examples/skyCrossing/skyCrossing.op | ./geoemtry2wkt
 ```
 
 this command will produce the file with Well Known Text for LINESTRING only, the file will be
 written to the terminal. We then use redirection to save this to a disk file:
 ```
- $  osm3s_query <  ../example_skyCrossing/skyCrossing.op | ./geoemtry2wkt > ../example_skyCrossing/skyCrossing.csv
+ $  osm3s_query <  ../examples/skyCrossing/skyCrossing.op | ./geoemtry2wkt > ../examples/skyCrossing/skyCrossing.csv
 ```
 this will write "skyCrossing.csv" file with WKT for LINESTRING to our specified directory.
 
@@ -493,7 +493,7 @@ Note that in the setting - first line - and in our "out" statement - last line, 
 request geometry output from overpass server.
 
 We save the query result in a file first. Change directory to that of query source
-file; that is "Guide/example_skyCrossing/skyCrossing/" and then run the query with
+file; that is "Guide/examples/skyCrossing/" and then run the query with
 redirection for output as:
 
 ```
@@ -507,7 +507,16 @@ This program is not in our environment PATH, we need to use full path to the pro
 to use it, or change directory to where it is at, assume we decided on the later and
 have moved to its directory:
 ```
- $ ./geoemtry2wkt ../example_skyCrossing/skyCrossing.raw
+ $ ./geoemtry2wkt ../examples/skyCrossing/skyCrossing.raw
+```
+the above command produced the following output on my system ( your paths might be different):
+```
+wael@yafa:~/overpass-4-slackware/Guide/geometry2wkt$ ./geometry2wkt ../examples/skyCrossing/skyCrossing.raw
+geometry2wkt: Wrote geometry POINT WKT file to: /home/wael/overpass-4-slackware/Guide/examples/skyCrossing/skyCrossing_Point.csv
+geometry2wkt: Converted WKT file to shapefile: /home/wael/overpass-4-slackware/Guide/examples/skyCrossing/skyCrossing_Point.shp
+geometry2wkt: Wrote geometry LINESTRING WKT file to: /home/wael/overpass-4-slackware/Guide/examples/skyCrossing/skyCrossing_Linestring.csv
+geometry2wkt: Converted WKT file to shapefile: /home/wael/overpass-4-slackware/Guide/examples/skyCrossing/skyCrossing_Linestring.shp
+wael@yafa:~/overpass-4-slackware/Guide/geometry2wkt$
 ```
 
 Now this program will produce files in the same directory of its argument as follows:
@@ -518,10 +527,10 @@ If you have the program "ogr2ogr" on your system, you will get shapefile and its
   - skyCrossing_Point.shp : ESRI Shapefile for POINT
   - skyCrossing_Linestring.shp : ESRI Shapefile for LINESTRING
 
-Note that I did not list ".dbf", "prj" and "shx" files, they are required if you want to
+Note that I did not list produced ".dbf", "prj" and "shx" files, they are required if you want to
 view your shapefiles with QGIS, so do not delete any of those files yet.
 
-Program "geometry2wkt" produces layers to show POINTS and LINESTRINGS.
+Program "geometry2wkt" produced layers to show POINTS and LINESTRINGS are illustrated in the following images:
 
 [See Sky Crossing Bbox](images/skyCrossBbox.png)
 
@@ -530,7 +539,6 @@ Program "geometry2wkt" produces layers to show POINTS and LINESTRINGS.
 [See Sky Crossing Points](images/skyCrossPoints.png)
 
 [See Sky Crossing All](images/skyCrossMap.png)
-
 
 Unlike my "dirty" Perl scripts, program "geometry2wkt" does some error checking,
 it is not perfect, but program will let you know the reason it failed when it does.
