@@ -141,7 +141,7 @@ int isGoodFilename(const char *name){
   char    slash = '/';
   char    period = '.';
   char    *hasSlash;
-  char    tmpBuf[PATH_MAX + 1] = {0};
+  char    *tmpBuf = NULL;
   char    *mover;
 
   ASSERTARGS(name);
@@ -166,7 +166,7 @@ int isGoodFilename(const char *name){
 
     return ztFnameSlashEnd;
 
-  strcpy(tmpBuf, name);
+  tmpBuf = STRDUP(name);
 
   hasSlash = strchr(tmpBuf, slash);
 
@@ -321,9 +321,7 @@ char* lastOfPath (const char *path){
   char  *pointer = NULL;
 
   char  slash = '/';
-  char  *lastSlash;
-  char  lastEntry[FNAME_MAX + 1] = {0};
-
+  char  *lastSlash = NULL;
   char  myPath[PATH_MAX] = {0};
 
   ASSERTARGS(path);
@@ -332,39 +330,27 @@ char* lastOfPath (const char *path){
 
     return pointer;
 
-  char    *PS = "./";
-
-  /* if period + slash; point AT the slash **/
-  if(strncmp(path, PS, 2) == 0){
-
-    path++;
-
-  }
-
   /* get our own copy **/
   strcpy(myPath, path);
 
-  /* if it ends with slash; remove it **/
-  if(SLASH_ENDING(myPath))
+  /* if it ends with slash; remove it - while() is probably wrong! **/
+  while(SLASH_ENDING(myPath))
 
     myPath[strlen(myPath) - 1] = '\0';
 
-  if(isGoodFilename(myPath) != ztSuccess)
+
+  if(! strchr(myPath, slash)){
+
+	pointer = STRDUP(myPath);
 
     return pointer;
+  }
 
   lastSlash = strrchr(myPath, slash);
 
-  if ( ! lastSlash ) /* just to be sure **/
+  lastSlash++;
 
-    return pointer;
-
-  strcpy(lastEntry, lastSlash + 1);
-
-  pointer = (char *)malloc((strlen(lastEntry)  + 1) * sizeof(char));
-  if( pointer )
-
-    strcpy(pointer, lastEntry);
+  pointer = STRDUP(lastSlash);
 
   return pointer;
 
@@ -2003,3 +1989,125 @@ int isGoodExecutable(char *file){
 
 } /* END isGoodExecutable() **/
 
+
+/* arg2FullPath():
+ *
+ * function return full path to its argument.
+ *
+ * argument is usually "file name" entered to program by user.
+ *
+ */
+
+char *arg2FullPath(const char *arg){
+
+  char *fullPath = NULL;
+
+  /* already path case **/
+  if(arg[0] == '/'){
+
+    fullPath = STRDUP(arg);
+    return fullPath;
+  }
+
+  /* case starts with tilde '~' prepend $HOME **/
+  if(arg[0] == '~'){
+
+    char *home;
+
+    home = getHome();
+    if(!home){
+      fprintf(stderr, "arg2FullPath(): Error failed getHome().\n");
+      return fullPath;
+    }
+
+    fullPath = (char *)malloc(strlen(home) + strlen(arg) + 1);
+    if(!fullPath){
+      fprintf(stderr, "arg2FullPath(): Error allocating memory.\n");
+      return fullPath;
+    }
+    memset(fullPath, 0, strlen(home) + strlen(arg) + 1);
+
+    strcpy(fullPath, home);
+    strcat(fullPath, arg + 1); /* skip the tilde character **/
+
+    return fullPath;
+  }
+
+  /* case starts with double dots '../' **/
+  if(strncmp(arg, "../", 3) == 0){
+
+    char *parent = NULL;
+    char *current = NULL;
+
+    current = getcwd(NULL, 0);
+    if(!current){
+      fprintf(stderr, "arg2FullPath(): Error failed getcwd().\n");
+      return fullPath;
+    }
+
+    parent = getParentDir(current);
+    if(!parent){
+      fprintf(stderr, "arg2FullPath(): Error failed getParentDir().\n");
+      return fullPath;
+    }
+
+    fullPath = (char *)malloc(strlen(parent) + strlen(arg) + 1);
+    if(!fullPath){
+      fprintf(stderr, "arg2FullPath(): Error allocating memory.\n");
+      return fullPath;
+    }
+    memset(fullPath, 0, strlen(parent) + strlen(arg) + 1);
+
+    if(SLASH_ENDING(parent))
+      sprintf(fullPath, "%s%s", parent, arg + 3); /* skip '../' **/
+    else
+      sprintf(fullPath, "%s%s", parent, arg + 2); /* skip '..' - we need slash **/
+
+
+    free(current);
+    free(parent);
+    
+    return fullPath;
+  }
+
+  /* case starts './' AND not slash **/
+  if((strncmp(arg, "./", 2) == 0) || (arg[0] != '/')){
+
+    char *current = NULL;
+
+    current = getcwd(NULL, 0);
+    if(!current){
+      fprintf(stderr, "arg2FullPath(): Error failed getcwd().\n");
+      return fullPath;
+    }
+
+    fullPath = (char *)malloc(strlen(current) + strlen(arg) + 2);
+    if(!fullPath){
+      fprintf(stderr, "arg2FullPath(): Error allocating memory.\n");
+      return fullPath;
+    }
+    memset(fullPath, 0, strlen(current) + strlen(arg) + 2);
+
+    if(SLASH_ENDING(current)){
+
+      if(arg[0] == '.')
+	sprintf(fullPath, "%s%s", current, arg + 2); /* skip './' **/
+      else
+	sprintf(fullPath, "%s%s", current, arg);
+    }
+    else{
+
+      if(arg[0] == '.')
+	sprintf(fullPath, "%s%s", current, arg + 1); /* skip '.' and keep slash **/
+      else
+	sprintf(fullPath, "%s/%s", current, arg); /* insert slash **/
+    }
+ 
+    free(current);
+
+    return fullPath;
+  }
+
+  return fullPath;
+
+} /* END arg2FullPath() **/

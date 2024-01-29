@@ -334,6 +334,7 @@ FILE *prepWktFile(const char *file){
   if(result != ztSuccess){
     fprintf(stderr, "prepWktFile(): Error parameter 'file' not a valid filename.\n"
 	    "Filename is not valid for: %s\n", ztCode2Msg(result));
+    fprintf(stderr, "prepWktFile(): The problem parameter 'file' is: <%s>\n", file);
     return filePtr;
   }
 

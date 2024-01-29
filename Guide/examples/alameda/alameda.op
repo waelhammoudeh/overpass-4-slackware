@@ -1,0 +1,12 @@
+[out:json]
+[bbox: 33.3997753,-111.9310284,33.4084452,-111.9151068];
+
+  (
+   way[highway=residential][name~"Alameda drive", i];
+
+   way[highway=secondary][name~"alameda drive", i];
+
+   way[highway=tertiary][name~"alameda drive", i];
+  );
+
+out qt geom;

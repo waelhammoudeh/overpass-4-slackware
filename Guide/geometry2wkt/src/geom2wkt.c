@@ -36,13 +36,8 @@ int main(int argc, char* const argv[]) {
   GEOMETRY      *geometry = NULL;
   LIST_STR_LIST *listListStr = NULL;
 
-
   /* set program name **/
-  if(strchr(argv[0], '/'))
-    progName = lastOfPath(argv[0]);
-  else
-    progName = argv[0];
-
+  progName = lastOfPath(argv[0]);
 
   if(argc == 1){
 
@@ -119,6 +114,7 @@ int main(int argc, char* const argv[]) {
   /* argc != 1; we have a geometry file, or maybe a list of files **/
 
   char  *inputfile;
+  char  *fileFull = NULL;
 
   char  *pointSuffix = "_Point.csv";
   char  *linestringSuffix = "_Linestring.csv";
@@ -140,7 +136,14 @@ int main(int argc, char* const argv[]) {
       goto CLEANUP;
     }
 
-    result = file2StringList(geomStrList, inputfile);
+    fileFull = arg2FullPath(inputfile);
+    if(! fileFull){
+      fprintf(stderr, "%s: Error failed arg2FullPath().\n", progName);
+      result = ztMemoryAllocate; /* most likely reason - we do not know **/
+      goto CLEANUP;
+    }
+
+    result = file2StringList(geomStrList, fileFull);
     if(result != ztSuccess){
       fprintf(stderr, "%s: Error failed file2StringList()\n", progName);
       goto CLEANUP;
@@ -168,7 +171,7 @@ int main(int argc, char* const argv[]) {
     /* make output file name; we drop extension then append "_Point.csv"
      * for WKT POINT.
      *******************************************************************/
-    sprintf(wktPointFile, "%s%s", dropExtension(inputfile), pointSuffix);
+    sprintf(wktPointFile, "%s%s", dropExtension(fileFull), pointSuffix);
 
     result = writeGeomWkt(wktPointFile, geometry, WKT_POINT);
     if(result != ztSuccess){
@@ -191,7 +194,7 @@ int main(int argc, char* const argv[]) {
     }
 
     /* LINESTRING file gets a different name with "_Linestring.csv" **/
-    sprintf(wktLinestringFile, "%s%s", dropExtension(inputfile), linestringSuffix);
+    sprintf(wktLinestringFile, "%s%s", dropExtension(fileFull), linestringSuffix);
 
     result = writeGeomWkt(wktLinestringFile, geometry, WKT_LINESTRING);
     if(result != ztSuccess){
@@ -211,14 +214,19 @@ int main(int argc, char* const argv[]) {
       else
         fprintf(stdout, "%s: Did NOT find ogr2ogr executable in path: [%s]\n"
                 "Could not convert WKT file to shapefile.\n\n"
-    			"The ogr2ogr program comes with GDAL package, you may want to install GDAL.\n"
-    			"if you have ogr2ogr installed in different location, adjust defined path in 'fileio.h'\n",
-    			progName, OGR2OGR_EXEC);
+  		"The ogr2ogr program comes with GDAL package, you may want to install GDAL.\n"
+    		"if you have ogr2ogr installed in different location, adjust defined path in 'fileio.h'\n",
+    		progName, OGR2OGR_EXEC);
     }
 
     zapStringList((void **) &geomStrList);
 
     zapGeometry(&geometry);
+
+    if(fileFull){
+      free(fileFull);
+      fileFull = NULL;
+    }
 
   }
 

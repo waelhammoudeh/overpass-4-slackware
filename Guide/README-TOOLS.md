@@ -386,7 +386,7 @@ Using overpass query the result will be a node or maybe nodes for roads intersec
     This "gps2wkt.perl" script, does not perform any error checking, it is your responsibility
     to check for the correct input for this script. This is why I called both Perl scripts "dirty".
 
-6) See the result in QGIS using ESRI shapefiles produced from prevoius steps:
+6) See the result in QGIS using ESRI shapefiles produced from previous steps:
     - start new project in QGIS, then drag and drop the bbox shapefile (tatShea_bbox.shp) into window: [see image](images/seeBbox1.png)
     - bounding box is filled by solid color (default), we change the Fill color to "Transparent" by right-clicking over tatShea_Bbox
        layer in the Layer pan: [see image](images/seeBbox2.png)
@@ -533,7 +533,9 @@ Program "geometry2wkt" produces layers to show POINTS and LINESTRINGS.
 
 
 Unlike my "dirty" Perl scripts, program "geometry2wkt" does some error checking,
-it is not perfect, but program will let you know the reason it failed when it does fail.
+it is not perfect, but program will let you know the reason it failed when it does.
+
+
 
 TODO:
 

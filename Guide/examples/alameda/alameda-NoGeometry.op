@@ -1,0 +1,17 @@
+[out:json]
+[bbox: 33.3997753,-111.9310284,33.4084452,-111.9151068];
+
+  (
+   way[highway=residential][name~"Alameda avenue", i];     // it is DRIVE not AVENUE
+
+   way[highway=secondary][name~"alameda avenue", i];
+
+   way[highway=tertiary][name~"alameda avenue", i];
+  );
+
+out qt geom;
+
+/* this is "alameda-NoGeometry.op" overpass query script file,
+    alameda DRIVE is intentionally renamed to alameda AVENUE to
+    force zero geometry return by the query.
+**/
