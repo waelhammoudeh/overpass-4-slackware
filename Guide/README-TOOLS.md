@@ -635,6 +635,13 @@ geometry2wkt: Converted WKT file to shapefile: /home/wael/overpass-4-slackware/G
 wael@yafa:~/overpass-4-slackware/Guide/examples/tempeBorder$
 ```
 
+A simple drag-and-drop operation enables us to view shapefiles in QGIS program:
+
+[See Tempe boundary Lines](images/tempeBorderLinestring.png)
+
+[See Tempe boundary Map](images/tempeBorderMap.png)
+
+
 Enjoy.
 
 Wael Hammoudeh
