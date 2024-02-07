@@ -101,7 +101,8 @@ My preferred way is to save the output to a file using shell redirection as:
 
 ```
 we use the greater than sign '>' to redirect the standard output to a named file; in
-this case "tempeBorder.raw".
+this case "tempeBorder.raw". You can 'cat' the file to view its contents or view it with
+your favorite text editor.
 
 In the example above - and ones that follow - we do not use any of "osm3s_query"
 options. But lets look at the the description for its "--db-dir" option:
@@ -145,7 +146,30 @@ result.
 
 One thing I would like to mention here is that under the "Settings" you can set
 it to query your local server; use this URL for Server:  "http://localhost/api/"
-This should work provided that you followed my Guide for Web setup.
+This should work provided that you followed my Guide for Web setup. To test this and
+after changing just mentioned Server URL under "Settings",
+first clear the "query window" in Overpass-Turbo then type your query - or copy and
+paste this query:
+```
+// overpass query starts with settings - one semi-colon terminates settings
+[out:csv(::lon, ::lat,::count)]
+[bbox:33.3765557,-111.9899942,33.4384608,-111.9048934];
+way[waterway][name~'Salt River',i];
+nwr(around:0)[bridge=yes][highway][name~'Mill Avenue',i];>;
+out; out count;
+
+/* The first line was single line comment, this is a multi-line comment.
+    Comments can be placed anywhere in overpass query script file.
+    This script finds the nodes in 'Mill Avenue' bridge over 'Salt River' */
+```
+execute the query with Overpass-Turbo "Run" button. To confirm your local server
+usage, check your "transactions.log" file in your database directory - use your path to
+your database directory - using this command line:
+```
+ $ tail /path/to/database/transactions.log
+```
+Your just "Run" query should be listed in the bottom of the output.
+
 
 ### JOSM:  Java OpenStreetMap Editor
 

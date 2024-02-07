@@ -608,7 +608,7 @@ int writeSegmentWktByNum(GEOMETRY *geometry, int segNum, char *toDir, char *fPre
    *
    * int writeWktStrList(char *file, DLIST *list, int strListFun(STRING_LIST *, DLIST *))
    *
-   * parameter 'file' is full filename: we stich that below.
+   * parameter 'file' is full filename: we stitch that below.
    * parameter 'list' is segment with segNum: we find this below.
    * parameter 'strListFun' is seg2LinestringWktStrList() or seg2PointWktStrList()
    *

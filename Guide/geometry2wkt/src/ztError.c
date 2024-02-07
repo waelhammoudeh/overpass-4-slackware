@@ -22,7 +22,7 @@ ZT_ERROR_ENTRY    ztErrorTable[] = {
 
   {ztInvalidArg,
    "ztInvalidArg",
-   "Invalid argument or option for function or program."},
+   "Invalid argument for specified option."},
 
   {ztUnknownOption,
    "ztUnknownOption",
@@ -49,15 +49,21 @@ ZT_ERROR_ENTRY    ztErrorTable[] = {
    "Not a string; last character / byte not null character"
   },
 
+  {ztStringNotFound,
+   "ztStringNotFound",
+   "String not found in list or file"
+  },
+
   {ztMalformedStr,
    "ztMalofromedStr",
    "Malformed string, string was not to specification by parse function"
   },
 
   {ztInvalidLatValue,
+   "ztInvalidLatValue",
    "Invalid LATITUDE value for Arizona",
-   ""
   },
+
   {ztInvalidLonValue,
    "ztInvalidLonValue",
    "Invalid LONGITITUDE value for Arizona"
@@ -350,7 +356,7 @@ ZT_ERROR_ENTRY    ztErrorTable[] = {
 
   {ztNoGeometryFound,
    "ztNoGeometryFound",
-   "Query result has zero geometry. No geometry was found by query script."},
+   "Function query4Path() may return this value when server response has zero geometry."},
 
   {ztBadSegment,
    "ztBadSegment",

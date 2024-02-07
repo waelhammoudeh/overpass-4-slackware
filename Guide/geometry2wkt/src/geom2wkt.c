@@ -224,8 +224,8 @@ int main(int argc, char* const argv[]) {
     zapGeometry(&geometry);
 
     if(fileFull){
-      free(fileFull);
-      fileFull = NULL;
+  	  free(fileFull);
+  	  fileFull = NULL;
     }
 
   }
