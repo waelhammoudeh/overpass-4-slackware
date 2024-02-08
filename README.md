@@ -9,10 +9,9 @@ build a Slackware package for the overpassAPI software, scripts to initial and u
 overpass database, script to control the dispatcher and program to retrieve the
 "Change Files" from Geofabrik servers needed for database updates: ["getdiff"](https://github.com/waelhammoudeh/getdiff).
 
-A draft for new section titled "Tools And Workflow" was just added to the Guide. It aims to ease
-learning Overpass Query for new users. Helpful programs and concepts to visualize OSM data
-are introducing.
-Workflow explains "Overpass Query" development process with walk-through example(s)!
+Tools And Workflow section was added to the Guide. Essential programs and software used
+to develop Overpass Queries and visualize OSM data are introduced . Workflow explains
+"Overpass Query" development process with some walk-through examples.
 
 ***Note that this is a work in progress***
 
@@ -274,6 +273,6 @@ to abide by, read the rules and follow the law please. Be in the know.
 
 Wael Hammoudeh
 
-September 12/2023
+Last updated: February 7/2024
 
 Next is ["README-START.md"](https://github.com/waelhammoudeh/overpass-4-slackware/blob/master/Guide/README-START.md)
