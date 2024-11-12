@@ -1,3 +1,9 @@
+**Changes 11/11/2024**
+  - SlackBuild changed to build version 0.7.62.2
+  - program "getdiff" updated. No longer has "diff" sub-directory.
+  - op_update_db.sh: changed destination for new differs to DIFF_DIR=$GETDIFF_WD/geofabrik
+
+
 This repository is a guide for setting up OSM overpass software on a local machine
 for limited area initialed from an OSM extract data file. It covers software installation,
 database initialization, database manager "dispatcher" control, web server setup for

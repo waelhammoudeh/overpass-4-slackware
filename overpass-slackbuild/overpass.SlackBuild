@@ -33,7 +33,7 @@
 
 CWD=$(pwd)
 PKGNAM=overpass
-VERSION=0.7.61.8
+VERSION=0.7.62.2
 SRC_NAM=osm-3s_v
 BUILD=${BUILD:-1}
 TAG=${TAG:-_wh}

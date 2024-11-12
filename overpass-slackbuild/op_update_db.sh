@@ -57,8 +57,16 @@ LOG_DIR=$OP_HOME/logs
 # getdiff Work Directory
 GETDIFF_WD=$OP_HOME/getdiff
 
-# getdiff download directory
-DIFF_DIR=$GETDIFF_WD/diff
+# CHANGE DOWNLOAD DIRECTORY PREFIX FOR version 0.01.77 of "getdiff" 11/11/2024
+# getdiff download directory PREFIX
+# DIFF_DIR=$GETDIFF_WD/diff -- no longer used
+DIFF_DIR=$GETDIFF_WD/geofabrik
+
+# depending on "getdiff" source argument used; valid values for "DIFF_DIR" are:
+# DIFF_DIR=$GETDIFF_WD/geofabrik
+# DIFF_DIR=$GETDIFF_WD/planet/minute
+# DIFF_DIR=$GETDIFF_WD/planet/hour
+# DIFF_DIR=$GETDIFF_WD/planet/day
 
 # "combined" merged change files only
 COMBINED_DIR=$DIFF_DIR/combined
