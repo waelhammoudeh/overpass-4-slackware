@@ -1,12 +1,7 @@
 This is the "README.SlackBuild" file for overpassAPI SlackBuild script.
 
-This file is part of "overpass-4-slackware" repository found at:
+This file is part of my "overpass-4-slackware" repository found at:
  https://github.com/waelhammoudeh/overpass-4-slackware
-
-This script retains an old front page "index.html" file (from version 0.7.55.9).
-The script also retains old documentation files which have been removed by
-the developer in recent versions. The files are: command_line.html and
-output_formats.html from version 0.7.57.1.
 
 Before building overpass software package you need "overpass" user and group.
 This can be done with the following commands:
@@ -20,21 +15,20 @@ avoid conflicts with other stuff from SlackBuilds.org.
 Please replace "/path/to/overpass/home" with your actual overpass {HOME} directory.
 This is the home {HOME} directory for the "overpass" user; directory needs to be created
 and ownership set for it.
-Please also note the space between that directory path and "overpass" user name
-on the second command line above.
 
-This build script installs the following helper scripts into /usr/local/bin/ directory:
+This build script installs the following helper scripts in the specified directories:
+
+Installed into /usr/local/bin/ directory:
 
  * op_initial_db.sh
  * op_ctl.sh
- * op_make_areas.sh
- * op_update_db.sh
- * update_osm_file.sh
+
 
 Installed to /etc/rc.d/ directory is file below:
+
  * rc.dispatcher
 
-Included with the script is a log rotation configuration file named "op_logrotate"
+Included with the script is a log rotation configuration file "op_logrotate"
 to manage log files.
 
 Please see my Guide in the above mentioned repository for full scripts usage.
@@ -92,13 +86,6 @@ parent directory.
 Overpass-API upgrade:
 
 If upgrading running overpass server, stop dispatcher before 'upgradepkg' step.
-
-IF UPGRADING FROM EARLIER VERSION THAN 0.7.60 READ FULL UPGRADE
-INSTRUCTIONS AT THE REPOSITORY GITHUB IN ITS FRONT README.md FILE:
-
-https://github.com/waelhammoudeh/overpass-4-slackware
-
-READ BEFORE THE UPGRADE PLEASE.
 
 Wael Hammoudeh
 

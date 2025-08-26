@@ -1,170 +1,110 @@
 #!/bin/bash
-
-# initial_op_db.sh : script to initialize Overpass database; takes TWO arguments
-# $1 : inputfile where file is any OSM data file supported by "osmium" program
-# $2 : DB_DIR destination database directory - must be empty
 #
-# Scripts requires "osmium" to be installed.
+# op_initial_db.sh : Initialize Overpass database and build area objects.
+#
+# Usage: op_ initial_db.sh <osm_file> <db_dir>
+#   osm_file : OSM data file (any format supported by osmium)
+#   db_dir   : Destination database directory (must exist and be empty)
+#
+# Requirements:
+#   - Run as user "overpass"
+#   - "osmium" (from osmium-tool package)
+#   - "update_database" (from overpassAPI)
+#
+# Part of the installation guide for overpassAPI on Slackware:
+#   https://github.com/waelhammoudeh/overpass-4-slackware
+#
 
-SCRIPT_NAME=$(basename $0 .sh)
-
+SCRIPT_NAME=$(basename "$0" .sh)
 OP_USER_NAME="overpass"
 
-if [[ $(id -u -n) != $OP_USER_NAME ]]; then
-    echo "$SCRIPT_NAME: ERROR Not overpass user! You must run this script as the \"$OP_USER_NAME\" user."
-    echo ""
-    echo "This script is part of the Guide for \"overpassAPI\" installation and setup on"
-    echo "Linux Slackware system. The Guide repository can be found here:"
-    echo "https://github.com/waelhammoudeh/overpass-4-slackware"
-    echo ""
-
-    exit 1
-fi
-
-if pgrep dispatcher >/dev/null ; then
-  dir=`dispatcher --show-dir`
-  echo "$SCRIPT_NAME: ERROR dispatcher is running; using database directory at: \"$dir\""
-  echo "$SCRIPT_NAME: Please stop your \"dispatcher\" before initialling another database."
-  exit 1
-fi
-
-IN_FILE=$1
-DB_DIR=$2
-
-# EXEC_DIR : overpass bin directory from Slackware package
 EXEC_DIR=/usr/local/bin
+UPDATE_EXEC="$EXEC_DIR/update_database"
+OSMIUM="$EXEC_DIR/osmium"
 
-# update_database and osmium executables
-UPDATE_EXEC=$EXEC_DIR/update_database
-OSMIUM=$EXEC_DIR/osmium
+PKG_LIB=/usr/local/lib/overpass
+TEMPLATES_DIR="$PKG_LIB/templates"
+RULES_DIR="$PKG_LIB/rules"
 
-# option to use - recommended is "--meta"
-META=--meta
-
-# WARNING avoid this option, NOT supported for limited area extract.
-# META=--keep-attic
-
-# accepted values are one of [ no| gz | lz4 ]
-COMPRESSION=no
-
-# controls amount of RAM usage by "update_database" program.
-# with 16 GB ram I set this to 4.
-FLUSH_SIZE=8
-
-set -e
-
-if [[ -z $2 ]]; then
-    echo "$SCRIPT_NAME: Error missing argument(s); 2 are required"
-    echo
-    echo "usage: $SCRIPT_NAME.sh inputfile db_dir"
-    echo "        where"
-    echo " inputfile: OSM data file in any osmium supported file format"
-    echo " db_dir: destination directory for Overpass database"
-    exit 1
-fi
-
-# Ensure DB_DIR has a trailing slash using a regular expression
-if [[ ! $DB_DIR =~ .*/$ ]]; then
-    DB_DIR="$DB_DIR/"
-fi
-
-if [[ ! -d $DB_DIR ]]; then
-    echo "$SCRIPT_NAME: Error could not find destination directory: $DB_DIR"
-    echo " Please create the directory and change ownership to overpass."
-    exit 1
-fi
-
-if [[ -n "$(ls -A $DB_DIR)" ]]; then
-    echo "$SCRIPT_NAME: Error destination directory is not empty: $DB_DIR"
-    echo " Please specify an empty directory."
-    exit 1
-fi
-
-if [[ ! -s $IN_FILE ]]; then
-    echo "$SCRIPT_NAME: Error could not find input file (maybe empty): $IN_FILE"
-    exit 1
-fi
-
-if [[ ! -x $OSMIUM ]]; then
-    echo "$SCRIPT_NAME: Error could not find \"osmium\" executable"
-    echo " Please install osmium-tool package"
-    exit 1
-fi
-
-if [[ ! -x $UPDATE_EXEC ]]; then
-    echo "$SCRIPT_NAME: Error could not find \"update_database\" executable"
-    echo " Please install or reinstall overpassAPI package"
-    exit 1
-fi
-
-SEQ_NUM=$($OSMIUM fileinfo --no-progress -e -g header.option.osmosis_replication_sequence_number $IN_FILE)
-
-URL_REGION=$($OSMIUM fileinfo --no-progress -e -g header.option.osmosis_replication_base_url $IN_FILE)
-
-TIMESTAMP=$($OSMIUM fileinfo --no-progress -e -g data.timestamp.last $IN_FILE)
-
+META=--meta               # preferred import mode
+COMPRESSION="gz"          # accepted values: [ no | gz | lz4 ]
+FLUSH_SIZE=${FLUSH_SIZE:-4}
 REPLICATE_ID="replicate_id"
 
-# osmconvert : is an alternative to osmium
+### --- Helper functions ---
+die() { echo "$SCRIPT_NAME: ERROR: $*" >&2; exit 1; }
+warn() { echo "$SCRIPT_NAME: WARNING: $*" >&2; }
+info() { echo "$SCRIPT_NAME: $*"; }
 
-# set -o pipefail --> $? get sets if either command fails
-set -o pipefail
-
-# commands are run in a pipe:
-
-$OSMIUM cat $IN_FILE -o - -f .osc | $UPDATE_EXEC --db-dir=$DB_DIR \
-                                                --version=$TIMESTAMP \
-                                                $META \
-                                                --flush-size=$FLUSH_SIZE \
-                                                --compression-method=$COMPRESSION \
-                                                --map-compression-method=$COMPRESSION 2>&1 >/dev/null
-
-# Check the exit status of the pipeline
-if [[ $? -ne 0 ]]; then
-    echo "$SCRIPT_NAME: Error Database initialization failed."
+usage() {
+    cat <<EOF
+Usage: $SCRIPT_NAME.sh <osm_file> <db_dir>
+  osm_file : Input file (any OSM format supported by osmium)
+  db_dir   : Destination Overpass DB directory (must exist and be empty)
+EOF
     exit 1
-else
-    echo "$SCRIPT_NAME: Database initialization successful."
-fi
+}
 
-if [[ -z $TIMESTAMP ]]; then
-    echo "$SCRIPT_NAME: Warning - could not retrieve Timestamp Last Date from OSM data file."
-else
-    echo "  OSM data file Timestamp Last Date: $TIMESTAMP"
-fi
+### --- Validate arguments ---
+[[ $# -ne 2 ]] && usage
 
-if [[ -z $URL_REGION ]]; then
-    echo "$SCRIPT_NAME: Warning - could not retrieve URL for {region}-updates from OSM data file."
-else
-    echo "  OSM data file URL for {region}-updates: $URL_REGION"
-fi
+IN_FILE=$1
+DB_DIR=$(realpath "$2")
 
-if [[ -z $SEQ_NUM ]]; then
-    echo "$SCRIPT_NAME: Warning - could not retrieve Replication Sequence Number from OSM data file."
-else
-    echo "  OSM data file Replication Sequence Number: $SEQ_NUM"
-fi
+[[ $(id -un) != "$OP_USER_NAME" ]] && \
+    die "Must run as user \"$OP_USER_NAME\"."
 
-echo ""
-echo "  Finishing up ..."
+pgrep dispatcher >/dev/null && {
+    dir=$(dispatcher --show-dir)
+    die "dispatcher is running using DB dir: \"$dir\". Stop it before initializing."
+}
 
-# Write SEQ_NUM to replicate_id file - we do NOT use this!?
-# somebody might need hourly or minutely updates ...
-# Geofabrik has the files to trim "planet" .osc Change Files.
-# I absolutely have no plans to do that, good luck.
-if [[ -n $SEQ_NUM ]]; then
-    echo "$SEQ_NUM" > "$DB_DIR$REPLICATE_ID"
-fi
+[[ ! -s $IN_FILE ]] && die "Input file not found or empty: $IN_FILE"
+[[ ! -d $DB_DIR ]] && die "Destination directory missing: $DB_DIR"
+[[ -n "$(ls -A "$DB_DIR")" ]] && die "Destination directory not empty: $DB_DIR"
+[[ ! -x $OSMIUM ]] && die "Missing executable: osmium"
+[[ ! -x $UPDATE_EXEC ]] && die "Missing executable: update_database"
 
-# To make the custom output feature operational
-# copy templates directory to database directory:
-# this is where overpassAPI expects to find them
-TEMPLATES_DIR=/usr/local/templates
+# Ensure trailing slash for DB dir
+[[ $DB_DIR != */ ]] && DB_DIR="$DB_DIR/"
 
-if [ -d ${TEMPLATES_DIR} ]; then
-    cp -pR ${TEMPLATES_DIR} ${DB_DIR}
-fi
+### --- Extract OSM metadata ---
+SEQ_NUM=$($OSMIUM fileinfo -e -g header.option.osmosis_replication_sequence_number "$IN_FILE")
+URL_REGION=$($OSMIUM fileinfo -e -g header.option.osmosis_replication_base_url "$IN_FILE")
+TIMESTAMP=$($OSMIUM fileinfo -e -g data.timestamp.last "$IN_FILE")
 
-echo "$SCRIPT_NAME.sh is done."
+### --- Run database initialization ---
+set -eo pipefail
+
+$OSMIUM cat "$IN_FILE" -o - -f .osc \
+  | $UPDATE_EXEC --db-dir="$DB_DIR" \
+                 --version="$TIMESTAMP" \
+                 $META \
+                 --flush-size="$FLUSH_SIZE" \
+                 --compression-method="$COMPRESSION" \
+                 --map-compression-method="$COMPRESSION" \
+                 >/dev/null 2>&1 \
+  || die "Database initialization failed."
+
+info "Database initialization successful."
+[[ -n $TIMESTAMP ]] && info "OSM Timestamp: $TIMESTAMP" || warn "Missing OSM timestamp."
+[[ -n $URL_REGION ]] && info "Replication URL: $URL_REGION" || warn "Missing replication URL."
+[[ -n $SEQ_NUM ]] && info "Replication sequence #: $SEQ_NUM" || warn "Missing replication sequence #."
+
+### --- Write replication sequence number ---
+[[ -n $SEQ_NUM ]] && echo "$SEQ_NUM" > "${DB_DIR}${REPLICATE_ID}"
+
+### --- Copy templates & rules ---
+[[ -d $TEMPLATES_DIR ]] && cp -pR "$TEMPLATES_DIR" "$DB_DIR"
+[[ -d $RULES_DIR ]] && cp -pR "$RULES_DIR" "$DB_DIR"
+
+### --- Build area objects ---
+info "Building areas in database ..."
+$EXEC_DIR/osm3s_query --db-dir="$DB_DIR" --rules <"$RULES_DIR/areas.osm3s" \
+  || die "Failed to build areas."
+
+info "Areas built successfully."
+info "Database is ready for use."
+info "$SCRIPT_NAME completed."
 
 exit 0

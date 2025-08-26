@@ -1,197 +1,170 @@
 #!/bin/bash
+#
+# op_ctl.sh : Overpass dispatcher control script
+#
+# Controls the Overpass API dispatcher daemon (start/stop/status).
+# Designed for Slackware64 with binaries installed in /usr/local/bin
+# and an 'overpass' user/group. Must be run as the 'overpass' user.
+#
+# Guide: https://github.com/waelhammoudeh/overpass-4-slackware
+#
 
-# op_ctl.sh : overpass control script.
-#
-# Script to start, stop and get status for overpass dispatcher daemon
-#
-# This script is part of my overpass.SlackBuild script and accompanied
-# by my Guide for overpassAPI installation and usage on Slackware64
-# Linux system.
-#
-# Binaries are assumed to be installed into "/usr/local/bin" directory.
-# An 'overpass' user and group are also assumed to exist in the system.
-# This script is to be called by the 'overpass' user only.
-#
-# If not following my Guide for database directory, you need to change
-# DB_DIR setting below; set it to your actual overpass database directory.
-#
-# added option --allow-duplicate-queries=yes
-# to both base & area dispatcher 12/10/2023
-
+SCRIPT_NAME=$(basename "$0")
 SYS_ROOT=/var/lib
+OP_HOME="$SYS_ROOT/overpass"
 
-# this can be a link to any directory on your system - "overpass" name should stay.
-OP_HOME=$SYS_ROOT/overpass
+# Adjust this to your actual database path if needed
+DB_DIR="$OP_HOME/database"
 
-# DB_DIR : overpass database directory
-# DB_DIR=/path/to/your/database
-DB_DIR=$OP_HOME/database
-
-EXEC_DIR=/usr/local/bin
-DSPTCHR=$EXEC_DIR/dispatcher
-USER=overpass
-DIS_MODE="normal mode"
-
-# can not use --attic with limited area extract, always use "--meta"
-META="--meta"
-
-if ! grep ^overpass: /etc/passwd 2>&1 > /dev/null; then
-    echo "$SCRIPT_NAME: Error"
-    echo " You must have overpass user and group to run this script."
-    echo " Please see the main \"README\" file included with build script"
-    exit 1
-fi
-
+EXEC_DIR="/usr/local/bin"
+DSPTCHR="$EXEC_DIR/dispatcher"
 OP_USER_NAME="overpass"
 
-if [[ $(id -u -n) != $OP_USER_NAME ]]; then
-    echo "$SCRIPT_NAME: ERROR Not overpass user! You must run this script as the \"$OP_USER_NAME\" user."
-    echo ""
-    echo "This script is part of the Guide for \"overpassAPI\" installation and setup on"
-    echo "Linux Slackware system. The Guide repository can be found here:"
-    echo "https://github.com/waelhammoudeh/overpass-4-slackware"
-    echo ""
+META="--meta"   # with extract data file always use --meta (not --attic)
+DIS_MODE="normal mode" # dispatcher modes: [normal | meta | attic]
 
+#--- Helper functions --------------------------------------------------
+
+err() { echo "$SCRIPT_NAME: Error: $*" >&2; }
+is_dispatcher_running() { pgrep -f "$DSPTCHR" >/dev/null 2>&1; }
+
+# Detect current dispatcher mode by inspecting running process
+get_base_mode() {
+    local pid cmd
+    pid=$(pgrep -f "dispatcher.*--osm-base" | head -n1)
+    if [ -z "$pid" ]; then
+        echo "not running"
+        return 1
+    fi
+    cmd=$(ps -o args= -p "$pid")
+    if [[ "$cmd" == *"--attic"* ]]; then
+        echo "attic"
+    elif [[ "$cmd" == *"--meta"* ]]; then
+        echo "meta"
+    else
+        echo "normal"
+    fi
+}
+
+#--- Environment checks ------------------------------------------------
+
+if ! id -u "$OP_USER_NAME" >/dev/null 2>&1; then
+    err "user '$OP_USER_NAME' not found. Please create 'overpass' user/group."
     exit 1
 fi
 
-# always show database directory in use
-echo ""
-echo "$SCRIPT_NAME: Database directory is set to: ${DB_DIR}"
-echo ""
+if [[ $(id -un) != "$OP_USER_NAME" ]]; then
+    err "Not running as '$OP_USER_NAME'. Please switch user."
+    exit 1
+fi
 
-# test for database directory - directory can not be empty
-if [ ! -d $DB_DIR ]; then
-    echo "$SCRIPT_NAME: Error Could not find database directory"
-    echo ""
-    echo "Check 'DB_DIR' variable please."
+echo
+echo "$SCRIPT_NAME: Using database directory: $DB_DIR"
+echo
+
+if [[ ! -d "$DB_DIR" ]]; then
+    err "Database directory not found."
     exit 2
 fi
 
-if [ ! "$(ls -A $DB_DIR)" ]; then
-    echo "$SCRIPT_NAME: Seems like database directory is empty! Overpass database must be initialed first."
-    echo "  Please see the \"README-SETUP.md\" file included in the Guide directory."
+if [[ -z "$(ls -A "$DB_DIR")" ]]; then
+    err "Database directory is empty! Initialize the Overpass database first."
     exit 2
 fi
 
-if [ -f ${DB_DIR}/nodes_meta.bin ]; then
-    DIS_MODE="meta data support"
-fi
+[[ -f "$DB_DIR/nodes_meta.bin"  ]] && DIS_MODE="meta data support"
+[[ -f "$DB_DIR/nodes_attic.bin" ]] && DIS_MODE="attic data support"
 
-# do NOT start dispatcher with --attic support
-
-# keep this if after if [ -f ${DB_DIR}/nodes_meta.bin ]; above
-if [ -f ${DB_DIR}/nodes_attic.bin ]; then
-    DIS_MODE="attic data support"
-fi
-
-# check dispatcher executable
-if [ ! -x $DSPTCHR ]; then
-    echo " $SCRIPT_NAME: Error could not find dispatcher executable file!"
+if ! command -v "$DSPTCHR" >/dev/null 2>&1; then
+    err "dispatcher binary not found at $DSPTCHR"
     exit 2
 fi
+
+#--- Command dispatcher ------------------------------------------------
 
 case "$1" in
+    start)
+        if is_dispatcher_running; then
+            echo "Dispatcher already running ($DIS_MODE)."
+            exit 0
+        fi
 
-    "start")
+        # Clean up stale sockets - we get here if dispatcher is NOT running
+        for sock in osm3s_osm_base osm3s_areas; do
+            if [[ -S "$DB_DIR/$sock" ]]; then
+                echo "Found stalled socket $sock, removing..."
+                rm -f "$DB_DIR/$sock" "/dev/shm/$sock" 2>/dev/null
+            fi
+        done
 
-    if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
-      echo " dispatcher is already running! with ${DIS_MODE}"
-      exit 0
-    fi
+        echo "Starting base dispatcher ($DIS_MODE)..."
+        "$DSPTCHR" --osm-base --db-dir="$DB_DIR" $META --allow-duplicate-queries=yes &
+        sleep 1
 
-    # I hope not to add "force-stop" case with this!
-    if [ -S ${DB_DIR}/osm3s_osm_base ]; then
-      echo " Found STALLED overpass BASE socket file, removing."
-      rm -f ${DB_DIR}/osm3s_osm_base
-      rm -f /dev/shm/osm3s_osm_base 2>&1 > /dev/null
-    fi
+        if ! is_dispatcher_running; then
+            err "Base dispatcher failed to start."
+            exit 1
+        fi
+        echo "Base dispatcher started."
 
-    if [ -S ${DB_DIR}/osm3s_areas ]; then
-      echo " Found STALLED overpass AREAS socket file, removing."
-        rm -f ${DB_DIR}/osm3s_areas
-        rm -f /dev/shm/osm3s_areas 2>&1 > /dev/null
-    fi
+        echo "Starting areas dispatcher..."
+        "$DSPTCHR" --areas --db-dir="$DB_DIR" --allow-duplicate-queries=yes &
+        sleep 1
 
-    # start base dispatcher
-    echo " Starting base dispatcher with ${DIS_MODE} ..."
+        if [[ -S "$DB_DIR/osm3s_areas" ]]; then
+            echo "Areas dispatcher started."
+            exit 0
+        else
+            err "Areas dispatcher failed to start."
+            exit 2
+        fi
+        ;;
 
-    $DSPTCHR --osm-base --db-dir=${DB_DIR} ${META} --allow-duplicate-queries=yes &
-    sleep 1
+    stop)
+        if ! is_dispatcher_running; then
+            err "Dispatcher is not running."
+            exit 2
+        fi
 
-    # start areas dispatcher if base started successfully ONLY
-    if (! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
-      echo " Error: dispatcher did not start !!!"
-      exit 1
-    fi
+        "$DSPTCHR" --osm-base --terminate
+        [[ -S "$DB_DIR/osm3s_areas" ]] && "$DSPTCHR" --areas --terminate
 
-    echo " base dispatcher started."
-    echo ""
+        sleep 2
+        if is_dispatcher_running; then
+            err "Could not stop dispatcher."
+            exit 2
+        else
+            echo "Dispatcher stopped."
+        fi
+        ;;
 
-    # start areas dispatcher if base started successfully ONLY
-    echo " Starting areas dispatcher ..."
+    status)
+        # Base dispatcher
+        BASE_PID=$(pgrep -f "dispatcher.*--osm-base" | head -n1)
+        if [ -n "$BASE_PID" ]; then
+            BASE_MODE=$(get_base_mode)
+            echo "Base dispatcher (PID $BASE_PID): running in $BASE_MODE mode support"
+            echo ""
+            "$DSPTCHR" --status
+            echo ""
+        else
+            echo "Base dispatcher: not running"
+        fi
 
-    $DSPTCHR --areas --db-dir=${DB_DIR} --allow-duplicate-queries=yes &
-    sleep 1
-
-    if [ -S ${DB_DIR}/osm3s_areas ]; then
-      echo " areas dispatcher started"
-      exit 0
-    else
-      echo " Error areas dispatcher did NOT start"
-      exit 2
-    fi
-
-;;
-
-    "stop")
-
-    if (! pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
-      echo " Error: dispatcher is not running."
-      exit 2
-    else
-      # stop base dispatcher
-      $DSPTCHR --osm-base --terminate
-
-      if [ -S ${DB_DIR}/osm3s_areas ]; then
-        # stop area dispatcher
-        $DSPTCHR --areas --terminate
-      fi
-
-      # increased to 2 seconds; occasionally 1 is not enough!
-      sleep 2
-
-      if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
-        echo " Error: could not stop dispatcher"
-        exit 2
-      else
-        echo " dispatcher stopped"
-      fi
-    fi
-    exit 0
-;;
-
-    "status")
-
-    if (pgrep -f $DSPTCHR  2>&1 > /dev/null) ; then
-      echo " dispatcher is running with ${DIS_MODE}"
-      echo ""
-      $DSPTCHR --status
-    else
-      echo " dispatcher is stopped. Not running!"
-    fi
-    exit 0
-;;
+        # Areas dispatcher
+        AREAS_PID=$(pgrep -f "dispatcher --areas" | head -n1)
+        if [ -n "$AREAS_PID" ]; then
+            echo "Areas dispatcher (PID $AREAS_PID): running"
+        else
+            echo "Areas dispatcher: not running"
+        fi
+        ;;
 
     *)
-      # something else - show usage
-    echo ""
-    echo " $SCRIPT_NAME: Error: missing argument or unkown command."
-    echo "  Usage: $SCRIPT_NAME.sh ACTION"
-    echo "  where ACTION is one of: { start | stop | status }"
-    echo ""
-    echo "  Please note they are all lower case letters!"
-    echo ""
-    exit 1
-;;
+        echo
+        err "missing or unknown command."
+        echo "Usage: $SCRIPT_NAME { start | stop | status }"
+        echo
+        exit 1
+        ;;
 esac

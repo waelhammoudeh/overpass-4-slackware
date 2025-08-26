@@ -144,3 +144,15 @@ Wael Hammoudeh
 
 August 3/2023
 
+Note: enable modules in main apache configure file "/etc/httpd/httpd.conf":
+```
+LoadModule ext_filter_module lib64/httpd/modules/mod_ext_filter.so
+
+<IfModule !mpm_prefork_module>
+	LoadModule cgid_module lib64/httpd/modules/mod_cgid.so
+</IfModule>
+<IfModule mpm_prefork_module>
+	LoadModule cgi_module lib64/httpd/modules/mod_cgi.so
+</IfModule>
+```
+

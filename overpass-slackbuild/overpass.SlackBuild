@@ -1,10 +1,11 @@
-#!/bin/sh -e
+#!/bin/sh
 
 #  Slackware package build script for OSM OverpassAPI software.
 #  Any use of the provided files is at your own risk.
 #  
 #  Author: Wael Hammoudeh
 # Email: w_hammoudeh@hotmail.com
+# updated August 26/2025
 #
 #  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
 #  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -32,14 +33,18 @@
 #
 
 CWD=$(pwd)
-PKGNAM=overpass
-VERSION=0.7.62.2
-SRC_NAM=osm-3s_v
-BUILD=${BUILD:-1}
-TAG=${TAG:-_wh}
 TMP=${TMP:-/tmp/WH}
-SRC=$TMP/${SRC_NAM}${VERSION}
-PKGDEST=$TMP/$PKGNAM
+
+PKGNAM=overpass
+SRC_OSM3S=osm-3s_v
+VERSION=0.7.62.8
+
+SRC=${SRC_OSM3S}${VERSION}
+
+BUILD=${BUILD:-1}
+TAG=_wh
+
+PKGDEST=$TMP/package-$PKGNAM
 MYPREFIX=/usr/local
 
 OUTPUT=/tmp
@@ -68,8 +73,6 @@ else
   LIBDIRSUFFIX=""
 fi
 
-set -e
-
 # check for overpass group and user first
 # www.slackbuilds.org, assigned overpass uid/gid are 367/367
 # See http://slackbuilds.org/uid_gid.txt
@@ -77,7 +80,7 @@ set -e
 if ! grep ^overpass: /etc/group 2>&1 > /dev/null; then
   echo " ERROR: Missing overpass GROUP."
   echo ""
-  echo "  You must have a overpass group to run this script."
+  echo "  You must have an overpass group to run this script."
   echo "    # groupadd -g 367 overpass"
   echo ""
    echo " Please see the main \"README\" file, thank you."
@@ -87,22 +90,25 @@ elif ! grep ^overpass: /etc/passwd 2>&1 > /dev/null; then
   echo ""
   echo " ERROR: Missing overpass user."
   echo "  You must have an overpass user to run this script."
-  echo "    # useradd -u 367 -g 367 -d /your/database/directory overpass"
-  echo "    # chown overpass:overpass /your/database/directory"
+  echo "    # useradd -u 367 -g 367 -d /var/lib/overpass overpass"
+  echo "    # chown overpass:overpass /var/lib/overpass"
   echo  ""
-  echo " Please replace "/your/database/directory" with your actual database directory"
+  echo " Overpass {HOME} can be other than /var/lib/overpass"
   echo " Please see the main \"README\" file, thank you."
   echo ""
   exit 1
 fi
 
-rm -rf $SRC $PKGDEST
-mkdir -p $PKGDEST
+# set -e prevents script from responding to errors
+set -e
+
+rm -rf $TMP/${SRC_OSM3S}* $PKGDEST
+
+mkdir -p $TMP $PKGDEST $OUTPUT
 
 cd $TMP
 
-tar xvzf $CWD/${SRC_NAM}${VERSION}.tar.gz
-tar xvzf $CWD/blog-doc.tar.gz
+tar xvzf $CWD/${SRC}.tar.gz
 
 cd $SRC
 
@@ -121,104 +127,59 @@ find -L . \
    --prefix=$MYPREFIX
 
 make -j$(expr $(nproc) + 1)
-make install DESTDIR=$PKGDEST || exit
 
-# with make install a directory is created in $TMP with the name 
-# "overpassosm-3s_v0.7.56.8" with all header files! 
-# maitainers may have a plan for it, now I do NOT need it
-if [ -d $TMP/$PKGNAM$SRC_NAM$VERSION ]; then
- rm -rf $TMP/$PKGNAM$SRC_NAM$VERSION
-fi
+make install DESTDIR="$PKGDEST" || exit 1
 
-# mkdir html and copy html file from source
-mkdir -p $PKGDEST/$MYPREFIX/html/$PKGNAM
-cp html/* $PKGDEST/$MYPREFIX/html/$PKGNAM/
+# package directories
+PKG_BIN=$PKGDEST/usr/local/bin
+PKG_INCLUDE=$PKGDEST/usr/local/include
+PKG_HTML=$PKGDEST/usr/local/html/$PKGNAM
+PKG_LIB=$PKGDEST/usr/local/lib/$PKGNAM
+PKG_DOC=$PKGDEST/usr/local/doc/$PKGNAM-$VERSION
 
-# use the index.html file from version 0.7.55.9 - provides link to blog and has "Query & Convert Form"
-# rename original first
-mv $PKGDEST/$MYPREFIX/html/$PKGNAM/index.html $PKGDEST/$MYPREFIX/html/$PKGNAM/index.html-$VERSION
-cp $CWD/index.html_v0.7.55.9 $PKGDEST/$MYPREFIX/html/$PKGNAM/index.html
+mkdir -p $PKG_INCLUDE $PKG_HTML $PKG_LIB $PKG_DOC
 
-# copy old documentation to html directory
-if [ -f $CWD/command_line.html_v0.7.57.1 ]; then
-  cp $CWD/command_line.html_v0.7.57.1 $PKGDEST/$MYPREFIX/html/$PKGNAM/command_line.html
-fi
+# move headers to PKG_INCLUDE preserving "osm-3s_v{$VERSION}" directory entry
+# this does not look right or good
+mv $PKGDEST$SRC/ $PKG_INCLUDE/$SRC/
 
-if [ -f $CWD/output_formats.html_v0.7.57.1 ]; then
-  cp $CWD/output_formats.html_v0.7.57.1 $PKGDEST/$MYPREFIX/html/$PKGNAM/output_formats.html
-fi
+# html files are copied under "overpass" directory entry
+cp -p html/* $PKG_HTML/
 
-# copy rules directory, needed for area creation and update
-cp -pr $SRC/rules $PKGDEST/$MYPREFIX/
+# move rules & templates to PKG_LIB. "share" is another option
+mv rules/ $PKG_LIB/
 
-# copy missing logo.png image to html directory
-cp $CWD/logo.png $PKGDEST/$MYPREFIX/html/$PKGNAM/
+# templates directory is created by "make install", we move it under $PKG_LIB/
+mv $PKGDEST/usr/local/templates $PKG_LIB/
 
-# copy the blog and doc, very educational
-mkdir -p $PKGDEST/$MYPREFIX/html/$PKGNAM/blog $PKGDEST/$MYPREFIX/html/$PKGNAM/overpass-doc
+# copy to documentation directory
+cp $CWD/README $PKG_DOC/
+cp $CWD/README.md $PKG_DOC/
+cp $CWD/README.setup $PKG_DOC/
 
-cp $TMP/blog-doc/blog/* $PKGDEST/$MYPREFIX/html/$PKGNAM/blog/
-cp -r $TMP/blog-doc/overpass-doc/* $PKGDEST/$MYPREFIX/html/$PKGNAM/overpass-doc/
+cp $CWD/LICENSE $PKG_DOC/
+cp $CWD/$PKGNAM.SlackBuild $PKG_DOC/
 
-# include op_ctl.sh script; provides: start, stop and status functions
-# rc.dispatcher calls op_ctl.sh script.
-cp $CWD/op_ctl.sh $PKGDEST/$MYPREFIX/bin/
-chmod 755 $PKGDEST/$MYPREFIX/bin/op_ctl.sh
+# copy scripts to their destinations
+cp $CWD/op_initial_db.sh $PKG_BIN/
+chmod 755 $PKG_BIN/op_initial_db.sh
+
+cp $CWD/op_ctl.sh $PKG_BIN/
+chmod 755 $PKG_BIN/op_ctl.sh
 
 # install rc.dispatcher start & stop script by root
-# no editing is required for this file; drop the "new" extension
 mkdir -p $PKGDEST/etc/rc.d
-cp $CWD/rc.dispatcher $PKGDEST/etc/rc.d/rc.dispatcher
-chmod 755 $PKGDEST/etc/rc.d/rc.dispatcher
+install -m 644 "$CWD/rc.dispatcher" "$PKGDEST/etc/rc.d/rc.dispatcher.new"
 
-# op_ctl.sh run by overpass user
-# include op_ctl.sh script; rc.dispatcher will not work without
-cp $CWD/op_ctl.sh $PKGDEST/$MYPREFIX/bin/
-chmod 755 $PKGDEST/$MYPREFIX/bin/op_ctl.sh
-
-# include op_initial_db.sh script, this requires osmium installed to use!
-# those will not last here! just too many changes at once.
-cp $CWD/op_initial_db.sh $PKGDEST/$MYPREFIX/bin/
-chmod 755 $PKGDEST/$MYPREFIX/bin/op_initial_db.sh
-
-# include op_update_db.sh, op_make_areas.sh and op_update_areas.sh
-cp $CWD/op_update_db.sh $PKGDEST/$MYPREFIX/bin/
-chmod 755 $PKGDEST/$MYPREFIX/bin/op_update_db.sh
-
-cp $CWD/op_make_areas.sh $PKGDEST/$MYPREFIX/bin/
-chmod 755 $PKGDEST/$MYPREFIX/bin/op_make_areas.sh
-
-cp $CWD/update_osm_file.sh $PKGDEST/$MYPREFIX/bin/
-chmod 755 $PKGDEST/$MYPREFIX/bin/update_osm_file.sh
+# copy httpd configure file
+mkdir -p $PKGDEST/etc/httpd/extra
+cp $CWD/httpd-overpass.conf $PKGDEST/etc/httpd/extra/
 
 mkdir -p $PKGDEST/install
 cat $CWD/slack-desc > $PKGDEST/install/slack-desc
 
-# Save those package-making files ..
-mkdir -p $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION
-cp $CWD/LICENSE $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/$PKGNAM.SlackBuild $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/$PKGNAM.info $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/index.html_v0.7.55.9 $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/blog-doc.tar.gz $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/slack-desc $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-
-# save added scripts & op_logrotate
-cp $CWD/op_initial_db.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/op_ctl.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/rc.dispatcher $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/op_update_db.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/op_make_areas.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/update_osm_file.sh $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/op_logrotate $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/rc.local $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-cp $CWD/rc.local_shutdown $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-
-# include or do not include the Guide?
-cd $CWD
-if [ -d ../Guide ]; then
-    cp -r ../Guide $PKGDEST/$MYPREFIX/doc/$PKGNAM-$VERSION/
-fi
-
 cd $PKGDEST
 /sbin/makepkg -l y -c n $OUTPUT/$PKGNAM-$VERSION-$ARCH-$BUILD$TAG.tgz
+
+exit 0
+

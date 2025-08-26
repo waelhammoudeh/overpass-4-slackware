@@ -29,7 +29,12 @@ EXEC_DIR=/usr/local/bin
 
 GETDIFF=$EXEC_DIR/getdiff
 
-UPDATER=$EXEC_DIR/op_update_db.sh
+# update from Geofabrik use: op_update_db.sh
+# update from Planet server use op_planet_update_db.sh
+# planet script makes extract from planet change files before applying
+
+# UPDATER=$EXEC_DIR/op_update_db.sh
+UPDATER=$EXEC_DIR/op_planet_update_db.sh
 
 # path to getdiff.conf configuration AND newerFiles.txt files
 SYS_ROOT=/var/lib

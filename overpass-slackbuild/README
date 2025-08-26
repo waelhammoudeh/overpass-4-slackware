@@ -1,0 +1,17 @@
+The Overpass API (formerly known as OSM Server Side Scripting, or OSM3S
+before 2011) is a read-only API that serves up custom selected parts of
+the OSM map data. It acts as a database over the web: the client sends a
+query to the API and gets back the data set that corresponds to the query.
+
+Before you can run overpass you'll need to create the database;
+please see README.setup.
+
+Before building overpass software package you need "overpass" user and group.
+This can be done with the following commands:
+
+     # groupadd -g 367 overpass
+     # useradd -u 367 -g 367 -d /var/lib/overpass overpass
+
+Feel free to use a different uid and gid if desired, but 367 is recommended to
+avoid conflicts with other stuff from SlackBuilds.org.
+

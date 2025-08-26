@@ -1,50 +1,51 @@
-#!/bin/bash
+#!/bin/sh
+#
+# /etc/rc.d/rc.dispatcher
+#
+# Control script for Overpass dispatcher daemon.
+#
 
-OP_CTL=/usr/local/bin/op_ctl.sh
-USER=overpass
+OP_CTL="/usr/local/bin/op_ctl.sh"
+USER="overpass"
 
-if ! grep ^overpass: /etc/passwd 2>&1 > /dev/null; then
-   echo "$0:"
-   echo "  You must have overpass user and group to run this script."
-   echo "   Please see the main \"README\" file included with build script"
-   exit 1
+# --- sanity checks ---
+if ! id -u "$USER" >/dev/null 2>&1; then
+  echo "rc.dispatcher: user '$USER' not found. Please create it first."
+  exit 1
 fi
 
-# check for op_ctl.sh executable script
-if [ ! -x $OP_CTL ]; then
-   echo " Could not find op_ctl.sh executable script file!"
-   exit 2
+if [ ! -x "$OP_CTL" ]; then
+  echo "rc.dispatcher: cannot execute $OP_CTL"
+  exit 1
 fi
 
+start() {
+  echo "Starting Overpass dispatcher..."
+  sudo -u "$USER" "$OP_CTL" start
+}
+
+stop() {
+  echo "Stopping Overpass dispatcher..."
+  sudo -u "$USER" "$OP_CTL" stop
+}
+
+restart() {
+  stop
+  sleep 1
+  start
+}
+
+status() {
+  sudo -u "$USER" "$OP_CTL" status
+}
+
+# --- command dispatch ---
 case "$1" in
-
-   "start")
-
-       sudo -u $USER $OP_CTL start
-;;
-
-   "stop")
-
-       sudo -u $USER $OP_CTL stop
- ;;
-
-    "status")
-
-       sudo -u $USER $OP_CTL status
- ;;
-
-   *)
-      # something else - show usage
-      echo ""
-      echo " $0: Error: missing argument or unkown command."
-      echo ""
-      echo "  Usage: $0 ACTION"
-      echo "  where ACTION is one of: { start | stop | status }"
-      echo ""
-      echo "  Please note they are all lower case letters!"
-      echo ""
-      exit 1
-;;
-
+  start)   start ;;
+  stop)    stop ;;
+  restart) restart ;;
+  status)  status ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    ;;
 esac
-

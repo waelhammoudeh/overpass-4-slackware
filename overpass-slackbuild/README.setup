@@ -1,0 +1,161 @@
+README.setup — Overpass SlackBuild
+
+This file explains how to set up the Overpass API database and supporting scripts.
+The following helper scripts are included:
+
+op_initial_db.sh – initializes the database from a region OSM file.
+
+op_ctl.sh – controls the dispatcher daemon (start/stop/status).
+
+rc.dispatcher – integration script for Slackware system startup/shutdown.
+
+1. Create Overpass User and Directories
+
+Overpass should run under its own user account. If you have not already created
+the overpass home directory, run these commands as root:
+
+# mkdir /var/lib/overpass
+# chown overpass:overpass /var/lib/overpass
+
+Switch to the overpass user:
+
+# su overpass
+
+Your shell prompt should now show $ instead of #. Move to the home directory:
+
+$ cd ~
+
+Create the database directory:
+
+$ mkdir database
+
+2. Initialize the database and build the area objects
+
+Run the initialization script with your region OSM file (downloaded from Geofabrik
+or another source):
+
+$ op_initial_db.sh sources/region.osm.pbf database/
+
+By default the script uses FLUSH_SIZE=4. You can adjust this depending on
+available RAM:
+
+$ FLUSH_SIZE=8 op_initial_db.sh sources/region.osm.pbf database/
+
+Larger values speed up initialization if you have plenty of RAM.
+
+Smaller values help on low-RAM systems.
+
+This step is time-consuming: depending on your CPU and region size, it may take
+minutes up to two hours. You can watch the database/ directory fill with files
+as the process runs.
+
+Recent extract files from Geofabrik.de have the following header file information
+set: osmosis_replication_base_url, osmosis_replication_sequence_number and
+osmosis_replication_timestamp among other settings.
+
+This script writes the value for "replication_sequence_number" in "replicate_id"
+file in the database. This is an id for the last change file included in your
+extract data file at Geofabrik.de, this number is used when we update database.
+
+You can view all your file information using osmium with:
+
+ $ osmium fileinfo --extended file_name.osm.pbf
+
+3. Test a Query (Manual Mode)
+
+Once initialization is complete, you can query the database directly:
+
+$ osm3s_query --db-dir=/var/lib/overpass/database < test-first.op | sort -ub
+
+The provided test-first.op uses a bounding box for Arizona.
+
+Replace it with bounding box coordinates suitable for your region.
+
+osm3s_query is part of Overpass API. Normally it runs interactively, reading
+queries line by line until you press Ctrl+D. With shell redirection, you can
+instead run queries in batch mode.
+
+4. Start the Dispatcher Daemon
+
+The dispatcher forwards queries to the database and must be running for normal
+usage.
+
+Start it using the control script as the overpass user:
+
+$ op_ctl.sh start
+
+This launches both base and area dispatchers. You can now run the example query
+without specifying a database directory:
+
+$ osm3s_query < area-test.op | sort -ub
+
+This will output a sorted list of cities and towns in your region database.
+
+5. Enable Dispatcher on System Startup
+
+To manage dispatcher automatically on system boot/shutdown, set rc.dispatcher to
+be executable:
+
+# chmod +x /etc/rc.d/rc.dispatcher
+
+Then add the following lines to /etc/rc.d/rc.local:
+
+# Start Overpass dispatcher
+if [ -x /etc/rc.d/rc.dispatcher ]; then
+    /etc/rc.d/rc.dispatcher start
+fi
+
+And add this to /etc/rc.d/rc.local_shutdown (create it if it does not exist):
+
+# Stop Overpass dispatcher
+if [ -x /etc/rc.d/rc.dispatcher ]; then
+    /etc/rc.d/rc.dispatcher stop
+fi
+
+6. Apache Configuration (Optional)
+
+With the dispatcher running, you can expose Overpass through Apache HTTPD.
+
+a) Update /etc/hosts
+
+On all client machines in your local network, add an entry for the Overpass server:
+Replace IP number "192.168.1.2" with your actual static IP.
+
+127.0.0.1       localhost
+::1             localhost
+192.168.1.2     myoverpass.local myoverpass
+
+
+This allows you to access the server at http://myoverpass.
+
+b) Enable CGI Support
+
+Edit /etc/httpd/httpd.conf and enable CGI execution:
+
+<IfModule !mpm_prefork_module>
+    LoadModule cgid_module lib64/httpd/modules/mod_cgid.so
+</IfModule>
+<IfModule mpm_prefork_module>
+    LoadModule cgi_module lib64/httpd/modules/mod_cgi.so
+</IfModule>
+
+
+At the bottom of the file, include the Overpass configuration:
+
+Include /etc/httpd/extra/httpd-overpass.conf
+
+Restart Apache:
+
+# apachectl restart
+
+7. Test via HTTP
+
+Send a query using curl:
+
+$ curl -G http://myoverpass/api/interpreter --data-urlencode data='[out:csv(name;false)];area[admin_level=8];out;'
+
+You should see a list of cities and towns in your database.
+
+8. Next Steps
+
+Updating and logging are explained in README.automate.

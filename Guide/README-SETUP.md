@@ -302,7 +302,7 @@ With those steps so far, you can query your database on the command line using t
 example file provided in the root directory in this Guide; the example uses bounding box for "Arizona",
 so please replace with good {bounding box} points for your region database:
 ```
-    $ osm3s_query --db-dir=DB_DIR < test-first.op
+    $ osm3s_query --db-dir=DB_DIR < test-first.op | sort -u
 ```
 command above assumes you are in the directory where the "test-first.op" file is, please replace
 "DB_DIR" with your actual database directory. Anybody on the system can use overpass to
@@ -317,7 +317,7 @@ If you are new to overpass then "osm3s_query" program is your friend, get to kno
 
 ### Starting the "dispatcher" daemon:
 
-The "dispatcher" program is part of the overpass package, it is run in the backgound as
+The "dispatcher" program is part of the overpass package, it runs in the backgound as
 daemon which forwards queries to the correct part of overpass. As long as the dispatcher
 is running, your queries to overpass will be answered.
 
@@ -395,9 +395,9 @@ overpass@yafa:~$ dispatcher --osm-base --db-dir="/var/lib/overpass/database" --m
 
 With dispatcher running in the background, --db-dir option for "osm3s_query" program is not needed.
 You can run the "test-first.op" query example - mentioned above - without providing the database
-directory argument as follows (assuming "example" file is in your current directory):
+directory argument as follows (assuming "test-first.op" file is in your current directory):
 ```
-    $ osm3s_query < test-first.op
+    $ osm3s_query < test-first.op | sort -u
 ```
 
 To stop the dispatcher daemon, as the overpass user run:
