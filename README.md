@@ -53,7 +53,7 @@ arizona-internal.osm.pbf     | 292  MB (0.29 GB)  |    4331 MB (4.3 GB)
 california-internal.osm.pbf  | 1324 MB (1.3 GB)   |    9181 MB (9.0 GB)
 ```
 
-**Rule of thumb:** Expect about 10 GB of disk space for the database of a typical
+**Rule of thumb:** Expect about 10 - 15 GB of disk space for the database of a typical
 country, plus an equal amount of space for update files.
 
 ---
