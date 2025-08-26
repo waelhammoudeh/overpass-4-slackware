@@ -109,11 +109,17 @@ Scripts included here assume the following file system structure:
 </pre>
 
 where:
+
 /var/lib/overpass: overpass user home directory
+
 /var/lib/overpass/database: where we initial overpass database
+
 /var/lib/overpass/getdiff: getdiff work directory for updating overpass
+
 /var/lib/overpass/logs: overpass scripts log files
+
 /var/lib/overpass/sources: OSM data files used to initial databases
+
 /var/lib/overpass/region: updated OSM data files (extracts) and region change files.
 
 ### DISCLAIMER:
