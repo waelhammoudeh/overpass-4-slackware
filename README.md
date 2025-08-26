@@ -1,5 +1,5 @@
 
-# Guide to Installing and Setting Up an Overpass Server on Slackware64 15.0
+## Guide to Installing and Setting Up an Overpass Server on Slackware64 15.0
 
 This guide describes how to install and configure an Overpass API server on a Linux
 machine running **Slackware64 15.0**. The focus here is on creating a
@@ -12,7 +12,7 @@ query up-to-date data for your chosen region.
 
 ---
 
-## Prerequisites
+### Prerequisites
 
 We assume you:
 
@@ -24,7 +24,7 @@ Their site also explains the available data formats.
 
 ---
 
-## Hardware Requirements
+### Hardware Requirements
 
 The original Overpass developer’s hardware recommendation (maybe outdated) suggested:
 
@@ -58,7 +58,7 @@ country, plus an equal amount of space for update files.
 
 ---
 
-## Software Requirements
+### Software Requirements
 
 1. **Overpass API**
    - Download the latest release [here](https://dev.overpass-api.de/releases/).
@@ -88,14 +88,14 @@ country, plus an equal amount of space for update files.
    - **JOSM** editor
    - **QGIS** desktop GIS
 
-## Planet Overpass
+### Planet Overpass
 
 Originally overpass server was initialed from planet file without historical data.
 Historical data was accumulated with minutely updates and still being added with
 the updates. Keeping this fact in mind one can use most of the scripts here to run
 his / her own instance of overpass server with full planet with meta plus attic data.
 
-## File System Structure:
+### File System Structure:
 
 Scripts included here assume the following file system structure:
 
