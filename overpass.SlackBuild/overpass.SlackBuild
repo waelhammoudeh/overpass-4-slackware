@@ -155,10 +155,16 @@ mv $PKGDEST/usr/local/templates $PKG_LIB/
 # copy to documentation directory
 cp $CWD/README $PKG_DOC/
 cp $CWD/README.md $PKG_DOC/
-cp $CWD/README.setup $PKG_DOC/
-
+cp $CWD/README.SlackBuild $PKG_DOC/
 cp $CWD/LICENSE $PKG_DOC/
 cp $CWD/$PKGNAM.SlackBuild $PKG_DOC/
+
+mkdir -p $PKG_DOC/guide
+cp $CWD/guide/README.setup $PKG_DOC/guide/
+cp $CWD/guide/README.update $PKG_DOC/guide/
+cp $CWD/guide/test-first.op $PKG_DOC/guide/
+cp $CWD/guide/test-area.op $PKG_DOC/guide/
+
 
 # copy scripts to their destinations
 cp $CWD/op_initial_db.sh $PKG_BIN/
@@ -167,16 +173,27 @@ chmod 755 $PKG_BIN/op_initial_db.sh
 cp $CWD/op_ctl.sh $PKG_BIN/
 chmod 755 $PKG_BIN/op_ctl.sh
 
+cp $CWD/guide/op_update_db.sh $PKG_BIN/
+chmod 755 $PKG_BIN/op_update_db.sh
+
+cp $CWD/guide/cron4op.sh $PKG_BIN/
+chmod 755 $PKG_BIN/cron4op.sh
+
 # install rc.dispatcher start & stop script by root
 mkdir -p $PKGDEST/etc/rc.d
 install -m 644 "$CWD/rc.dispatcher" "$PKGDEST/etc/rc.d/rc.dispatcher.new"
 
 # copy httpd configure file
 mkdir -p $PKGDEST/etc/httpd/extra
-cp $CWD/httpd-overpass.conf $PKGDEST/etc/httpd/extra/
+install -m 644 "$CWD/httpd-overpass.conf" "$PKGDEST/etc/httpd/extra/httpd-overpass.conf.new"
+
+# copy op_logrotate
+mkdir -p $PKGDEST/etc/logrotate.d/
+install -m 644 "$CWD/guide/op_logrotate" "$PKGDEST/etc/logrotate.d/op_logrotate.new"
 
 mkdir -p $PKGDEST/install
 cat $CWD/slack-desc > $PKGDEST/install/slack-desc
+cat $CWD/doinst.sh > $PKGDEST/install/doinst.sh
 
 cd $PKGDEST
 /sbin/makepkg -l y -c n $OUTPUT/$PKGNAM-$VERSION-$ARCH-$BUILD$TAG.tgz

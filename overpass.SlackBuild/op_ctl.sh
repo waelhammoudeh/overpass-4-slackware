@@ -9,24 +9,24 @@
 # Guide: https://github.com/waelhammoudeh/overpass-4-slackware
 #
 
-SCRIPT_NAME=$(basename "$0")
-SYS_ROOT=/var/lib
-OP_HOME="$SYS_ROOT/overpass"
+scriptName=$(basename "$0")
+sysRoot=/var/lib
+opHome="$sysRoot/overpass"
 
 # Adjust this to your actual database path if needed
-DB_DIR="$OP_HOME/database"
+dbDir="$opHome/database"
 
-EXEC_DIR="/usr/local/bin"
-DSPTCHR="$EXEC_DIR/dispatcher"
-OP_USER_NAME="overpass"
+execDir="/usr/local/bin"
+DISPATCHER="$execDir/dispatcher"
+opUser="overpass"
 
 META="--meta"   # with extract data file always use --meta (not --attic)
-DIS_MODE="normal mode" # dispatcher modes: [normal | meta | attic]
+DISPATCHER_MODE="normal mode" # dispatcher modes: [normal | meta | attic]
 
 #--- Helper functions --------------------------------------------------
 
-err() { echo "$SCRIPT_NAME: Error: $*" >&2; }
-is_dispatcher_running() { pgrep -f "$DSPTCHR" >/dev/null 2>&1; }
+err() { echo "$scriptName: Error: $*" >&2; }
+is_dispatcher_running() { pgrep -f "$DISPATCHER" >/dev/null 2>&1; }
 
 # Detect current dispatcher mode by inspecting running process
 get_base_mode() {
@@ -48,35 +48,35 @@ get_base_mode() {
 
 #--- Environment checks ------------------------------------------------
 
-if ! id -u "$OP_USER_NAME" >/dev/null 2>&1; then
-    err "user '$OP_USER_NAME' not found. Please create 'overpass' user/group."
+if ! id -u "$opUser" >/dev/null 2>&1; then
+    err "user '$opUser' not found. Please create 'overpass' user/group."
     exit 1
 fi
 
-if [[ $(id -un) != "$OP_USER_NAME" ]]; then
-    err "Not running as '$OP_USER_NAME'. Please switch user."
+if [[ $(id -un) != "$opUser" ]]; then
+    err "Not running as '$opUser'. Please switch user."
     exit 1
 fi
 
 echo
-echo "$SCRIPT_NAME: Using database directory: $DB_DIR"
+echo "$scriptName: Using database directory: $dbDir"
 echo
 
-if [[ ! -d "$DB_DIR" ]]; then
+if [[ ! -d "$dbDir" ]]; then
     err "Database directory not found."
     exit 2
 fi
 
-if [[ -z "$(ls -A "$DB_DIR")" ]]; then
+if [[ -z "$(ls -A "$dbDir")" ]]; then
     err "Database directory is empty! Initialize the Overpass database first."
     exit 2
 fi
 
-[[ -f "$DB_DIR/nodes_meta.bin"  ]] && DIS_MODE="meta data support"
-[[ -f "$DB_DIR/nodes_attic.bin" ]] && DIS_MODE="attic data support"
+[[ -f "$dbDir/nodes_meta.bin"  ]] && DISPATCHER_MODE="meta data support"
+[[ -f "$dbDir/nodes_attic.bin" ]] && DISPATCHER_MODE="attic data support"
 
-if ! command -v "$DSPTCHR" >/dev/null 2>&1; then
-    err "dispatcher binary not found at $DSPTCHR"
+if ! command -v "$DISPATCHER" >/dev/null 2>&1; then
+    err "dispatcher binary not found at $DISPATCHER"
     exit 2
 fi
 
@@ -85,20 +85,20 @@ fi
 case "$1" in
     start)
         if is_dispatcher_running; then
-            echo "Dispatcher already running ($DIS_MODE)."
+            echo "Dispatcher already running ($DISPATCHER_MODE)."
             exit 0
         fi
 
         # Clean up stale sockets - we get here if dispatcher is NOT running
         for sock in osm3s_osm_base osm3s_areas; do
-            if [[ -S "$DB_DIR/$sock" ]]; then
+            if [[ -S "$dbDir/$sock" ]]; then
                 echo "Found stalled socket $sock, removing..."
-                rm -f "$DB_DIR/$sock" "/dev/shm/$sock" 2>/dev/null
+                rm -f "$dbDir/$sock" "/dev/shm/$sock" 2>/dev/null
             fi
         done
 
-        echo "Starting base dispatcher ($DIS_MODE)..."
-        "$DSPTCHR" --osm-base --db-dir="$DB_DIR" $META --allow-duplicate-queries=yes &
+        echo "Starting base dispatcher ($DISPATCHER_MODE)..."
+        "$DISPATCHER" --osm-base --db-dir="$dbDir" $META --allow-duplicate-queries=yes &
         sleep 1
 
         if ! is_dispatcher_running; then
@@ -108,10 +108,10 @@ case "$1" in
         echo "Base dispatcher started."
 
         echo "Starting areas dispatcher..."
-        "$DSPTCHR" --areas --db-dir="$DB_DIR" --allow-duplicate-queries=yes &
+        "$DISPATCHER" --areas --db-dir="$dbDir" --allow-duplicate-queries=yes &
         sleep 1
 
-        if [[ -S "$DB_DIR/osm3s_areas" ]]; then
+        if [[ -S "$dbDir/osm3s_areas" ]]; then
             echo "Areas dispatcher started."
             exit 0
         else
@@ -126,8 +126,8 @@ case "$1" in
             exit 2
         fi
 
-        "$DSPTCHR" --osm-base --terminate
-        [[ -S "$DB_DIR/osm3s_areas" ]] && "$DSPTCHR" --areas --terminate
+        "$DISPATCHER" --osm-base --terminate
+        [[ -S "$dbDir/osm3s_areas" ]] && "$DISPATCHER" --areas --terminate
 
         sleep 2
         if is_dispatcher_running; then
@@ -145,7 +145,7 @@ case "$1" in
             BASE_MODE=$(get_base_mode)
             echo "Base dispatcher (PID $BASE_PID): running in $BASE_MODE mode support"
             echo ""
-            "$DSPTCHR" --status
+            "$DISPATCHER" --status
             echo ""
         else
             echo "Base dispatcher: not running"
@@ -163,7 +163,7 @@ case "$1" in
     *)
         echo
         err "missing or unknown command."
-        echo "Usage: $SCRIPT_NAME { start | stop | status }"
+        echo "Usage: $scriptName { start | stop | status }"
         echo
         exit 1
         ;;

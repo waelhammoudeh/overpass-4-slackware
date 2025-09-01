@@ -53,8 +53,8 @@ arizona-internal.osm.pbf     | 292  MB (0.29 GB)  |    4331 MB (4.3 GB)
 california-internal.osm.pbf  | 1324 MB (1.3 GB)   |    9181 MB (9.0 GB)
 ```
 
-**Rule of thumb:** Expect about 10 GB of disk space for the database of a typical
-country, plus an equal amount of space for update files.
+**Rule of thumb:** Expect about 10 - 15 GB of disk space for the database of a typical
+region, plus an equal amount of space for update files.
 
 ---
 
@@ -65,7 +65,7 @@ country, plus an equal amount of space for update files.
    - Use the included `overpass.SlackBuild` script to compile and install the package.
 
 2.  **Region OSM Data File**
-   - Download your region’s OSM data file from the [Geofabrik download server](https://download.geofabrik.de).
+   - Download your region’s OSM data file from [Geofabrik download server](https://download.geofabrik.de).
    - The files are organized geographically — you can select your country, a sub-region,
    or even a whole continent (depending on your disk space).
    - The required format is the common **`.osm.pbf`** file **with full metadata**.
@@ -109,11 +109,17 @@ Scripts included here assume the following file system structure:
 </pre>
 
 where:
+
 /var/lib/overpass: overpass user home directory
+
 /var/lib/overpass/database: where we initial overpass database
+
 /var/lib/overpass/getdiff: getdiff work directory for updating overpass
+
 /var/lib/overpass/logs: overpass scripts log files
+
 /var/lib/overpass/sources: OSM data files used to initial databases
+
 /var/lib/overpass/region: updated OSM data files (extracts) and region change files.
 
 ### DISCLAIMER:

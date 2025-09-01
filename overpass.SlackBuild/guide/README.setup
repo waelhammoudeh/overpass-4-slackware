@@ -31,8 +31,8 @@ $ mkdir database
 
 2. Initialize the database and build the area objects
 
-Run the initialization script with your region OSM file (downloaded from Geofabrik
-or another source):
+Run the initialization script with your region OSM data file (downloaded from
+Geofabrik or another source):
 
 $ op_initial_db.sh sources/region.osm.pbf database/
 
@@ -41,9 +41,8 @@ available RAM:
 
 $ FLUSH_SIZE=8 op_initial_db.sh sources/region.osm.pbf database/
 
-Larger values speed up initialization if you have plenty of RAM.
-
-Smaller values help on low-RAM systems.
+Larger values speed up initialization if you have plenty of RAM. Smaller values
+help on low-RAM systems.
 
 This step is time-consuming: depending on your CPU and region size, it may take
 minutes up to two hours. You can watch the database/ directory fill with files
@@ -57,9 +56,17 @@ This script writes the value for "replication_sequence_number" in "replicate_id"
 file in the database. This is an id for the last change file included in your
 extract data file at Geofabrik.de, this number is used when we update database.
 
+The replication_timestamp value is used as the "osm_base_version" number by this
+script.
+
 You can view all your file information using osmium with:
 
  $ osmium fileinfo --extended file_name.osm.pbf
+
+If header information is missing from your data file, you may use "osmium" to
+add the missing information. Man "osmium-cat" and see "--output-header" option.
+
+This script copies the package "template" and "rules" directories to database/.
 
 3. Test a Query (Manual Mode)
 
@@ -67,9 +74,10 @@ Once initialization is complete, you can query the database directly:
 
 $ osm3s_query --db-dir=/var/lib/overpass/database < test-first.op | sort -ub
 
-The provided test-first.op uses a bounding box for Arizona.
-
-Replace it with bounding box coordinates suitable for your region.
+Find the provided "test-first.op" overpass script in the guide directory under the
+package documentation: /usr/local/doc/overpass-{VERSION}/guide/
+This script uses a bounding box values valid for Arizona. Replace it with values
+valid for your region. (copy the example to your current directory and edit BBOX).
 
 osm3s_query is part of Overpass API. Normally it runs interactively, reading
 queries line by line until you press Ctrl+D. With shell redirection, you can
@@ -89,7 +97,9 @@ without specifying a database directory:
 
 $ osm3s_query < area-test.op | sort -ub
 
-This will output a sorted list of cities and towns in your region database.
+This will output a sorted list of cities and towns in your region database. Provide
+full path to "area-test.op" script or move to its directory:
+ $ cd /usr/local/doc/overpass-{VERSION}/guide/
 
 5. Enable Dispatcher on System Startup
 
@@ -112,6 +122,9 @@ if [ -x /etc/rc.d/rc.dispatcher ]; then
     /etc/rc.d/rc.dispatcher stop
 fi
 
+The "rc.dispatcher" is a wraper script to "op_ctl.sh" which is used by "overpass"
+user to start, stop or get status of the dispatcher daemon.
+
 6. Apache Configuration (Optional)
 
 With the dispatcher running, you can expose Overpass through Apache HTTPD.
@@ -128,9 +141,19 @@ Replace IP number "192.168.1.2" with your actual static IP.
 
 This allows you to access the server at http://myoverpass.
 
-b) Enable CGI Support
+b) Edit main Apache file: /etc/httpd/httpd.conf
 
-Edit /etc/httpd/httpd.conf and enable CGI execution:
+Three things we change in this file:
+1st) Change Listen setting:
+
+# Listen 80
+Listen 127.0.0.1:80
+Listen 192.168.1.2:80
+
+Note again use your own static IP above
+
+2nd) Enable CGI execution
+uncomment commented lines below:
 
 <IfModule !mpm_prefork_module>
     LoadModule cgid_module lib64/httpd/modules/mod_cgid.so
@@ -139,12 +162,16 @@ Edit /etc/httpd/httpd.conf and enable CGI execution:
     LoadModule cgi_module lib64/httpd/modules/mod_cgi.so
 </IfModule>
 
-
+3rd) Include the provided "httpd-overpass.conf" file
 At the bottom of the file, include the Overpass configuration:
 
 Include /etc/httpd/extra/httpd-overpass.conf
 
-Restart Apache:
+Start Apache:
+
+# apachectl start
+
+You may need "restart" instead if that fails!
 
 # apachectl restart
 
@@ -156,6 +183,7 @@ $ curl -G http://myoverpass/api/interpreter --data-urlencode data='[out:csv(name
 
 You should see a list of cities and towns in your database.
 
-8. Next Steps
+8. Next Steps are in README.update:
 
-Updating and logging are explained in README.automate.
+Updating database and automate strategy are explained in guide/README.update file.
+

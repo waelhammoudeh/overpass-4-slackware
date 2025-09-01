@@ -1,0 +1,39 @@
+# Global settings for Overpass logs
+compress
+nomail
+missingok
+notifempty
+
+# Overpass script logs
+/var/lib/overpass/logs/op_update_db.log \
+/var/lib/overpass/logs/update_osm_file.log \
+/var/lib/overpass/getdiff/getdiff.log {
+    su overpass overpass
+    rotate 5
+    size 100K
+}
+
+# Overpass database logs
+/var/lib/overpass/database/transactions.log \
+/var/lib/overpass/database/database.log {
+    su overpass overpass
+    rotate 5
+    size 500K
+}
+
+# httpd-overpass logs (modified original Slackware httpd log rotation:
+# you may not want this for ALL your files?!)
+/var/log/httpd/*_log {
+#  rotate 10
+    rotate 5
+    notifempty
+    missingok
+#    size 5M
+    size 300K
+    compress
+    delaycompress
+    sharedscripts
+    postrotate
+        /etc/rc.d/rc.httpd restart
+    endscript
+}

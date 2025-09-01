@@ -1,3 +1,0 @@
-/* this a comment line */
-[out:csv(name; false)]; //output name; do not include "name" column header
-area[admin_level=8]; out;

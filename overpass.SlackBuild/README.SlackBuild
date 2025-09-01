@@ -1,0 +1,75 @@
+This is the README.SlackBuild file for the Overpass API SlackBuild script.
+It is part of my overpass-4-slackware repository:
+
+ https://github.com/waelhammoudeh/overpass-4-slackware
+
+User and Group:
+
+Before building the Overpass package, you must create the overpass user and group:
+
+ # groupadd -g 367 overpass
+ # useradd -u 367 -g 367 -d /var/lib/overpass overpass
+
+You may use different UID/GID values if desired, but 367 is recommended to avoid
+conflicts with other software from SlackBuilds.org.
+
+Also ensure the home directory exists with correct ownership:
+
+ # mkdir -p /var/lib/overpass
+ # chown overpass:overpass /var/lib/overpass
+
+Installed Files
+
+The build script installs the following helper scripts and configuration files:
+
+Installed to /usr/local/bin/:
+
+    *) op_initial_db.sh
+    *) op_ctl.sh
+    *) op_update_db.sh
+    *) cron4op.sh
+
+Installed to /etc/rc.d/:
+
+    *) rc.dispatcher
+
+Installed to /etc/httpd/extra/:
+
+    *) httpd-overpass.conf
+
+Installed to /etc/logrotate.d/:
+
+    *) op_logrotate
+
+Documentation:
+
+Additionally my guide is included in the package documentation directory:
+
+/usr/local/doc/overpass-{VERSION}/ with the following files:
+
+    *) README.setup:
+    Explains database initialization, dispatcher setup, and Apache (httpd) configuration.
+
+    *) README.update
+    Explains how to update the database with change files and automate server maintenance.
+
+Requirements:
+
+  op_initial_db.sh script requires osmium to be installed, use my SlackBuild script:
+      https://github.com/waelhammoudeh/osmium-tool_slackbuild
+
+  op_update_db.sh script requires my getdiff program, its repository:
+     https://github.com/waelhammoudeh/getdiff
+
+Directory Layout:
+The following filesystem structure is used:
+
+/var/lib/overpass
+    |--- database
+    |--- getdiff
+    |--- sources   (optional)
+    |--- logs
+
+Wael Hammoudeh
+
+August 31/2025

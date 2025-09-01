@@ -15,3 +15,4 @@ This can be done with the following commands:
 Feel free to use a different uid and gid if desired, but 367 is recommended to
 avoid conflicts with other stuff from SlackBuilds.org.
 
+See also: README.SlackBuild

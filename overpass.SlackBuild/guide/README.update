@@ -1,0 +1,232 @@
+README.update_automate — Overpass SlackBuild
+
+This file explains how to update an initialized Overpass database with the latest
+available OSM data using change files. It also describes how to automate this
+process on a Slackware64 system.
+
+1. About Change files:
+
+Databases and OSM data files are updated with "change files". Change file is the
+difference between two data files from two different times, when adding change
+file to the oldest of the two data files we get the newest of the two.
+Each change file has a correponding "state.txt" with 2 important identification
+lines; the sequence number and a timestamp lines. Sequence number is incremented
+for each new change file and the timestamp is when that change file was calculated.
+
+2. Update Database:
+
+This process is basically two steps; in the first we retrieve or fetch change
+files using my "getdiff" program and on the second step we apply change files
+to update the database using my "op_update_db.sh" script.
+
+The "getdiff" program and "op_update_db.sh" script work in succession, "getdiff"
+fills a bucket then "op_update_db.sh" empties this bucket.
+
+The "getdiff" program appends new downloaded file names to list file called
+"newerFiles.txt", this file is then read by "op_update_db.sh" script to update
+the database, the script renames the list file to "newerFiles.txt.bak" so getdiff
+starts a new "newerFiles.txt" next time around.
+
+2.1 Install and setup "getdiff"
+
+You download "getdiff" using "git clone", build it using its "makefile" and then
+install the executable by copying it as root to your system "/usr/local/bin/"
+directory. This is accomplished by the following steps as your own mortal self
+from your own {HOME} directory:
+
+ $ git clone https://github.com/waelhammoudeh/getdiff
+ $ cd getdiff
+ $ make
+
+Note that this directory includes an example configure file which you will need
+to copy farther down.
+
+Now as the root user copy getdiff program:
+
+ $ su -
+ (enter root password)
+ # cp {HOME}/getdiff/getdiff /usr/local/bin/
+
+Replace {HOME} with path to your real home directory.
+
+Now we setup "getdiff" as the "overpass" user and couple settings will be taken
+from the region OSM data file which you use "osmium fileinfo" to retrieve.
+
+Now from "root" user change to the "overpass" user and change directory to user
+"overpass" home directory:
+
+ # su overpass
+ $ cd ~
+
+Create "getdiff" directory, and copy the example configure file mentioned above.
+This will be "getdiff" program work directory where it will write "newerFiles.txt"
+file and where it will create "geofabrik" directory to save downloaded change files.
+
+ $ mkdir getdiff
+ $ cp {HOME}/getdiff/getdiff.conf.example getdiff/getdiff.conf
+
+Now we edit the configure file, to illustrate I will use the following output:
+
+overpass@regrets:~$ osmium fileinfo sources/california-latest-internal.osm.pbf
+File:
+  Name: sources/california-latest-internal.osm.pbf
+  Format: PBF
+  Compression: none
+  Size: 1387283693
+Header:
+  Bounding boxes:
+    (-125.8935,32.48171,-114.1291,42.01618)
+  With history: no
+  Options:
+    generator=osmium/1.15.0
+    osmosis_replication_base_url=https://osm-internal.download.geofabrik.de/north-america/us/california-updates
+    osmosis_replication_sequence_number=4525
+    osmosis_replication_timestamp=2025-08-24T20:21:35Z
+    pbf_dense_nodes=true
+    pbf_optional_feature_0=Sort.Type_then_ID
+    sorting=Type_then_ID
+    timestamp=2025-08-24T20:21:35Z
+overpass@regrets:~$
+
+We change the following settings: USER, DIRECTORY, SOURCE and BEGIN.
+
+The USER name is required if you used Geofabrik INTERNAL server to download your
+region data file, in that case we will enter the password on invocation of getdiff:
+
+USER = myemail@someserver.com
+
+The DIRECTORY setting is where "getdiff" work directory is; the one you just
+created in "overpass" home directory:
+
+DIRECTORY = /var/lib/overpass
+
+The SOURCE setting is the region update URL at geofabrik.de, that is listed on
+your data file header information; from the illustration above:
+
+SOURCE = https://osm-internal.download.geofabrik.de/north-america/us/california-updates
+
+The BEGIN number is the sequence number to start download from, this also from
+the header information above listed as replication_sequence_number:
+
+BEGIN = 4525
+
+Edit your "getdiff.conf" file with your own information and save it.
+
+To download change files, we start "getdiff" with the configuration file and if
+using the INTERNAL server the password:
+
+  $ getdiff -c getdiff/getdiff.conf -p xxxxxx
+
+Program logs its progress to "getdiff.log" under its work directory.
+
+2.2 Update with "op_update_db.sh" script:
+
+The script "op_update_db.sh" is used to update overpass database with change files
+downloaded by "getdiff". Script usage is:
+
+ op_update_db.sh <list_file> <osc_dir>
+
+The list_file is "newerFiles.txt" produced by "getdiff", osc_dir is the directory
+where change files are in the file system, that is: getdiff/geofabrik.
+
+The script uses the same "update_database" program we used in initialing the
+database, what we said about the "FLUSH_SIZE" there applies here. You should
+adjust the default value "4" used in the script. See the script for suggested values.
+To adjust the value, edit that setting in the script - its on top of the script!
+
+Start the script with:
+
+  $ op_update_db.sh /var/lib/overpass/getdiff/newerFiles.txt \
+                   /var/lib/overpass/getdiff/geofabrik
+
+The script writes its progress to "logs/op_update_db.log" in overpass home directory.
+
+3. Automate Update Process:
+
+The script "cron4op.sh" runs the opertions: getdiff then op_update_db.sh one after
+another. Besides that it also deletes change files older than seven days to free
+your disk space.
+
+Slackware64 ships with Dillon Cron, You tell Cron when to run a job and it does
+that for you. This is done by adding a new "crontab" - cron table entry. For more
+information "man crontab" at your terminal.
+
+We add a new crontab as the "overpass" user to run our "cron4op.sh" script every
+day (Slackware64 will start vi for you in this command), this is accomplished by:
+
+ $ crontab -e
+
+press "i" to enter vi insert mode then type the following line:
+
+@daily ID=opUpdateDB /usr/local/bin/cron4op.sh
+
+press "Escape key" to get to vi command mode, then type ":wq"
+
+You are done adding the required "crontab entry", to verify this, list your entries:
+
+  $ crontab -l
+
+your output should be something like:
+
+overpass@yafa:~$ crontab -l
+# cron entry to download change files AND update overpass database
+@daily ID=opUpdateDB /usr/local/bin/cron4op.sh
+
+If you made a mistake, then corrects it by doing "crontab -e" again.
+
+4. Log Files and Rotation
+
+Different components write their logs in different directories:
+
+ *) Overpass API:
+    - /var/lib/overpass/database/database.log
+    - /var/lib/overpass/database/transactions.log
+
+ *) getdiff:
+    - /var/lib/overpass/getdiff/getdiff.log
+
+  *) httpd-overpass:
+    - /var/log/httpd/overpass_access_log
+    - /var/log/httpd/overpass_error_log
+
+  *) Scripts (ours):
+    - /var/lib/overpass/logs/op_update_db.log
+    - /var/lib/overpass/logs/cron4op.log
+
+To simplify access, we create symlinks in the logs/ directory under the Overpass
+home directory:
+
+  $ cd /var/lib/overpass/logs
+  $ ln -s /var/lib/overpass/database/database.log database.log
+  $ ln -s /var/lib/overpass/database/transactions.log transactions.log
+  $ ln -s /var/lib/overpass/getdiff/getdiff.log getdiff.log
+  $ ln -s /var/log/httpd/overpass_access_log overpass_access_log
+  $ ln -s /var/log/httpd/overpass_error_log overpass_error_log
+
+Log Rotation
+
+Slackware already rotates logs daily via /etc/cron.daily/logrotate, scheduled in
+root’s crontab at 04:40 AM:
+
+40 4 * * * /usr/bin/run-parts /etc/cron.daily
+
+This is fine for systems running 24/7. However, if the machine is powered off at
+that time, the daily jobs never run — and Overpass logs will not be rotated.
+
+To handle this, we provide a separate logrotate config file:
+
+/etc/logrotate.d/op_logrotate
+
+and add this crontab entry for root (log rotation is done by "root" in Slackware):
+
+# do overpass log rotation
+@daily ID=op_logrotate /usr/sbin/logrotate /etc/logrotate.d/op_logrotate >/dev/null
+
+Yes, you use "crontab -e" and the "Esc" dance to edit cron entry.
+
+This ensures Overpass logs are rotated once per day whenever the machine is on,
+independent of Slackware’s 04:40 AM daily slot.
+
+
+
+

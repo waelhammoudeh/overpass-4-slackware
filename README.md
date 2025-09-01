@@ -1,5 +1,5 @@
 
-## Guide to Installing and Setting Up an Overpass Server on Slackware64 15.0
+# Guide to Installing and Setting Up an Overpass Server on Slackware64 15.0
 
 This guide describes how to install and configure an Overpass API server on a Linux
 machine running **Slackware64 15.0**. The focus here is on creating a
@@ -12,7 +12,7 @@ query up-to-date data for your chosen region.
 
 ---
 
-### Prerequisites
+## Prerequisites
 
 We assume you:
 
@@ -24,7 +24,7 @@ Their site also explains the available data formats.
 
 ---
 
-### Hardware Requirements
+## Hardware Requirements
 
 The original Overpass developer’s hardware recommendation (maybe outdated) suggested:
 
@@ -54,18 +54,18 @@ california-internal.osm.pbf  | 1324 MB (1.3 GB)   |    9181 MB (9.0 GB)
 ```
 
 **Rule of thumb:** Expect about 10 - 15 GB of disk space for the database of a typical
-country, plus an equal amount of space for update files.
+region, plus an equal amount of space for update files.
 
 ---
 
-### Software Requirements
+## Software Requirements
 
 1. **Overpass API**
    - Download the latest release [here](https://dev.overpass-api.de/releases/).
    - Use the included `overpass.SlackBuild` script to compile and install the package.
 
 2.  **Region OSM Data File**
-   - Download your region’s OSM data file from the [Geofabrik download server](https://download.geofabrik.de).
+   - Download your region’s OSM data file from [Geofabrik download server](https://download.geofabrik.de).
    - The files are organized geographically — you can select your country, a sub-region,
    or even a whole continent (depending on your disk space).
    - The required format is the common **`.osm.pbf`** file **with full metadata**.
@@ -88,14 +88,14 @@ country, plus an equal amount of space for update files.
    - **JOSM** editor
    - **QGIS** desktop GIS
 
-### Planet Overpass
+## Planet Overpass
 
 Originally overpass server was initialed from planet file without historical data.
 Historical data was accumulated with minutely updates and still being added with
 the updates. Keeping this fact in mind one can use most of the scripts here to run
 his / her own instance of overpass server with full planet with meta plus attic data.
 
-### File System Structure:
+## File System Structure:
 
 Scripts included here assume the following file system structure:
 
