@@ -147,6 +147,10 @@ The script "cron4op.sh" runs the opertions: getdiff then op_update_db.sh one aft
 another. Besides that it also deletes change files older than seven days to free
 your disk space.
 
+If you are using the INTERNAL server on Geofabrik site you need to provide your
+"openstreetmap.org" account password; edit "cron4op.sh" script and provide your
+password as the value for the SECRET variable in the script.
+
 Slackware64 ships with Dillon Cron, You tell Cron when to run a job and it does
 that for you. This is done by adding a new "crontab" - cron table entry. For more
 information "man crontab" at your terminal.
