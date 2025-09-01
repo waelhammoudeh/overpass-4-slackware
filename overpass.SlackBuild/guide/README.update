@@ -101,11 +101,11 @@ created in "overpass" home directory:
 DIRECTORY = /var/lib/overpass
 
 The SOURCE setting is the region update URL at geofabrik.de, that is listed on
-your data file header information; from the illustration above:
+your data file header information as replication_base_url; from the illustration above:
 
 SOURCE = https://osm-internal.download.geofabrik.de/north-america/us/california-updates
 
-The BEGIN number is the sequence number to start download from, this also from
+The BEGIN number is the sequence number to start download from, this is also from
 the header information above listed as replication_sequence_number:
 
 BEGIN = 4525
