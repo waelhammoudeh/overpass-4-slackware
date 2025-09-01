@@ -4,7 +4,7 @@ the OSM map data. It acts as a database over the web: the client sends a
 query to the API and gets back the data set that corresponds to the query.
 
 Before you can run overpass you'll need to create the database;
-please see README.setup.
+please see README.setup and README.update in the guide directory.
 
 Before building overpass software package you need "overpass" user and group.
 This can be done with the following commands:
