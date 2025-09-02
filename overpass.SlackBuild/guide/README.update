@@ -231,6 +231,8 @@ Yes, you use "crontab -e" and the "Esc" dance to edit cron entry.
 This ensures Overpass logs are rotated once per day whenever the machine is on,
 independent of Slackware’s 04:40 AM daily slot.
 
+Changed settings are NOT preserved between upgrades:
 
-
-
+If you upgrade your overpass package, changed settings in scripts are NOT preserved
+between upgrades. This applies to "FLUSH_SIZE" in op_update_db.sh" and "SECRET"
+in cron4op.sh scripts.
