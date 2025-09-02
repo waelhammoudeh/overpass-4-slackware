@@ -480,13 +480,14 @@ mv $list_file $list_file.bak
 
 # start dispatcher
 if (( restartDispatcher == 1 )); then
-  log "$scriptName.sh: Restarting dispatcher ..."
-  op_ctl.sh start
-  rc=$?
-  if [[ $rc -ne $E_SUCCESS ]]; then
+    log "$scriptName.sh: Restarting dispatcher ..."
+    op_ctl.sh start
+    rc=$?
+    if [[ $rc -ne $E_SUCCESS ]]; then
         log "Error, failed to start dispatcher"
         exit $E_UNKNOWN
     fi
+    log "$scriptName.sh: Dispatcher started."
 fi
 
 # update area in database
