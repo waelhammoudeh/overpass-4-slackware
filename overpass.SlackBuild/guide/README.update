@@ -234,5 +234,9 @@ independent of Slackware’s 04:40 AM daily slot.
 Changed settings are NOT preserved between upgrades:
 
 If you upgrade your overpass package, changed settings in scripts are NOT preserved
-between upgrades. This applies to "FLUSH_SIZE" in op_update_db.sh" and "SECRET"
+between upgrades. This applies to "FLUSH_SIZE" in op_update_db.sh and "SECRET"
 in cron4op.sh scripts.
+
+Wael Hammoudeh
+
+September 1/2025
