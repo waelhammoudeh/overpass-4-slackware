@@ -154,7 +154,6 @@ mv $PKGDEST/usr/local/templates $PKG_LIB/
 
 # copy to documentation directory
 cp $CWD/README $PKG_DOC/
-# cp $CWD/README.md $PKG_DOC/
 cp $CWD/README.SlackBuild $PKG_DOC/
 cp $CWD/LICENSE $PKG_DOC/
 cp $CWD/$PKGNAM.SlackBuild $PKG_DOC/

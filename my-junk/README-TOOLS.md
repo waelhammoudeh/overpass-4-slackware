@@ -1,5 +1,28 @@
 **Tools And Workflow**
 
+OSC Change Files:
+
+Osmium:
+
+Getdiff:
+
+osm3s_query:
+
+BBOX:
+
+ JOSM:
+
+Well Known Text WKT:
+
+GDAL: org2org
+
+Shapefile:
+
+QGIS:
+
+
+
+
 Now you have setup your own overpass server on your own machine, wondering how to
 use it. We assume you want to learn how to write overpass queries, overpass query syntax is not complicated.
 The hard part is acquiring the knowledge of how OSM is structured and stored in a database.

@@ -337,6 +337,7 @@ logFile=$log_dir/$scriptName.log
 exec_dir="/usr/local/bin"
 OSMIUM=$exec_dir/osmium # not used here!
 OP_CTL=$exec_dir/op_ctl.sh
+DISPATCHER=$exec_dir/dispatcher
 
 op_user="overpass"
 
@@ -392,7 +393,7 @@ if [[ $? -ne $E_SUCCESS ]]; then
     exit $E_FAILED_TEST
 fi
 
-chk_executables $OSMIUM $OP_CTL
+chk_executables $DISPATCHER $OP_CTL
 if [[ $? -ne $E_SUCCESS ]]; then
     log "$scriptName.sh: Error failed chk_executables() function. Exiting"
     log "$scriptName.sh: Terminated with ERROR   XXXXX"
@@ -408,12 +409,18 @@ fi
 
 # we only update real active database
 # get it from dispatcher if it is running, else get it from op_ctl.sh
-if [[ ! -z `pgrep dispatcher` ]]; then
-    active_db_path=$(realpath $(dispatcher --show-dir))
+if pgrep -x dispatcher > /dev/null; then
+    dbDisDir=$($DISPATCHER --show-dir 2>/dev/null)
+    active_db_path=$(realpath "$dbDisDir")
 else
-    active_db_path=$(realpath $($OP_CTL status \
-               | grep "database directory" \
-               | cut -d ':' -f 3 | sed 's/^ //'))
+    dbOpctlDir=$($OP_CTL status | grep "database directory" \
+               | cut -d ':' -f 3 | sed 's/^ //')
+    active_db_path=$(realpath "$dbOpctlDir")
+fi
+
+if [[ -z $active_db_path ]]; then
+    log "Error, could not get active directory! EMPTY string."
+    exit $E_UNKNOWN
 fi
 
 if [[ $db_dir != $active_db_path ]]; then
