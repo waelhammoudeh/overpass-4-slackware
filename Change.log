@@ -1,0 +1,2 @@
+Wed Sep 3/2025
+    op_update_db.sh     use full path for executables dispatcher and op_ctl.sh
