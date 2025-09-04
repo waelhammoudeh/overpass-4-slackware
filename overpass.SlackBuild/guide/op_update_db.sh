@@ -462,7 +462,7 @@ restartDispatcher=0
 # dispatcher can not be running when using update_database
 if [[ ! -z `pgrep dispatcher` ]]; then
     log "dispatcher is running; stopping ..."
-    op_ctl.sh stop
+    $OP_CTL stop
     rc=$?
     if [[ $rc -ne $E_SUCCESS ]]; then
         log "Error, could not stop dispatcher"
@@ -488,7 +488,7 @@ mv $list_file $list_file.bak
 # start dispatcher
 if (( restartDispatcher == 1 )); then
     log "$scriptName.sh: Restarting dispatcher ..."
-    op_ctl.sh start
+    $OP_CTL start
     rc=$?
     if [[ $rc -ne $E_SUCCESS ]]; then
         log "Error, failed to start dispatcher"
