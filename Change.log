@@ -1,2 +1,5 @@
 Wed Sep 3/2025
     op_update_db.sh     use full path for executables dispatcher and op_ctl.sh
+
+Fri Sep 5/2025
+    README.md           Download region poly file from Geofabrik

@@ -78,6 +78,7 @@ region, plus an equal amount of space for update files.
    - The required format is the common **`.osm.pbf`** file **with full metadata**.
    - ⚠️ **Do not use** `.osh.pbf` files (these contain historical data, which is not
    supported in extract-initialized databases).
+   - Download your region *.poly* from Geofabrik which describes the extent of your region.
 
 3. **Osmium Tool**
    - Required for converting PBF/other formats to Overpass-compatible XML.
