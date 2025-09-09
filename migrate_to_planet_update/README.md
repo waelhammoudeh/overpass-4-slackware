@@ -105,14 +105,14 @@ the time between 21:00:00 and 22:00:00 hours inclusive.
 
 #### Create "getdiff" directory:
 
-  In your region directory create "getdiff" directory. In that directory create
+  In your **work** directory create "getdiff" directory. In that directory create
   a new configuration file with the name "getdiff.conf" with following lines:
 
   ```
   # This is a brief getdiff.conf
-  DIRECTORY = /path/to/region
+  DIRECTORY = /path/to/{WORK}
 
-  # replace /path/to/region with real path to your region directory.
+  # replace "/path/to/{WORK}"  with real path to your work directory.
   ```
 
   The file is needed because most of you have "getdiff.conf" somewhere and we need
@@ -123,14 +123,14 @@ the time between 21:00:00 and 22:00:00 hours inclusive.
   with "minute", "hour" and "day" sub-directories; that is where you can find the
   downloaded change files. A "geofabrik" directory entry is also created.
 
-  We invoke "getdiff" with the following arguments:
+  We invoke "getdiff" with the following arguments from {WORK} directory:
 
-    -c {region}/getdiff/getdiff.conf  ---> path to configure file to use
+    -c getdiff/getdiff.conf  ---> path to configure file to use
     -s https://planet.osm.org/replication/minute ---> source URL for planet minute (hour later)
     -b sequence_number ---> minute begin sequence number
     -e sequence_number ---> minute end sequence number
 
-  $ getdiff -c {region}/getdiff/getdiff.conf -s https://planet.osm.org/replication/minute -b 6742364 -e 6742402
+  $ getdiff -c getdiff/getdiff.conf -s https://planet.osm.org/replication/minute -b 6742364 -e 6742402
 
   The above command will download the minutely range files (change and state.txt).
   Find the files in: {region}/getdiff/planet/minute directory.
@@ -141,7 +141,7 @@ the time between 21:00:00 and 22:00:00 hours inclusive.
   Now we do the second invocation to fetch the hourly range, we change the source
   and sequence numbers for begin & end:
 
-  $ getdiff -c {region}/getdiff/getdiff.conf -s https://planet.osm.org/replication/hour -b 113511 -e 113513
+  $ getdiff -c getdiff/getdiff.conf -s https://planet.osm.org/replication/hour -b 113511 -e 113513
 
   This command above downloads the hourly range change files and their corresponding
   state.txt files to: {region}/getdiff/planet/hour/ directory.
