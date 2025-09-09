@@ -499,119 +499,37 @@ mergeListOSC() {
 
 } # END mergeListOSC()
 
+# --- update_from_osc_list()  ----
+# Usage: update_from_osc_list <database_dir> <flush_size> <prefix_dir> <osc_array>
+#
 update_from_osc_list() {
 
-    UPDATER=/usr/local/bin/update_database
-
-    # update_database options
-    META=--meta
-    FLUSH_SIZE=4
-    COMPRESSION="gz"
-
-    if [[ ! -z `pgrep dispatcher` ]]; then
-        log "update_from_osc_list(): Error, dispatcher is running."
-        return $E_FAILED_TEST
-    fi
-
-    if [[ $# -lt 3 ]]; then
-        log "update_from_osc_list(): Error - missing arguments. Usage:"
-        log "  update_from_osc_list <database_dir> <prefix_dir> <osc_array>"
-        return $E_MISSING_PARAM
-    fi
-
-    local database_dir="$1"
-    local prefix_dir="$2"
-    local -n osc_array="$3"   # Name reference for the array
-
-    local length=${#osc_array[@]}
-
-    local i=0
-    local j=0
-
-    while [[ $i -lt $length ]]; do {
-
-        j=$((i+1))
-        change_suffix=${osc_array[$i]}
-        state_suffix=${osc_array[$j]}
-
-        change_file=$prefix_dir$change_suffix
-        state_file=$prefix_dir$state_suffix
-
-        timestampLine=$(grep timestamp "$state_file")
-        full_version=${timestampLine#timestamp=}
-        full_version=${full_version//\\/}  # remove backslashes
-
-# update_database does not remove slashes;  timestamp=2023-09-03T20\:21\:30Z
-# full_version=$(echo "$full_version" | sed 's/\\//g')
-
-        # get sequence number from state.txt file, on successful update; it is "replicate_id"
-        sequence_line=$(grep sequenceNumber "$state_file")
-        sequence_number=`echo $sequence_line | cut -d '=' -f 2`
-
-        # log PRE_UPDATE_VERSION number
-        PRE_UPDATE_VERSION=$(cat "$database_dir/osm_base_version")
-        log "PRE_UPDATE_VERSION number is: $PRE_UPDATE_VERSION"
-
-        log " applying update from Change File: <$change_file> Dated: <$full_version>"
-
-        # set -o pipefail --> $? get sets if either command fails
-        set -o pipefail
-
-        gunzip <$change_file | $UPDATER \
-                    --db-dir=$database_dir \
-                    --version=$full_version \
-                    $META \
-                    --flush-size=$FLUSH_SIZE \
-                    --compression-method=$COMPRESSION \
-                    --map-compression-method=$COMPRESSION 2>&1 >/dev/null
-
-        if [[  ! $? -eq 0 ]]; then
-            log "update_from_osc_list(): Failed to update from file $change_file"
-            log " Exiting with Error XXXXX"
-            exit $E_UNKNOWN # would return work here?
-        fi
-
-        # update replicate_id in database directory with new sequence number
-        echo "$sequence_number" >$database_dir/replicate_id
-
-        # log POST_UPDATE_VERSION number
-        POST_UPDATE_VERSION=$(cat "$database_dir/osm_base_version")
-        log "POST_UPDATE_VERSION number is: $POST_UPDATE_VERSION"
-
-        log "update_from_osc_list(): done updating from $change_file"
-
-        # move to next pair
-        i=$((j+1))
-
-    }; done # end while()
-
-    num_files=$((length/2))
-    log "update_from_osc_list(): DONE updating of <$num_files> change file(s) from list."
-
-    return $EXIT_SUCCESS
-
-} # END update_from_osc_list()
-
-update_from_osc_list() {
     local UPDATER=/usr/local/bin/update_database
     local META=--meta
-    local FLUSH_SIZE=4
+#    local FLUSH_SIZE # made as seconad parameter! It was an after thought!
     local COMPRESSION=gz
 
-    if pgrep -q dispatcher; then
+    if pgrep dispatcher; then
         log "update_from_osc_list(): Error, dispatcher is running."
         return $E_FAILED_TEST
     fi
 
-    if (( $# < 3 )); then
+    chk_executables $UPDATER
+    if [[ $? -ne $EXIT_SUCCESS ]]; then
+        log "Error failed chk_executables() for $UPDATER."
+        return $E_FAILED_TEST
+    fi
+
+    if (( $# < 4 )); then
         log "update_from_osc_list(): Error - missing arguments."
-        log "  Usage: update_from_osc_list <database_dir> <prefix_dir> <osc_array>"
+        log "  Usage: update_from_osc_list <database_dir> <flush_size> <prefix_dir> <osc_array>"
         return $E_MISSING_PARAM
     fi
 
     local database_dir=$1
-    local prefix_dir=$2
-    local -n osc_array=$3
+    local FLUSH_SIZE=$2
+    local prefix_dir=$3
+    local -n osc_array=$4
     local length=${#osc_array[@]}
 
     for ((i=0; i<length; i+=2)); do
@@ -652,9 +570,10 @@ update_from_osc_list() {
         log "Done updating from $change_file"
     done
 
-    log "update_from_osc_list(): DONE updating of $((length/2)) change file(s)."
+    log "update_from_osc_list(): DONE updating from $((length/2)) change file(s)."
     return $EXIT_SUCCESS
-}
+
+} # END update_from_osc_list()
 
 # getMixedName <originalName> <stateFile>
 getMixedName(){

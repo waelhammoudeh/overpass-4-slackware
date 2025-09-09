@@ -9,3 +9,6 @@ Sat Sep 6/2025
 
 Mon Sep 8/2025
     extract2planet.sh  Migrate To Daily Planet Update published
+
+Mon Sep 8/2025
+    common_functions.sh     removed duplicate function
