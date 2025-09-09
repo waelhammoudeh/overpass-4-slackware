@@ -296,6 +296,8 @@ character. Please do **NOT use underscore** in your original data file name.
 
 I suggest the following file system structure:
 
+<pre>
+
 {WORK_DIR}
     |---getdiff
     |---logs
@@ -303,6 +305,7 @@ I suggest the following file system structure:
     |---region
            |---extract
 
+</pre>
 
 Create and name {WORK_DIR} any where you want, replace region above with your own
 region name. Place the script and "common_functions.sh" under "scripts" directory.
