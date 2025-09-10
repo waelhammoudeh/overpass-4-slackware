@@ -20,7 +20,7 @@
 #
 # The script writes the new produced OSM data file to {regionDir}/extract/
 # (directory must exist) using input <data_file> name with appended date
-# separated by an underscore character: orginal-name_YYYY-MM-DD.osm.pbf
+# separated by an underscore character: original-name_YYYY-MM-DD.osm.pbf
 # Please do not use underscore in data file name.):-
 #
 # There is no guarantee that this is accurate. USE AT YOUR OWN RISK.
@@ -63,8 +63,8 @@ usage() {
   echo " data_file: Extract data file to update"
   echo " poly_file: Region polygon (.poly) file."
   echo " list_file: File name with time gap change files list (from getdiff)."
-  echo  "            List file is assumed to include path to getdiff directory!"
-  return $E_SUCCESS
+
+  return $EXIT_SUCCESS
   }
 
 ### --- check arguments number ---

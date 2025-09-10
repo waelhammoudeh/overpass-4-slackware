@@ -18,3 +18,9 @@ Mon Sep 8/2025
 
 Mon Sep 8/2025
     README.md       force preset text
+
+Wed Sep 10/2025
+    common_functions.sh        added new function
+    extract2planet.sh          bug fixes
+    op_update_db.sh            bug fixed
+

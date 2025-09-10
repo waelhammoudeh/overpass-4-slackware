@@ -262,7 +262,7 @@ update_from_osc_list() {
     fi
 
     chk_executables $UPDATER
-    if [[ $? -ne $E_SUCCESS ]]; then
+    if [[ $? -ne $EXIT_SUCCESS ]]; then
         log "Error failed chk_executables() for $UPDATER."
         return $E_FAILED_TEST
     fi
@@ -318,7 +318,7 @@ update_from_osc_list() {
     done
 
     log "update_from_osc_list(): DONE updating from $((length/2)) change file(s)."
-    return $E_SUCCESS
+    return $EXIT_SUCCESS
 
 } # END update_from_osc_list()
 
@@ -370,7 +370,7 @@ fi
 
 chk_directories $op_dir $db_dir $rules_dir $exec_dir $osc_dir
 
-if [[ $? -ne $E_SUCCESS ]]; then
+if [[ $? -ne $EXIT_SUCCESS ]]; then
     echo "$scriptName.sh: Error failed chk_directories() function. Exiting"
     echo ""
     exit $E_FAILED_TEST
@@ -387,21 +387,21 @@ log "$scriptName has started ..."
 
 check_database_directory $db_dir
 
-if [[ $? -ne $E_SUCCESS ]]; then
+if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "$scriptName.sh: Error failed check_database_directory() function. Exiting"
     log "$scriptName.sh: Terminated with ERROR   XXXXX"
     exit $E_FAILED_TEST
 fi
 
 chk_executables $DISPATCHER $OP_CTL
-if [[ $? -ne $E_SUCCESS ]]; then
+if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "$scriptName.sh: Error failed chk_executables() function. Exiting"
     log "$scriptName.sh: Terminated with ERROR   XXXXX"
     exit $E_FAILED_TEST
 fi
 
 chk_files $rules_dir/areas.osm3s
-if [[ $? -ne $E_SUCCESS ]]; then
+if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "$scriptName.sh: Error failed chk_files() function to update area. Exiting"
     log "$scriptName.sh: Terminated with ERROR   XXXXX"
     exit $E_FAILED_TEST
@@ -435,7 +435,7 @@ if [[ ! -s $list_file ]]; then
    log "$scriptName: List file: \"$list_file\" not found or empty."
    log "$scriptName: No new change files to update with. Exiting"
    log "+++++++++++++++++ No New Change Files Were Found +++++++++++++++++++++"
-   exit $E_SUCCESS
+   exit $EXIT_SUCCESS
 fi
 
 # initial an empty array
@@ -451,7 +451,7 @@ done < "$list_file"
 
 checkList $osc_dir newFilesArray
 
-if [[ $? -ne $E_SUCCESS ]]; then
+if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "$scriptName.sh: Error failed checkList() function. Exiting"
     log "$scriptName.sh: Terminated with ERROR   XXXXX"
     exit $E_FAILED_TEST
@@ -464,7 +464,7 @@ if [[ ! -z `pgrep dispatcher` ]]; then
     log "dispatcher is running; stopping ..."
     $OP_CTL stop
     rc=$?
-    if [[ $rc -ne $E_SUCCESS ]]; then
+    if [[ $rc -ne $EXIT_SUCCESS ]]; then
         log "Error, could not stop dispatcher"
         exit $E_UNKNOWN
     fi
@@ -476,7 +476,7 @@ fi
 
 update_from_osc_list $db_dir $FLUSH_SIZE $osc_dir newFilesArray
 
-if [[ $? -ne $E_SUCCESS ]]; then
+if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "$scriptName.sh: Error failed update_from_osc_list() function. Exiting"
     log "$scriptName.sh: Terminated with ERROR   XXXXX"
     exit $?
@@ -490,7 +490,7 @@ if (( restartDispatcher == 1 )); then
     log "$scriptName.sh: Restarting dispatcher ..."
     $OP_CTL start
     rc=$?
-    if [[ $rc -ne $E_SUCCESS ]]; then
+    if [[ $rc -ne $EXIT_SUCCESS ]]; then
         log "Error, failed to start dispatcher"
         exit $E_UNKNOWN
     fi
@@ -502,7 +502,7 @@ log "Updating areas in database ..."
 
 $exec_dir/osm3s_query --progress --rules <"$rules_dir/areas.osm3s"
 
-if [[ $? -ne $E_SUCCESS ]]; then
+if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "$scriptName.sh: Error failed to update area objects in database. Exiting"
     log "$scriptName.sh: Terminated with ERROR   XXXXX"
     exit $?
@@ -514,4 +514,4 @@ log "Database: <$db_dir> update complete."
 log "================= $scriptName is Done ================="
 log ""
 
-exit $E_SUCCESS
+exit $EXIT_SUCCESS

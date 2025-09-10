@@ -41,7 +41,7 @@ check_database_directory() {
     local DIR="$1"
 
     if [[ -z "$DIR" ]]; then
-        err "Error: missing argument in check_database_directory()"
+        log "Error: missing argument in check_database_directory()"
         return $E_MISSING_PARAM
     fi
 
@@ -54,12 +54,12 @@ check_database_directory() {
     if [ -L "$DIR" ] || { [ -d "$DIR" ] && [ "$(find "$DIR" -mindepth 1 -print -quit)" ]; }; then
         for file in "${REQUIRED_FILES[@]}"; do
             if [ ! -e "$DIR/$file" ]; then
-                err "Error: Missing essential database file: $file"
+                log "Error: Missing essential database file: $file"
                 return $E_FAILED_TEST
             fi
         done
     else
-        err "Error: The database directory ($DIR) does not exist or is empty."
+        log "Error: The database directory ($DIR) does not exist or is empty."
         return $E_FAILED_TEST
     fi
 
@@ -70,14 +70,14 @@ check_database_directory() {
 # Usage: chk_files file1 [file2 ...]
 chk_files() {
     if [[ $# -eq 0 ]]; then
-        err "Error: missing argument(s) in chk_files()"
+        log "Error: missing argument(s) in chk_files()"
         return $E_MISSING_PARAM
     fi
 
     for f in "$@"; do
 #        log "Checking file: $f"
         if [[ ! -s "$f" ]]; then
-            err "Error: File not found or is an empty file: $f"
+            log "Error: File not found or is an empty file: $f"
             return $E_FAILED_TEST
         fi
     done
@@ -89,14 +89,14 @@ chk_files() {
 # Usage: chk_directories dir1 [dir2 ...]
 chk_directories() {
     if [[ $# -eq 0 ]]; then
-        err "Error: missing argument(s) in chk_directories()"
+        log "Error: missing argument(s) in chk_directories()"
         return $E_MISSING_PARAM
     fi
 
     for dir in "$@"; do
 #        log "Checking directory: $dir"
         if [ ! -d "$dir" ]; then
-            err "Error chk_directories(): Directory not found: $dir"
+            log "chk_directories() Error: Directory not found: $dir"
             return $E_FAILED_TEST
         fi
     done
@@ -108,14 +108,14 @@ chk_directories() {
 # Usage: chk_executables /path/to/prog1 [/path/to/prog2 ...]
 chk_executables() {
     if [[ $# -eq 0 ]]; then
-        err "Error: missing argument(s) in chk_executables()"
+        log "Error: missing argument(s) in chk_executables()"
         return $E_MISSING_PARAM
     fi
 
     for prog in "$@"; do
 #        log "Checking executable: $prog"
         if [ ! -x "$prog" ]; then
-            err "Error chk_executables(): could not find executable: $prog"
+            log "Error chk_executables(): could not find executable: $prog"
             return $E_FAILED_TEST
         fi
     done
@@ -126,7 +126,7 @@ chk_executables() {
 printList() {
 
     if [[ $# != 1 ]]; then
-        err "printList(): Error missing argument."
+        log "printList(): Error missing argument."
         return E_MISSING_PARAM
     fi
 
@@ -635,4 +635,36 @@ getNewName() {
 
 } # END getNewName()
 
+getFileSysOSM(){
+
+    # formats sequence number into OSM file system xxx/xxx/xxx
+    if (( $# < 1 )); then
+        log "getFileSysOSM(): Error - missing arguments."
+        log "  Usage: getFileSysOSM <sequenceNum>"
+        return $E_MISSING_PARAM
+    fi
+
+    local sequenceNum=$1
+
+    local file
+    local parent
+    local root
+
+    printf -v file %03u $(($sequenceNum % 1000))
+
+    local arg=$((sequenceNum / 1000))
+
+    printf -v parent %03u $(($arg % 1000))
+
+    arg=$(($arg / 1000))
+
+    printf -v root %03u $(($arg % 1000))
+
+    fileSysOSM=$root/$parent/$file
+
+    echo "$fileSysOSM"
+
+    return $EXIT_SUCCESS
+
+} # END getFileSysOSM()
 
