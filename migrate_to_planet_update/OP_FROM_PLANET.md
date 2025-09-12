@@ -58,7 +58,7 @@ underscore is a separator between the name and the date parts.
 #### Initialize New Database:
 
 If you have not initialized an overpass database yet, follow the instructions in my
-guide [README.setup](overpass-4-slackware/overpass.SlackBuild/guide/README.setup)
+guide [README.setup](https://github.com/waelhammoudeh/overpass-4-slackware/blob/master/overpass.SlackBuild/guide/README.setup)
 to setup your overpass database using your region aligned OSM data file with planet daily update.
 Come back here to continue for updating your database.
 
