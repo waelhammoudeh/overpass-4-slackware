@@ -13,7 +13,7 @@ change files based on extract data file. We will be using the later in this proc
 
 #### Preparation:
 
-A lot of scripts and files have seen changes, I strongly advice of cloning the whole
+A lot of scripts and files have seen changes, I strongly advise of cloning the whole
 repository and perform a rebuild and upgrade your overpass Slackware package.
 If you choose to do that; do not forget that I strongly recommend stopping the
 dispatcher daemon before performing "upgradepkg", you can start it afterwords.
@@ -50,7 +50,7 @@ Your overpass home directory should have this file system structure:
 </pre>
 
 Copy your planet daily aligned OSM data file you made from "Migrate To Daily Planet
-Update" earlier [README.md](migrate_to_planet_update/README.md) to the new
+Update" earlier [README.md](README.md) to the new
 "region/extract" directory. The data file name was similar to "region-data_2025-09-09.osm.pbf"
 witha date. This is the file **we are not to use underscore character** in its name. The
 underscore is a separator between the name and the date parts.
@@ -58,8 +58,8 @@ underscore is a separator between the name and the date parts.
 #### Initialize New Database:
 
 If you have not initialized an overpass database yet, follow the instructions in my
-guide [README.setup](overpass.SlackBuild/guide/README.setup) to setup your
-overpass database using your region aligned OSM data file with planet daily update.
+guide [README.setup](overpass-4-slackware/overpass.SlackBuild/guide/README.setup)
+to setup your overpass database using your region aligned OSM data file with planet daily update.
 Come back here to continue for updating your database.
 
 We initialize a new overpass database using your OSM data file mentioned above, to
