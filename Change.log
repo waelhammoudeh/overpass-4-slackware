@@ -25,6 +25,7 @@ Thu Sep 11/2025
     op_update_db.sh            bug fixed - area update
     cron4op-planet.sh          new script
     mk_regional_osc.sh         new script
-    cron4op.sh                updated script
+    cron4op.sh                 updated script
     op_logrotate               updated for new script
     op_initial_db.sh           updated script - get timestamp from header first
+    OP_FROM_PLANET.md          new file
