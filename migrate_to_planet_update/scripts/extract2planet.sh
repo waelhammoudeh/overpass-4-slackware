@@ -3,7 +3,7 @@
 # extract2planet.sh
 #
 #
-# Script aims to produce an new updated OSM regional extract file aligned with
+# Script aims to produce a new updated OSM regional extract file aligned with
 # daily updates from planet OSM {https://planet.osm.org/replication/day} server.
 #
 # Planet server daily updates are issued at the hour (00:00:00 UTC).
@@ -63,7 +63,7 @@ usage() {
   echo " data_file: Extract data file to update"
   echo " poly_file: Region polygon (.poly) file."
   echo " list_file: File name with time gap change files list (from getdiff)."
-
+  echo  "            List file is assumed to include path to getdiff directory!"
   return $EXIT_SUCCESS
   }
 
@@ -150,12 +150,12 @@ $OSMIUM apply-changes --overwrite \
                       $dataFile $combinedOSC
 
 # save return code
-return_code=$?
+rc=$?
 
 # Check the return code from osmium apply-changes
-if [ $return_code -ne 0 ]; then
-  log "Error: osmium apply-changes failed with exit code $return_code"
-  exit $return_code
+if [ $rc -ne 0 ]; then
+  log "Error: osmium apply-changes failed with exit code $rc"
+  exit $rc
 fi
 
 log "Merged combined PLANET change file, find mixed file: $mixedFileName"
@@ -187,12 +187,12 @@ $OSMIUM extract -s complete_ways --set-bounds --overwrite -p "$polyFile" \
                                  $mixedFileName
 
 # save return code
-return_code=$?
+rc=$?
 
 # Check the return code from osmium extract
-if [ $return_code -ne 0 ]; then
-    log "Error: Failed osmium extract command with exit code $return_code"
-    exit $return_code
+if [ $rc -ne 0 ]; then
+    log "Error: Failed osmium extract command with exit code $rc"
+    exit $rc
 fi
 
 log "Successfully made new extract OSM data file contains all OSM data up to: $timestamp"

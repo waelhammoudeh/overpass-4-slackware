@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Common functions for scripts
+# Common functions for OSM bash scripts
 #
 
 # --- Exit / return codes ---
@@ -14,6 +14,7 @@ E_UNKNOWN=4
 # The calling script must set:
 #   scriptName="<name of calling script>"
 #   logFile="<path to log file>"
+#   OSMIUM path to osmium executable
 
 : "${scriptName:?Error: scriptName is not set}"
 : "${logFile:?Error: logFile is not set}"
@@ -646,25 +647,23 @@ getFileSysOSM(){
 
     local sequenceNum=$1
 
-    local file
-    local parent
-    local root
+    # Validate: must be digits only, max 9 digits, not starting with zero
+    if [[ ! $sequenceNum =~ ^[1-9][0-9]{0,8}$ ]]; then
+        log "getFileSysOSM(): Error - invalid sequenceNum '$sequenceNum'."
+        log "  Must be numeric, 1–9 digits, no leading zero."
+        return $E_INVALID_PARAM
+    fi
 
-    printf -v file %03u $(($sequenceNum % 1000))
+    local file parent root
 
-    local arg=$((sequenceNum / 1000))
+    printf -v file   %03u $(( sequenceNum % 1000 ))
+    printf -v parent %03u $(( (sequenceNum / 1000) % 1000 ))
+    printf -v root   %03u $(( (sequenceNum / 1000000) % 1000 ))
 
-    printf -v parent %03u $(($arg % 1000))
-
-    arg=$(($arg / 1000))
-
-    printf -v root %03u $(($arg % 1000))
-
-    fileSysOSM=$root/$parent/$file
+    local fileSysOSM="$root/$parent/$file"
 
     echo "$fileSysOSM"
 
     return $EXIT_SUCCESS
 
 } # END getFileSysOSM()
-

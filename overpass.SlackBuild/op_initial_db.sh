@@ -72,7 +72,10 @@ pgrep dispatcher >/dev/null && {
 ### --- Extract OSM metadata ---
 seqNum=$($OSMIUM fileinfo -e -g header.option.osmosis_replication_sequence_number "$inFile")
 regionURL=$($OSMIUM fileinfo -e -g header.option.osmosis_replication_base_url "$inFile")
-timestamp=$($OSMIUM fileinfo -e -g data.timestamp.last "$inFile")
+timestamp=$($OSMIUM fileinfo -e -g header.option.osmosis_replication_timestamp "$inFile")
+if [[ -z "$timestamp" ]]; then
+    timestamp=$($OSMIUM fileinfo -e -g data.timestamp.last "$inFile")
+fi
 
 ### --- Run database initialization ---
 set -eo pipefail

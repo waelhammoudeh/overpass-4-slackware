@@ -4,13 +4,24 @@ nomail
 missingok
 notifempty
 
-# Overpass script logs
-/var/lib/overpass/logs/op_update_db.log \
-/var/lib/overpass/logs/update_osm_file.log \
+# Overpass script logs in one place
+/var/lib/overpass/logs/*.log {
+    su overpass overpass
+    rotate 5
+    size 300K
+    compress
+    notifempty
+    missingok
+}
+
+# getdiff log (different directory)
 /var/lib/overpass/getdiff/getdiff.log {
     su overpass overpass
     rotate 5
-    size 100K
+    size 300K
+    compress
+    notifempty
+    missingok
 }
 
 # Overpass database logs

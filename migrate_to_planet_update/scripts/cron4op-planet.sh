@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# cron4op.sh -- cron job for overpass
-# script calls getdiff then op_update_db.sh
-# script removes change files older than 7 days from
-#  getdiff/geofabrik directory
+# cron4op-planet.sh -- cron job for overpass from planet server
+# script calls "getdiff" to fetch planet daily change files, calls "mk_regional_osc.sh"
+# to make region daily change files and new OSM data file, script then calls
+# "op_update_db.sh" to update overpass database using made region change files.
 #
-
-SECRET=""
-# OSM account password for INTERNAL server at Geofabrik
+# script removes old files from directories: getdiff download, region change files
+# and region extract.
+#
 
 # --- Exit / return codes ---
 EXIT_SUCCESS=0
@@ -60,6 +60,7 @@ chk_files() {
     fi
 
     for f in "$@"; do
+#        log "Checking file: $f"
         if [[ ! -s "$f" ]]; then
             log "Error: File not found or is an empty file: $f"
             return $E_FAILED_TEST
@@ -113,13 +114,21 @@ opDir=/var/lib/overpass
 
 logDir=$opDir/logs
 
+regionDir=$opDir/region
+
+extractDir=$regionDir/extract
+
+replicationDir=$regionDir/replication
+
 getdiffDir=$opDir/getdiff
 
-oscDir=$getdiffDir/geofabrik
+planetDir=$getdiffDir/planet/day
 
 execDir=/usr/local/bin
 
 GETDIFF=$execDir/getdiff
+
+OSC_MAKER=$execDir/mk_regional_osc.sh
 
 UPDATER=$execDir/op_update_db.sh
 
@@ -138,14 +147,14 @@ touch $logFile
 
 log "Starting cron job for overpass ..."
 
-chk_directories $opDir $getdiffDir $oscDir $execDir
+chk_directories $opDir $regionDir $extractDir $replicationDir $getdiffDir $planetDir  $execDir
 
 if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "Error failed chk_directories() function. Exiting"
     exit $E_FAILED_TEST
 fi
 
-chk_executables $GETDIFF $UPDATER
+chk_executables $GETDIFF $OSC_MAKER $UPDATER
 if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "Error failed chk_executables() function. Exiting"
     exit $E_FAILED_TEST
@@ -157,15 +166,10 @@ if [[ $? -ne $EXIT_SUCCESS ]]; then
     exit $E_FAILED_TEST
 fi
 
-log "calling getdiff to fetch change files ..."
+# get new daily planet change files with getdiff
+log "Getting new change files from planet server"
 
-# get new change files from geofabrik server
-
-if [[ -z $SECRET ]]; then
-    $GETDIFF -c "$gdConfigure"
-else
-    $GETDIFF -c "$gdConfigure" -p "$SECRET"
-fi
+$GETDIFF -c "$gdConfigure"
 
 rc=$?
 if [[ $rc -ne $EXIT_SUCCESS ]]; then
@@ -180,15 +184,33 @@ log "Program < getdiff > completed successfully"
 log "======================================================"
 log""
 
-log "Updating overpass database"
+# make regional change file(s) from planet change ones - using list / download from getdiff
+log "Making regional change and data files ..."
 
-# update overpass database
-
-$UPDATER "$getdiffDir/newerFiles.txt" "$oscDir"
+$OSC_MAKER $getdiffDir/newerFiles.txt
 
 rc=$?
 if [[ $rc -ne $EXIT_SUCCESS ]]; then
-    log "Error failed < op_update_db.sh > operation. Exiting with code < $rc >; code is for:"
+    log "Error failed <mk_regional_osc.sh> operation. Exiting with code < $rc >; code is for:"
+    log "< $(getErrorString $rc) >, see script log for more info."
+    log "Exiting with error XXXXX"
+    log ""
+    exit $rc
+fi
+
+log "Script < mk_regional_osc.sh > completed successfully"
+log "======================================================"
+log""
+
+
+# update overpass database - from regional change files
+log "Updating overpass database ..."
+
+$UPDATER $regionDir/oscList.txt $replicationDir
+
+rc=$?
+if [[ $rc -ne $EXIT_SUCCESS ]]; then
+    log "Error failed <op_update_db.sh> operation. Exiting with code < $rc >; code is for:"
     log "< $(getErrorString $rc) >, see script log for more info."
     log "Exiting with error XXXXX"
     log ""
@@ -199,14 +221,20 @@ log "Script < op_update_db.sh > completed successfully"
 log "======================================================"
 log""
 
-log "Removing old files"
-
 # --- Cleanup old files ---
 cd "$opDir" || exit $E_UNKNOWN
 
-deleted=$(find "$oscDir" -mtime +7 -type f -print -delete | wc -l)
-log "Cleanup: removed $deleted old files from change files directory."
+deleted=$(find "$extractDir" -mtime +7 -type f -print -delete | wc -l)
+log "Cleanup: removed $deleted old extract files"
+
+deleted=$(find "$replicationDir" -mtime +7 -type f -print -delete | wc -l)
+log "Cleanup: removed $deleted old change/state.txt files"
+
+deleted=$(find "$planetDir" -mtime +7 -type f -print -delete | wc -l)
+log "Cleanup: removed $deleted old files from getdiff"
 
 log "Cron job for overpass was done successfully"
+log "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+log ""
 
 exit $EXIT_SUCCESS

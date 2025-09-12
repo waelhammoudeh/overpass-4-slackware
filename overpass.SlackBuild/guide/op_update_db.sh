@@ -7,7 +7,7 @@
 # db_dir="/var/lib/overpass/database"
 #
 # script does NOT require dispatcher to be running.
-# script will stop the dispatcher durring the update.
+# script will stop the dispatcher during the update.
 #
 ## you may adjust FLUSH_SIZE; values I have used;
 #   8 GB ram --> FLUSH_SIZE=8
@@ -497,10 +497,16 @@ if (( restartDispatcher == 1 )); then
     log "$scriptName.sh: Dispatcher started."
 fi
 
+sleep 2
+
 # update area in database
 log "Updating areas in database ..."
 
-$exec_dir/osm3s_query --progress --rules <"$rules_dir/areas.osm3s"
+if pgrep dispatcher; then
+    $exec_dir/osm3s_query --progress --rules <"$rules_dir/areas.osm3s"
+else
+   $exec_dir/osm3s_query --db-dir="$db_dir" --progress  --rules <"$rules_dir/areas.osm3s"
+fi
 
 if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "$scriptName.sh: Error failed to update area objects in database. Exiting"
