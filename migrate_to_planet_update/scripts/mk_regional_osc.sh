@@ -379,5 +379,7 @@ mv $listFile $listFile.old
 rm -rf $tmpDir/
 
 log "Script is done, exiting with EXIT_SUCCESS value of zero"
+log "--------------------------------------------------------------------------"
+log ""
 
 exit $EXIT_SUCCESS
