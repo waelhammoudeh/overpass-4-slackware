@@ -35,3 +35,7 @@ Fri Sep 12/2025
     httpd-overpass.conf        log files name change
                                use new files please, this requires apache restart.
     mk_regional_osc.sh         rename used newerFiles.txt ---> newerFiles.txt.old
+
+Sat Sep 13/2025
+    README.setup               use new updated httpd-overpass.conf file
+

@@ -9,6 +9,13 @@ op_ctl.sh – controls the dispatcher daemon (start/stop/status).
 
 rc.dispatcher – integration script for Slackware system startup/shutdown.
 
+Also included is an Apache server configuration file:
+
+httpd-overpass.conf
+
+Please note that this file was updated on September 12/2025, use the the updated
+version if used an earlier one.
+
 1. Create Overpass User and Directories
 
 Overpass should run under its own user account. If you have not already created
@@ -129,6 +136,9 @@ user to start, stop or get status of the dispatcher daemon.
 
 With the dispatcher running, you can expose Overpass through Apache HTTPD.
 
+Network configuration is beyond this README subject, simple home network with
+static IPs is assumed.
+
 a) Update /etc/hosts
 
 On all client machines in your local network, add an entry for the Overpass server:
@@ -167,11 +177,11 @@ At the bottom of the file, include the Overpass configuration:
 
 Include /etc/httpd/extra/httpd-overpass.conf
 
-Start Apache:
+Start or restart Apache:
 
 # apachectl start
 
-You may need "restart" instead if that fails!
+Or:
 
 # apachectl restart
 
@@ -189,4 +199,4 @@ Updating database and automate strategy are explained in guide/README.update fil
 
 Wael Hammoudeh
 
-September 1/2025
+September 13/2025
