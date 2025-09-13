@@ -217,6 +217,9 @@ root’s crontab at 04:40 AM:
 This is fine for systems running 24/7. However, if the machine is powered off at
 that time, the daily jobs never run — and Overpass logs will not be rotated.
 
+Note that "op_logrotate" file was updated on Sep 12/2025. Use the new updated file
+if are using the previous file.
+
 To handle this, we provide a separate logrotate config file:
 
 /etc/logrotate.d/op_logrotate
