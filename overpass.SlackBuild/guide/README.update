@@ -190,22 +190,22 @@ Different components write their logs in different directories:
     - /var/lib/overpass/getdiff/getdiff.log
 
   *) httpd-overpass:
-    - /var/log/httpd/overpass_access_log
-    - /var/log/httpd/overpass_error_log
+    - /var/log/httpd/op_httpd_access.log
+    - /var/log/httpd/op_httpd_error.log
 
   *) Scripts (ours):
     - /var/lib/overpass/logs/op_update_db.log
     - /var/lib/overpass/logs/cron4op.log
 
 To simplify access, we create symlinks in the logs/ directory under the Overpass
-home directory:
+home directory (periods at the end):
 
   $ cd /var/lib/overpass/logs
-  $ ln -s /var/lib/overpass/database/database.log database.log
-  $ ln -s /var/lib/overpass/database/transactions.log transactions.log
-  $ ln -s /var/lib/overpass/getdiff/getdiff.log getdiff.log
-  $ ln -s /var/log/httpd/overpass_access_log overpass_access_log
-  $ ln -s /var/log/httpd/overpass_error_log overpass_error_log
+  $ ln -s /var/lib/overpass/database/database.log .
+  $ ln -s /var/lib/overpass/database/transactions.log .
+  $ ln -s /var/lib/overpass/getdiff/getdiff.log .
+  $ ln -s /var/log/httpd/op_httpd_access.log .
+  $ ln -s /var/log/httpd/op_httpd_error.log .
 
 Log Rotation
 
@@ -239,4 +239,4 @@ in cron4op.sh scripts.
 
 Wael Hammoudeh
 
-September 1/2025
+September 12/2025

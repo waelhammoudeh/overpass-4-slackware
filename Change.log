@@ -29,3 +29,9 @@ Thu Sep 11/2025
     op_logrotate               updated for new script
     op_initial_db.sh           updated script - get timestamp from header first
     OP_FROM_PLANET.md          new file
+
+Fri Sep 12/2025
+    guide/op_logrotate         rotate our log files only
+    httpd-overpass.conf        log files name change
+                               use new files please, this requires apache restart.
+    mk_regional_osc.sh         rename used newerFiles.txt ---> newerFiles.txt.old

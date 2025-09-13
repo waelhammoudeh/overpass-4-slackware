@@ -208,5 +208,7 @@ deleted=$(find "$oscDir" -mtime +7 -type f -print -delete | wc -l)
 log "Cleanup: removed $deleted old files from change files directory."
 
 log "Cron job for overpass was done successfully"
+log "======================= Done ========================="
+log""
 
 exit $EXIT_SUCCESS

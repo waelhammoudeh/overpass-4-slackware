@@ -32,9 +32,12 @@ notifempty
     size 500K
 }
 
-# httpd-overpass logs (modified original Slackware httpd log rotation:
-# you may not want this for ALL your files?!)
-/var/log/httpd/*_log {
+# overpass-httpd logs - September 12/2025
+
+# uncomment to handle other apache log files
+# /var/log/httpd/*_log \
+/var/log/httpd/overpass_access.log \
+/var/log/httpd/overpass_error.log {
 #  rotate 10
     rotate 5
     notifempty

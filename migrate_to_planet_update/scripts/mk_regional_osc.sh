@@ -373,6 +373,9 @@ while [[ $length -gt $i ]]; do
     i=$((i + 2))
 done # end while()
 
+# rename processed list file: newerFiles.txt to newerFiles.txt.old
+mv $listFile $listFile.old
+
 rm -rf $tmpDir/
 
 log "Script is done, exiting with EXIT_SUCCESS value of zero"
