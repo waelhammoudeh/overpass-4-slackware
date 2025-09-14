@@ -46,3 +46,6 @@ Sun Sep 14/2025
     op_update_db.sh            Sleep 2 sec between change files including last file
     op_initial_db.sh           flush_size is an option third argument, protect from keyboard strokes
     README.setup               updated op_initial_db.sh changes
+
+Sun Sep 14/2025
+    README.setup               corrected information

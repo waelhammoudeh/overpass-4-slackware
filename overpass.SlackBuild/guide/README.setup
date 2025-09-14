@@ -13,7 +13,7 @@ Also included is an Apache server configuration file:
 
 httpd-overpass.conf
 
-Please note that this file was updated on September 12/2025, use the the updated
+Please note that this file was updated on September 14/2025, use the the updated
 version if used an earlier one.
 
 1. Create Overpass User and Directories
@@ -75,8 +75,9 @@ This script writes the value for "replication_sequence_number" in "replicate_id"
 file in the database. This is an id for the last change file included in your
 extract data file at Geofabrik.de, this number is used when we update database.
 
-The timestamp in the header is used as the "osm_base_version" number by this
-script. If that is not available then replication_timestamp is used.
+The timestamp in the header (header.option.osmosis_replication_timestamp) is used
+as the "osm_base_version" number by this script. If that is not available then
+last data timestamp is used instead (data.timestamp.last) is used.
 
 You can view all your OSM data file information using osmium with:
 
