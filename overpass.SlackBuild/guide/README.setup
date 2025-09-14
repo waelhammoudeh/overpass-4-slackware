@@ -38,22 +38,34 @@ $ mkdir database
 
 2. Initialize the database and build the area objects
 
+Use the provided "op_initial_db.sh" to initialize your database, its usage:
+
+ op_initial_db <input.osm.pbf> <db_dir> [flush_size]
+where:
+ input.osm.pbf: regional OSM extract data file in any osmium supported format.
+ db_dir: is your database directory, must exist and empty.
+ flush_size: (optional integer) Chunk size for update_database [default: 4].
+
 Run the initialization script with your region OSM data file (downloaded from
-Geofabrik or another source):
+Geofabrik) assuming you placed it in your "sources" directory with nohup command
+and run in the background using "&":
 
-$ op_initial_db.sh sources/region.osm.pbf database/
+$ nohup op_initial_db.sh sources/region.osm.pbf database/ 8 < /dev/null > nohup.out &
 
-By default the script uses FLUSH_SIZE=4. You can adjust this depending on
-available RAM:
+This command redirects script output to "nohup.out" file which you can view with
+tail -f nohup.out.
 
-$ FLUSH_SIZE=8 op_initial_db.sh sources/region.osm.pbf database/
-
-Larger values speed up initialization if you have plenty of RAM. Smaller values
-help on low-RAM systems.
+By default the script uses flush_size with value 4. Here I used 8. The flush size
+is how much data is read from the data file by "update_database" program. This
+depends on the your RAM size, larger values will speedup the process. Values I
+have used are below:
+8 GB ram ---> 4
+16 GB ram ---> 16
+128 GB ram ---> 512
 
 This step is time-consuming: depending on your CPU and region size, it may take
-minutes up to two hours. You can watch the database/ directory fill with files
-as the process runs.
+minutes up to two hours. You can watch the database/ directory fill-up with files
+as the process runs, and view "nohup.out" file.
 
 Recent extract files from Geofabrik.de have the following header file information
 set: osmosis_replication_base_url, osmosis_replication_sequence_number and
@@ -63,15 +75,12 @@ This script writes the value for "replication_sequence_number" in "replicate_id"
 file in the database. This is an id for the last change file included in your
 extract data file at Geofabrik.de, this number is used when we update database.
 
-The replication_timestamp value is used as the "osm_base_version" number by this
-script.
+The timestamp in the header is used as the "osm_base_version" number by this
+script. If that is not available then replication_timestamp is used.
 
-You can view all your file information using osmium with:
+You can view all your OSM data file information using osmium with:
 
  $ osmium fileinfo --extended file_name.osm.pbf
-
-If header information is missing from your data file, you may use "osmium" to
-add the missing information. Man "osmium-cat" and see "--output-header" option.
 
 This script copies the package "template" and "rules" directories to database/.
 

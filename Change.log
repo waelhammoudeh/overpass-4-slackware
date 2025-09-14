@@ -42,4 +42,7 @@ Sat Sep 13/2025
 Sat Sep 13/2025
     README.update               use new updated op_logrotate file
 
-
+Sun Sep 14/2025
+    op_update_db.sh            Sleep 2 sec between change files including last file
+    op_initial_db.sh           flush_size is an option third argument, protect from keyboard strokes
+    README.setup               updated op_initial_db.sh changes

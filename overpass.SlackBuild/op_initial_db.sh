@@ -2,9 +2,12 @@
 #
 # op_initial_db.sh : Initialize Overpass database and build area objects.
 #
-# Usage: op_ initial_db.sh <osm_file> <db_dir>
+# Usage: op_initial_db.sh <osm_file> <db_dir>
 #   osm_file : OSM data file (any format supported by osmium)
 #   db_dir   : Destination database directory (must exist and be empty)
+#
+# run script with nohup
+#  nohup op_initial_db.sh inputfile database/  < /dev/null > nohup.out 2>&1 &
 #
 # Requirements:
 #   - Run as user "overpass"
@@ -29,7 +32,7 @@ rulesDir="$pkgLib/rules"
 
 META=--meta               # preferred import mode
 COMPRESSION="gz"          # accepted values: [ no | gz | lz4 ]
-FLUSH_SIZE=${FLUSH_SIZE:-4}
+# FLUSH_SIZE=${FLUSH_SIZE:-4} # changed to optional last argument 9/14/2025
 REPLICATE_ID="replicate_id"
 
 ### --- Helper functions ---
@@ -39,18 +42,25 @@ info() { echo "$scriptName: $*"; }
 
 usage() {
     cat <<EOF
-Usage: $scriptName.sh <osm_file> <db_dir>
+Usage: $scriptName.sh <osm_file> <db_dir> [flush_size]
   osm_file : Input file (any OSM format supported by osmium)
   db_dir   : Destination Overpass DB directory (must exist and be empty)
+  flush_size : (optional) Chunk size for update_database [default: 4]
 EOF
     exit 1
 }
 
 ### --- Validate arguments ---
-[[ $# -ne 2 ]] && usage
+[[ $# -lt 2 || $# -gt 3 ]] && usage
 
 inFile=$1
 dbDir=$(realpath "$2")
+
+# Default flush size = 4 if not given
+FLUSH_SIZE=${3:-4}
+
+# Validate flush size is a positive integer
+[[ "$FLUSH_SIZE" =~ ^[0-9]+$ ]] || die "Invalid flush size: $FLUSH_SIZE"
 
 [[ $(id -un) != "$opUser" ]] && \
     die "Must run as user \"$opUser\"."
@@ -69,6 +79,9 @@ pgrep dispatcher >/dev/null && {
 # Ensure trailing slash for DB dir
 [[ $dbDir != */ ]] && dbDir="$dbDir/"
 
+# --- do not allow keyboard input ---
+exec </dev/null
+
 ### --- Extract OSM metadata ---
 seqNum=$($OSMIUM fileinfo -e -g header.option.osmosis_replication_sequence_number "$inFile")
 regionURL=$($OSMIUM fileinfo -e -g header.option.osmosis_replication_base_url "$inFile")
@@ -82,12 +95,11 @@ set -eo pipefail
 
 $OSMIUM cat "$inFile" -o - -f .osc \
   | $UPDATER --db-dir="$dbDir" \
-                 --version="$timestamp" \
-                 $META \
-                 --flush-size="$FLUSH_SIZE" \
-                 --compression-method="$COMPRESSION" \
-                 --map-compression-method="$COMPRESSION" \
-                 >/dev/null 2>&1 \
+             --version="$timestamp" \
+             $META \
+             --flush-size="$FLUSH_SIZE" \
+             --compression-method="$COMPRESSION" \
+             --map-compression-method="$COMPRESSION" \
   || die "Database initialization failed."
 
 info "Database initialization successful."

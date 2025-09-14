@@ -315,6 +315,7 @@ update_from_osc_list() {
         POST_UPDATE_VERSION=$(<"$database_dir/osm_base_version")
         log "POST_UPDATE_VERSION number is: $POST_UPDATE_VERSION"
         log "Done updating from $change_file"
+        sleep 2
     done
 
     log "update_from_osc_list(): DONE updating from $((length/2)) change file(s)."
