@@ -8,44 +8,52 @@ Sat Sep 6/2025
     README.md           More on poly file
 
 Mon Sep 8/2025
-    extract2planet.sh  Migrate To Daily Planet Update published
+   extract2planet.sh  	Migrate To Daily Planet Update published
 
 Mon Sep 8/2025
-    common_functions.sh     removed duplicate function
+   common_functions.sh  removed duplicate function
 
 Mon Sep 8/2025
-    README.md       getdiff directory is under {WORK} directory
+   README.md       	getdiff directory is under {WORK} directory
 
 Mon Sep 8/2025
-    README.md       force preset text
+   README.md       	force preset text
 
 Thu Sep 11/2025
-    common_functions.sh        added new functions
-    extract2planet.sh          bug fixes
-    op_update_db.sh            bug fixed - area update
-    cron4op-planet.sh          new script
-    mk_regional_osc.sh         new script
-    cron4op.sh                 updated script
-    op_logrotate               updated for new script
-    op_initial_db.sh           updated script - get timestamp from header first
-    OP_FROM_PLANET.md          new file
+   common_functions.sh  added new functions
+   extract2planet.sh    bug fixes
+   op_update_db.sh      bug fixed - area update
+   cron4op-planet.sh    new script
+   mk_regional_osc.sh   new script
+   cron4op.sh           updated script
+   op_logrotate         updated for new script
+   op_initial_db.sh     updated script - get timestamp from header first
+   OP_FROM_PLANET.md    new file
 
 Fri Sep 12/2025
-    guide/op_logrotate         rotate our log files only
-    httpd-overpass.conf        log files name change
-                               use new files please, this requires apache restart.
-    mk_regional_osc.sh         rename used newerFiles.txt ---> newerFiles.txt.old
+   guide/op_logrotate   rotate our log files only
+   httpd-overpass.conf  log files name change
+                        use new files please, this requires apache restart.
+   mk_regional_osc.sh   rename used newerFiles.txt ---> newerFiles.txt.old
 
 Sat Sep 13/2025
-    README.setup               use new updated httpd-overpass.conf file
+   README.setup         use new updated httpd-overpass.conf file
 
 Sat Sep 13/2025
-    README.update               use new updated op_logrotate file
+   README.update        use new updated op_logrotate file
 
 Sun Sep 14/2025
-    op_update_db.sh            Sleep 2 sec between change files including last file
-    op_initial_db.sh           flush_size is an option third argument, protect from keyboard strokes
-    README.setup               updated op_initial_db.sh changes
+   op_update_db.sh      Sleep 2 sec between change files including last file
+   op_initial_db.sh     flush_size is an optional third argument, protect from keyboard strokes
+   README.setup         updated op_initial_db.sh changes
 
 Sun Sep 14/2025
-    README.setup               corrected information
+   README.setup         corrected information
+
+Mon Sep 15/2025
+   README.md		Database size grows with updates
+   cron4op.sh		log format
+   cron4op-planet	log format
+   mk_regional_osc.sh	log format
+   op_update_db.sh	log format
+

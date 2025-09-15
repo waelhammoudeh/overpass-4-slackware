@@ -279,6 +279,9 @@ update_from_osc_list() {
     local -n osc_array=$4
     local length=${#osc_array[@]}
 
+    echo "" >> $logFile
+    log "Function update_from_osc_list(): Recieved list with $((length/2)) change file(s)."
+
     for ((i=0; i<length; i+=2)); do
         local change_suffix=${osc_array[i]}
         local state_suffix=${osc_array[i+1]}
@@ -295,8 +298,10 @@ update_from_osc_list() {
 
         local PRE_UPDATE_VERSION
         PRE_UPDATE_VERSION=$(<"$database_dir/osm_base_version")
-        log "PRE_UPDATE_VERSION number is: $PRE_UPDATE_VERSION"
-        log "Applying update from Change File: <$change_file> Dated: <$full_version>"
+        log "   PRE_UPDATE_VERSION number is: $PRE_UPDATE_VERSION"
+        log "   Applying update from:"
+        log "     Change File: <$change_file>"
+        log "     Dated: <$full_version>"
 
         if ! gunzip <"$change_file" | "$UPDATER" \
             --db-dir="$database_dir" \
@@ -313,12 +318,15 @@ update_from_osc_list() {
 
         local POST_UPDATE_VERSION
         POST_UPDATE_VERSION=$(<"$database_dir/osm_base_version")
-        log "POST_UPDATE_VERSION number is: $POST_UPDATE_VERSION"
-        log "Done updating from $change_file"
+        log "   POST_UPDATE_VERSION number is: $POST_UPDATE_VERSION"
+        log "   Done updating from change file: $change_file"
+        log ""
         sleep 2
     done
 
-    log "update_from_osc_list(): DONE updating from $((length/2)) change file(s)."
+    log "Function update_from_osc_list(): Done updating from $((length/2)) change file(s)."
+    echo "" >> $logFile
+
     return $EXIT_SUCCESS
 
 } # END update_from_osc_list()
@@ -383,28 +391,28 @@ mkdir -p $log_dir
 # now our log directory is there and we can write to it, so open log file
 touch $logFile
 
-log "================= $scriptName Starting ================="
+log "======================== Starting ========================"
 log "$scriptName has started ..."
 
 check_database_directory $db_dir
 
 if [[ $? -ne $EXIT_SUCCESS ]]; then
-    log "$scriptName.sh: Error failed check_database_directory() function. Exiting"
-    log "$scriptName.sh: Terminated with ERROR   XXXXX"
+    log "Error failed check_database_directory() function. Exiting"
+    log "Terminated with ERROR   XXXXX"
     exit $E_FAILED_TEST
 fi
 
 chk_executables $DISPATCHER $OP_CTL
 if [[ $? -ne $EXIT_SUCCESS ]]; then
-    log "$scriptName.sh: Error failed chk_executables() function. Exiting"
-    log "$scriptName.sh: Terminated with ERROR   XXXXX"
+    log "Error failed chk_executables() function. Exiting"
+    log "Terminated with ERROR   XXXXX"
     exit $E_FAILED_TEST
 fi
 
 chk_files $rules_dir/areas.osm3s
 if [[ $? -ne $EXIT_SUCCESS ]]; then
-    log "$scriptName.sh: Error failed chk_files() function to update area. Exiting"
-    log "$scriptName.sh: Terminated with ERROR   XXXXX"
+    log "Error failed chk_files() function to update area. Exiting"
+    log "Terminated with ERROR   XXXXX"
     exit $E_FAILED_TEST
 fi
 
@@ -433,8 +441,8 @@ fi
 
 # list_file maybe empty, this is not an error - we just have no work to do.
 if [[ ! -s $list_file ]]; then
-   log "$scriptName: List file: \"$list_file\" not found or empty."
-   log "$scriptName: No new change files to update with. Exiting"
+   log "List file: \"$list_file\" not found or empty."
+   log "No new change files to update with. Exiting"
    log "+++++++++++++++++ No New Change Files Were Found +++++++++++++++++++++"
    exit $EXIT_SUCCESS
 fi
@@ -453,8 +461,8 @@ done < "$list_file"
 checkList $osc_dir newFilesArray
 
 if [[ $? -ne $EXIT_SUCCESS ]]; then
-    log "$scriptName.sh: Error failed checkList() function. Exiting"
-    log "$scriptName.sh: Terminated with ERROR   XXXXX"
+    log "Error failed checkList() function. Exiting"
+    log "Terminated with ERROR   XXXXX"
     exit $E_FAILED_TEST
 fi
 
@@ -478,8 +486,8 @@ fi
 update_from_osc_list $db_dir $FLUSH_SIZE $osc_dir newFilesArray
 
 if [[ $? -ne $EXIT_SUCCESS ]]; then
-    log "$scriptName.sh: Error failed update_from_osc_list() function. Exiting"
-    log "$scriptName.sh: Terminated with ERROR   XXXXX"
+    log "Error failed update_from_osc_list() function. Exiting"
+    log "Terminated with ERROR   XXXXX"
     exit $?
 fi
 
@@ -488,14 +496,14 @@ mv $list_file $list_file.bak
 
 # start dispatcher
 if (( restartDispatcher == 1 )); then
-    log "$scriptName.sh: Restarting dispatcher ..."
+    log "Restarting dispatcher ..."
     $OP_CTL start
     rc=$?
     if [[ $rc -ne $EXIT_SUCCESS ]]; then
         log "Error, failed to start dispatcher"
         exit $E_UNKNOWN
     fi
-    log "$scriptName.sh: Dispatcher started."
+    log "Dispatcher started."
 fi
 
 sleep 2
@@ -510,15 +518,15 @@ else
 fi
 
 if [[ $? -ne $EXIT_SUCCESS ]]; then
-    log "$scriptName.sh: Error failed to update area objects in database. Exiting"
-    log "$scriptName.sh: Terminated with ERROR   XXXXX"
+    log "Error failed to update area objects in database. Exiting"
+    log "Terminated with ERROR   XXXXX"
     exit $?
 fi
 
 log "Done updating areas."
 
 log "Database: <$db_dir> update complete."
-log "================= $scriptName is Done ================="
+log "++++++++++++++++++++++++ Done ++++++++++++++++++++++++++"
 log ""
 
 exit $EXIT_SUCCESS

@@ -136,6 +136,7 @@ fi
 mkdir -p $logDir
 touch $logFile
 
+log "------------------------ Starting ------------------------"
 log "Starting cron job for overpass ..."
 
 chk_directories $opDir $getdiffDir $oscDir $execDir
@@ -209,6 +210,6 @@ log "Cleanup: removed $deleted old files from change files directory."
 
 log "Cron job for overpass was done successfully"
 log "======================= Done ========================="
-log""
+echo "" >> $logFile
 
 exit $EXIT_SUCCESS

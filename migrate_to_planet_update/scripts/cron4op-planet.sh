@@ -145,6 +145,7 @@ fi
 mkdir -p $logDir
 touch $logFile
 
+log "------------------------ Starting ------------------------"
 log "Starting cron job for overpass ..."
 
 chk_directories $opDir $regionDir $extractDir $replicationDir $getdiffDir $planetDir  $execDir
@@ -234,7 +235,7 @@ deleted=$(find "$planetDir" -mtime +7 -type f -print -delete | wc -l)
 log "Cleanup: removed $deleted old files from getdiff"
 
 log "Cron job for overpass was done successfully"
-log "++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-log ""
+log "++++++++++++++++++++++ DONE ++++++++++++++++++++++++++++++"
+ech "" >>$logFile
 
 exit $EXIT_SUCCESS

@@ -60,8 +60,8 @@ arizona-internal.osm.pbf     | 292  MB (0.29 GB)  |    4331 MB (4.3 GB)
 california-internal.osm.pbf  | 1324 MB (1.3 GB)   |    9181 MB (9.0 GB)
 ```
 
-**Rule of thumb:** Expect about 10 - 15 GB of disk space for the database of a typical
-region, plus an equal amount of space for update files.
+**Rule of thumb:** Expect about 10 - 15 GB as an initial database size of a typical
+region and this size will grow with updates. Allow extra space for the update files.
 
 ---
 
@@ -138,4 +138,4 @@ to abide by, read the rules and follow the law please. Be in the know.
 
 Wael Hammoudeh
 
-August 26/2025
+September 15/2025

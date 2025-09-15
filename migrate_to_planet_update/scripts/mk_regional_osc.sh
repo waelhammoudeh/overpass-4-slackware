@@ -143,7 +143,7 @@ listFile=$1
 mkdir -p $logDir
 touch $logFile
 
-log "================= $scriptName Starting ================="
+log "======================== Starting ======================"
 log "$scriptName has started ..."
 log " Input settings in use:"
 log "   target_file is: $targetFile"
@@ -364,6 +364,8 @@ while [[ $length -gt $i ]]; do
     echo "/$osmFileSys.osc.gz" >> $oscList
     echo "/$osmFileSys.state.txt" >> $oscList
 
+    log "Appended new pair names to list file: $oscList"
+
     # sequence number is written to "replicate_id" in regionDir
     echo "$sequenceNum" > $regionDir/replicate_id
 
@@ -379,7 +381,7 @@ mv $listFile $listFile.old
 rm -rf $tmpDir/
 
 log "Script is done, exiting with EXIT_SUCCESS value of zero"
-log "--------------------------------------------------------------------------"
-log ""
+log "------------------------------ DONE -------------------------------"
+echo "" >>$logFile
 
 exit $EXIT_SUCCESS
