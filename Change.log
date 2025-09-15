@@ -57,3 +57,9 @@ Mon Sep 15/2025
    mk_regional_osc.sh	log format
    op_update_db.sh	log format
 
+Mon Sep 15/2025
+   OP_FROM_PLANET.md    corrections and clarifications
+   cron4op-planet.sh	typo corrected
+   mk_regional_osc.sh   use mktemp for tmp directory
+   op_update_db.sh      space in log
+

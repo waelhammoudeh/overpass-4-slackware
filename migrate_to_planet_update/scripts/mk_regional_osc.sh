@@ -95,7 +95,9 @@ getdiffDir=$opDir/getdiff
 
 planetDir=$getdiffDir/planet/day
 
-tmpDir=/tmp/mk_osc
+# tmpDir=/tmp/mk_osc
+# Create temporary directory under /tmp with mk_osc prefix
+tmpdir=$(mktemp -d /tmp/mk_oscXXXXXX)
 
 logDir=$opDir/logs
 
@@ -378,7 +380,7 @@ done # end while()
 # rename processed list file: newerFiles.txt to newerFiles.txt.old
 mv $listFile $listFile.old
 
-rm -rf $tmpDir/
+rm -rf $tmpDir
 
 log "Script is done, exiting with EXIT_SUCCESS value of zero"
 log "------------------------------ DONE -------------------------------"

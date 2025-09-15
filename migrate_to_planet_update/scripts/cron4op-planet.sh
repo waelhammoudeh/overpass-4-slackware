@@ -236,6 +236,6 @@ log "Cleanup: removed $deleted old files from getdiff"
 
 log "Cron job for overpass was done successfully"
 log "++++++++++++++++++++++ DONE ++++++++++++++++++++++++++++++"
-ech "" >>$logFile
+echo "" >>$logFile
 
 exit $EXIT_SUCCESS

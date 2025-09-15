@@ -74,10 +74,11 @@ from their contents - directories stay. This is done with:
  $ rm -rf getdiff/*
 ```
 
-Now initialize the database using "op_initial.sh" script, set the FLUSH_SIZE if needed:
+Now initialize the database using "op_initial.sh" script,  using 8 for optional
+flush_size (change if needed):
 
 ```
- $ FLUSH_SIZE=16 op_initial.sh region/extract/region-data_2025-09-09.osm.pbf database/
+ $ nohup op_initial.sh region/extract/region-data_2025-09-09.osm.pbf database/ < /dev/null > nohup.out &
 ```
 
 You may start the dispatcher and test your database.
@@ -122,7 +123,12 @@ Your planet change files will be in: "getdiff/planet/day/" directory.
 #### mk_regional_osc.sh script:
 
 This script does what its name says; it makes change files for your region plus a
-new region OSM data file.
+new region OSM data file. Script usage:
+
+```
+mk_regional_osc.sh <list_file>
+ list_file: file name with a list of planet change and state.txt files.
+```
 
 The script uses the "newerFiles.txt" list file produced by "getdiff" program - in
 the step above. This file is passed as an argument to the script.
@@ -144,7 +150,7 @@ OSM data file used to initialize overpass database. Those two need setup.
    $ echo "region-data_2025-09-09.osm.pbf" > region/target.name
 ```
 
-The file "region-data_2025-09-09.osm.pbf" itself should be in the "region/extract"
+The file "region-data_2025-09-09.osm.pbf" itself should be placed in the "region/extract"
 directory.
 
 Region change files and their corresponding state.txt files are written to replication
@@ -152,7 +158,8 @@ directory under the region directory. Updated region OSM data files are written 
 the extract directory under your region directory.
 
 Just like "getdiff" program, the script produces a list file named "oscList.txt" in
-the region directory with change and state.txt file names produced.
+the region directory with change and state.txt file names produced. In effect it
+sets between getdiff program and op_update_db.sh script.
 
 Scripts logs its progress to "mk_regional_osc.log" file in "logs" directory.
 

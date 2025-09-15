@@ -527,6 +527,6 @@ log "Done updating areas."
 
 log "Database: <$db_dir> update complete."
 log "++++++++++++++++++++++++ Done ++++++++++++++++++++++++++"
-log ""
+echo ""
 
 exit $EXIT_SUCCESS
