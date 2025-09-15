@@ -533,6 +533,9 @@ update_from_osc_list() {
     local -n osc_array=$4
     local length=${#osc_array[@]}
 
+    echo "" >> $logFile
+    log "Function update_from_osc_list(): Recieved list with $((length/2)) change file(s)."
+
     for ((i=0; i<length; i+=2)); do
         local change_suffix=${osc_array[i]}
         local state_suffix=${osc_array[i+1]}
@@ -549,8 +552,10 @@ update_from_osc_list() {
 
         local PRE_UPDATE_VERSION
         PRE_UPDATE_VERSION=$(<"$database_dir/osm_base_version")
-        log "PRE_UPDATE_VERSION number is: $PRE_UPDATE_VERSION"
-        log "Applying update from Change File: <$change_file> Dated: <$full_version>"
+        log "   PRE_UPDATE_VERSION number is: $PRE_UPDATE_VERSION"
+        log "   Applying update from:"
+        log "     Change File: <$change_file>"
+        log "     Dated: <$full_version>"
 
         if ! gunzip <"$change_file" | "$UPDATER" \
             --db-dir="$database_dir" \
@@ -567,11 +572,15 @@ update_from_osc_list() {
 
         local POST_UPDATE_VERSION
         POST_UPDATE_VERSION=$(<"$database_dir/osm_base_version")
-        log "POST_UPDATE_VERSION number is: $POST_UPDATE_VERSION"
-        log "Done updating from $change_file"
+        log "   POST_UPDATE_VERSION number is: $POST_UPDATE_VERSION"
+        log "   Done updating from change file: $change_file"
+        log ""
+        sleep 2
     done
 
-    log "update_from_osc_list(): DONE updating from $((length/2)) change file(s)."
+    log "Function update_from_osc_list(): Done updating from $((length/2)) change file(s)."
+    echo "" >> $logFile
+
     return $EXIT_SUCCESS
 
 } # END update_from_osc_list()

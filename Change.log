@@ -63,3 +63,5 @@ Mon Sep 15/2025
    mk_regional_osc.sh   use mktemp for tmp directory
    op_update_db.sh      space in log
 
+Mon Sep 15/2025
+  common_functions.sh   format logging in update_from_osc_list()
