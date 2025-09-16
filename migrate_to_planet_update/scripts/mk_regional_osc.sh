@@ -97,7 +97,7 @@ planetDir=$getdiffDir/planet/day
 
 # tmpDir=/tmp/mk_osc
 # Create temporary directory under /tmp with mk_osc prefix
-tmpdir=$(mktemp -d /tmp/mk_oscXXXXXX)
+tmpDir=$(mktemp -d /tmp/mk_oscXXXXXX)
 
 logDir=$opDir/logs
 
@@ -202,12 +202,6 @@ if [[ $? -ne $EXIT_SUCCESS ]]; then
 fi
 
 length=${#newFilesArray[@]}
-
-mkdir -p $tmpDir
-if [[ $? -ne $EXIT_SUCCESS ]]; then
-    log "Error failed to create temporary directory. Exiting"
-    exit $E_UNKNOWN
-fi
 
 i=0
 

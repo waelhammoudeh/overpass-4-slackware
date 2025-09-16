@@ -68,3 +68,6 @@ Mon Sep 15/2025
 
 Mon Sep 15/2025
   README.setup          better explain flush size, exact command used for op_initial_db.sh
+
+Mon Sep 15/2025
+  mk_regional_osc.sh    tmpDir mistake (bug) fixed.
