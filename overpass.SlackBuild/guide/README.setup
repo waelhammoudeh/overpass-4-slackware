@@ -50,15 +50,15 @@ Run the initialization script with your region OSM data file (downloaded from
 Geofabrik) assuming you placed it in your "sources" directory with nohup command
 and run in the background using "&":
 
-$ nohup op_initial_db.sh sources/region.osm.pbf database/ 8 < /dev/null > nohup.out &
+$ nohup op_initial_db.sh sources/region.osm.pbf database/ 8 > nohup.out &
 
 This command redirects script output to "nohup.out" file which you can view with
 tail -f nohup.out.
 
 By default the script uses flush_size with value 4. Here I used 8. The flush size
 is how much data is read from the data file by "update_database" program. This
-depends on the your RAM size, larger values will speedup the process. Values I
-have used are below:
+depends on the RAM size, larger values will speedup the process, try lower value
+such as 1 if you have issues with low memory. Values I have used are below:
 8 GB ram ---> 4
 16 GB ram ---> 16
 128 GB ram ---> 512

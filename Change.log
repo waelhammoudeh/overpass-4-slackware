@@ -51,17 +51,20 @@ Sun Sep 14/2025
    README.setup         corrected information
 
 Mon Sep 15/2025
-   README.md		Database size grows with updates
-   cron4op.sh		log format
-   cron4op-planet	log format
-   mk_regional_osc.sh	log format
-   op_update_db.sh	log format
+  README.md             Database size grows with updates
+  cron4op.sh            log format
+  cron4op-planet        log format
+  mk_regional_osc.sh    log format
+  op_update_db.sh       log format
 
 Mon Sep 15/2025
-   OP_FROM_PLANET.md    corrections and clarifications
-   cron4op-planet.sh	typo corrected
-   mk_regional_osc.sh   use mktemp for tmp directory
-   op_update_db.sh      space in log
+  OP_FROM_PLANET.md     corrections and clarifications
+  cron4op-planet.sh     typo corrected
+  mk_regional_osc.sh    use mktemp for tmp directory
+  op_update_db.sh       space in log
 
 Mon Sep 15/2025
   common_functions.sh   format logging in update_from_osc_list()
+
+Mon Sep 15/2025
+  README.setup          better explain flush size, exact command used for op_initial_db.sh
