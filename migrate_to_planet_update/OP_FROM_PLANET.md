@@ -78,7 +78,7 @@ Now initialize the database using "op_initial.sh" script,  using 8 for optional
 flush_size (change if needed):
 
 ```
- $ nohup op_initial.sh region/extract/region-data_2025-09-09.osm.pbf database/ < /dev/null > nohup.out &
+ $ nohup op_initial.sh region/extract/region-data_2025-09-09.osm.pbf database/ > nohup.out &
 ```
 
 You may start the dispatcher and test your database.
@@ -165,13 +165,26 @@ Scripts logs its progress to "mk_regional_osc.log" file in "logs" directory.
 
 #### op_update_db.sh script:
 
-This is the same script we used to update from Geofabrik server, we change the script
-two argument; list file argument becomes "oscList.txt" from "mk_regional_osc.sh" script
-and change files directory becomes "region/replication" - full path of course.
+This is the same script we used to update from Geofabrik server, here is the script
+usage again:
+```
+ op_update_db.sh <list_file> <osc_dir>
+```
+
+we change the script two argument; list file argument becomes "oscList.txt" from
+"mk_regional_osc.sh" script and change files directory becomes "region/replication"
+- full path of course. We invoke the script with:
+
+<pre>
+  $ op_update_db.sh /var/lib/overpass/region/oscList.txt \
+                   /var/lib/overpass/region/replication
+</pre>
 
 #### cron4op-planet.sh script:
 
-This is a replacement script for "cron4op.sh" script we use for cron job setting.
+This is a replacement script for "cron4op.sh" script we used for cron job with the
+updating from Geofabrik server.
+
 The overpass "crontab" entry needs to be updated to run the newer script, this is
 done using "crontab -e", edit the entry for the new script to match:
 
@@ -191,6 +204,6 @@ Find the new "op_logrotate" file in this repository under "/overpass.SlackBuild/
 
 Wael Hammoudeh
 
-September 11, 2025
+September 16, 2025
 
     -

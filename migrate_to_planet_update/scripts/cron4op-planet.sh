@@ -192,8 +192,9 @@ $OSC_MAKER $getdiffDir/newerFiles.txt
 
 rc=$?
 if [[ $rc -ne $EXIT_SUCCESS ]]; then
-    log "Error failed <mk_regional_osc.sh> operation. Exiting with code < $rc >; code is for:"
-    log "< $(getErrorString $rc) >, see script log for more info."
+    log "Error failed <mk_regional_osc.sh> operation. Exiting with code < $rc >"
+    log " code is for: < $(getErrorString $rc) >"
+    log " codes are meaningful FROM scripts, see script log for more info."
     log "Exiting with error XXXXX"
     log ""
     exit $rc
@@ -211,8 +212,9 @@ $UPDATER $regionDir/oscList.txt $replicationDir
 
 rc=$?
 if [[ $rc -ne $EXIT_SUCCESS ]]; then
-    log "Error failed <op_update_db.sh> operation. Exiting with code < $rc >; code is for:"
-    log "< $(getErrorString $rc) >, see script log for more info."
+    log "Error failed <op_update_db.sh> operation. Exiting with code < $rc >"
+    log " code is for: < $(getErrorString $rc) >"
+    log " codes are meaningful FROM scripts, see script log for more info."
     log "Exiting with error XXXXX"
     log ""
     exit $rc

@@ -134,10 +134,15 @@ database, what we said about the "FLUSH_SIZE" there applies here. You should
 adjust the default value "4" used in the script. See the script for suggested values.
 To adjust the value, edit that setting in the script - its on top of the script!
 
+The script is designed to run in a cron job, if you have to run it manually in a
+terminal, then run the script as a background process.
+
 Start the script with:
 
+<pre>
   $ op_update_db.sh /var/lib/overpass/getdiff/newerFiles.txt \
                    /var/lib/overpass/getdiff/geofabrik
+</pre>
 
 The script writes its progress to "logs/op_update_db.log" in overpass home directory.
 

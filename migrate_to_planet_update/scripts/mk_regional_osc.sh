@@ -97,6 +97,8 @@ planetDir=$getdiffDir/planet/day
 
 # tmpDir=/tmp/mk_osc
 # Create temporary directory under /tmp with mk_osc prefix
+# tmpDir is checked for by chk_directories(). Checking the
+# return from mktemp is the correct way! lazy!
 tmpDir=$(mktemp -d /tmp/mk_oscXXXXXX)
 
 logDir=$opDir/logs
@@ -157,7 +159,8 @@ log "  change and state files (region): $replicationDir"
 log "  oscList.txt file directory: $regionDir"
 log ""
 
-chk_directories $opDir $regionDir $extractDir $replicationDir $getdiffDir $planetDir $execDir
+chk_directories $opDir $regionDir $extractDir $replicationDir \
+                $getdiffDir $planetDir $execDir $tmpDir
 if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "Error failed chk_directories() function. Exiting"
     log "Script work directory is where region and getdiff directories are found."

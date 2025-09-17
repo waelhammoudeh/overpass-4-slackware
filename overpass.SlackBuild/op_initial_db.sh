@@ -25,6 +25,7 @@ execDir=/usr/local/bin
 
 UPDATER="$execDir/update_database"
 OSMIUM="$execDir/osmium"
+DISPATCHER=$execDir/dispatcher
 
 pkgLib=/usr/local/lib/overpass
 templateDir="$pkgLib/templates"
@@ -66,7 +67,7 @@ FLUSH_SIZE=${3:-4}
     die "Must run as user \"$opUser\"."
 
 pgrep dispatcher >/dev/null && {
-    dir=$(dispatcher --show-dir)
+    dir=$($DISPATCHER --show-dir)
     die "dispatcher is running using DB dir: \"$dir\". Stop it before initializing."
 }
 

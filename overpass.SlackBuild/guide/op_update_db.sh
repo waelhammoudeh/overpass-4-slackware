@@ -1,15 +1,22 @@
 #!/bin/bash
 
 # Script updates overpass database and area objects from a list of change
-# files specified by <list_file> and their location directory specified by <osc_dir>.
+# and their corresponding state.txt file, with specified directory for files
+# location in file system.
 #
-# overpasss database directory is set to "db_dir" with default value below:
-# db_dir="/var/lib/overpass/database"
+# Script usage:
+#  op_update_db.sh <listFile> <oscDir>
+#   listFile: file with list of new change files and their corresponding state.txt files
+#   oscDir: directory for differs and their state.txt files.
+#
+# overpasss database directory is set to "dbDir" with default value below:
+# dbDir="/var/lib/overpass/database"
 #
 # script does NOT require dispatcher to be running.
-# script will stop the dispatcher during the update.
+# script will stop the dispatcher - if found running - during the update.
 #
-## you may adjust FLUSH_SIZE; values I have used;
+# FLUSH_SIZE is set in the script below, you may adjust this value.
+# values I have used;
 #   8 GB ram --> FLUSH_SIZE=8
 #   16 GB ram --> FLUSH_SIZE=16
 #   128 GB ram --> FLUSH_SIZE=512
@@ -247,11 +254,12 @@ checkList() {
 } # END checkList()
 
 # --- update_from_osc_list()  ----
-# Usage: update_from_osc_list <database_dir> <flush_size> <prefix_dir> <osc_array>
+# Usage: update_from_osc_list <dbDir> <flush_size> <prefixDir> <oscArray>
 #
 update_from_osc_list() {
 
-    local UPDATER=/usr/local/bin/update_database
+    local execDir=/usr/local/bin
+    local UPDATER=$execDir/update_database
     local META=--meta
 #    local FLUSH_SIZE # made as seconad parameter! It was an after thought!
     local COMPRESSION=gz
@@ -269,57 +277,57 @@ update_from_osc_list() {
 
     if (( $# < 4 )); then
         log "update_from_osc_list(): Error - missing arguments."
-        log "  Usage: update_from_osc_list <database_dir> <flush_size> <prefix_dir> <osc_array>"
+        log "  Usage: update_from_osc_list <dbDir> <flush_size> <prefixDir> <oscArray>"
         return $E_MISSING_PARAM
     fi
 
-    local database_dir=$1
+    local dbDir=$1
     local FLUSH_SIZE=$2
-    local prefix_dir=$3
-    local -n osc_array=$4
-    local length=${#osc_array[@]}
+    local prefixDir=$3
+    local -n oscArray=$4
+    local length=${#oscArray[@]}
 
     echo "" >> $logFile
     log "Function update_from_osc_list(): Recieved list with $((length/2)) change file(s)."
 
     for ((i=0; i<length; i+=2)); do
-        local change_suffix=${osc_array[i]}
-        local state_suffix=${osc_array[i+1]}
-        local change_file="$prefix_dir$change_suffix"
-        local state_file="$prefix_dir$state_suffix"
+        local changeSuffix=${oscArray[i]}
+        local stateSuffix=${oscArray[i+1]}
+        local changeFile="$prefixDir$changeSuffix"
+        local stateFile="$prefixDir$stateSuffix"
 
         local timestampLine
-        timestampLine=$(grep timestamp "$state_file")
-        local full_version=${timestampLine#timestamp=}
-        full_version=${full_version//\\/}
+        timestampLine=$(grep timestamp "$stateFile")
+        local fullVersion=${timestampLine#timestamp=}
+        fullVersion=${fullVersion//\\/}
 
-        local sequence_number
-        sequence_number=$(grep sequenceNumber "$state_file" | cut -d= -f2)
+        local sequenceNum
+        sequenceNum=$(grep sequenceNumber "$stateFile" | cut -d= -f2)
 
         local PRE_UPDATE_VERSION
-        PRE_UPDATE_VERSION=$(<"$database_dir/osm_base_version")
+        PRE_UPDATE_VERSION=$(<"$dbDir/osm_base_version")
         log "   PRE_UPDATE_VERSION number is: $PRE_UPDATE_VERSION"
         log "   Applying update from:"
-        log "     Change File: <$change_file>"
-        log "     Dated: <$full_version>"
+        log "     Change File: <$changeFile>"
+        log "     Dated: <$fullVersion>"
 
-        if ! gunzip <"$change_file" | "$UPDATER" \
-            --db-dir="$database_dir" \
-            --version="$full_version" \
+        if ! gunzip <"$changeFile" | "$UPDATER" \
+            --db-dir="$dbDir" \
+            --version="$fullVersion" \
             $META \
             --flush-size="$FLUSH_SIZE" \
             --compression-method="$COMPRESSION" \
             --map-compression-method="$COMPRESSION" >/dev/null 2>&1; then
-            log "update_from_osc_list(): Failed to update from file $change_file"
+            log "update_from_osc_list(): Failed to update from file $changeFile"
             return $E_UNKNOWN
         fi
 
-        echo "$sequence_number" >"$database_dir/replicate_id"
+        echo "$sequenceNum" >"$dbDir/replicate_id"
 
         local POST_UPDATE_VERSION
-        POST_UPDATE_VERSION=$(<"$database_dir/osm_base_version")
+        POST_UPDATE_VERSION=$(<"$dbDir/osm_base_version")
         log "   POST_UPDATE_VERSION number is: $POST_UPDATE_VERSION"
-        log "   Done updating from change file: $change_file"
+        log "   Done updating from change file: $changeFile"
         log ""
         sleep 2
     done
@@ -335,20 +343,20 @@ update_from_osc_list() {
 
 # SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
-op_dir="/var/lib/overpass"
-db_dir=$(realpath $op_dir/database)
+opDir="/var/lib/overpass"
+dbDir=$(realpath $opDir/database)
 
-rules_dir=$db_dir/rules
+rulesDir=$dbDir/rules
 
-log_dir=$op_dir/logs
-logFile=$log_dir/$scriptName.log
+logDir=$opDir/logs
+logFile=$logDir/$scriptName.log
 
-exec_dir="/usr/local/bin"
-OSMIUM=$exec_dir/osmium # not used here!
-OP_CTL=$exec_dir/op_ctl.sh
-DISPATCHER=$exec_dir/dispatcher
+execDir="/usr/local/bin"
+OSMIUM=$execDir/osmium # not used here!
+OP_CTL=$execDir/op_ctl.sh
+DISPATCHER=$execDir/dispatcher
 
-op_user="overpass"
+opUser="overpass"
 
 # source common_functions.sh -- included used functions here
 # source "$SCRIPT_DIR/common_functions.sh"
@@ -356,28 +364,28 @@ op_user="overpass"
 usage() {
   echo "usage:"
   echo ""
-  echo "$scriptName.sh <list_file> <osc_dir>"
-  echo " list_file: file with list of new change files and their state.txt files"
-  echo " osc_dir: directory for differs and their state.txt files."
+  echo "$scriptName.sh <listFile> <oscDir>"
+  echo " listFile: file with list of new change files and their state.txt files"
+  echo " oscDir: directory for differs and their state.txt files."
   exit $E_MISSING_PARAM
 }
 
 ### --- Validate arguments number ---
 [[ $# -ne 2 ]] && usage
 
-list_file=$1
-osc_dir=$2
+listFile=$1
+oscDir=$2
 
 # only "overpass" user can update database
-if [[ $(id -u -n) != $op_user ]]; then
-    echo "$scriptName: ERROR Not $op_user user! You must run this script as the \"$op_user\" user."
+if [[ $(id -u -n) != $opUser ]]; then
+    echo "$scriptName: ERROR Not $opUser user! You must run this script as the \"$opUser\" user."
     exit $E_FAILED_TEST
 fi
 
 # remove trailing slash unless root - if you have more than 1, you are SOL
-[[ $osc_dir != "/" ]] && osc_dir=${osc_dir%/}
+[[ $oscDir != "/" ]] && oscDir=${oscDir%/}
 
-chk_directories $op_dir $db_dir $rules_dir $exec_dir $osc_dir
+chk_directories $opDir $dbDir $rulesDir $execDir $oscDir
 
 if [[ $? -ne $EXIT_SUCCESS ]]; then
     echo "$scriptName.sh: Error failed chk_directories() function. Exiting"
@@ -386,7 +394,7 @@ if [[ $? -ne $EXIT_SUCCESS ]]; then
 fi
 
 # create log directory if it does not exist
-mkdir -p $log_dir
+mkdir -p $logDir
 
 # now our log directory is there and we can write to it, so open log file
 touch $logFile
@@ -394,7 +402,7 @@ touch $logFile
 log "======================== Starting ========================"
 log "$scriptName has started ..."
 
-check_database_directory $db_dir
+check_database_directory $dbDir
 
 if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "Error failed check_database_directory() function. Exiting"
@@ -409,7 +417,7 @@ if [[ $? -ne $EXIT_SUCCESS ]]; then
     exit $E_FAILED_TEST
 fi
 
-chk_files $rules_dir/areas.osm3s
+chk_files $rulesDir/areas.osm3s
 if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "Error failed chk_files() function to update area. Exiting"
     log "Terminated with ERROR   XXXXX"
@@ -420,30 +428,32 @@ fi
 # get it from dispatcher if it is running, else get it from op_ctl.sh
 if pgrep -x dispatcher > /dev/null; then
     dbDisDir=$($DISPATCHER --show-dir 2>/dev/null)
-    active_db_path=$(realpath "$dbDisDir")
+    ACTIVE_DB_PATH=$(realpath "$dbDisDir")
 else
     dbOpctlDir=$($OP_CTL status | grep "database directory" \
                | cut -d ':' -f 3 | sed 's/^ //')
-    active_db_path=$(realpath "$dbOpctlDir")
+    ACTIVE_DB_PATH=$(realpath "$dbOpctlDir")
 fi
 
-if [[ -z $active_db_path ]]; then
+if [[ -z $ACTIVE_DB_PATH ]]; then
     log "Error, could not get active directory! EMPTY string."
     exit $E_UNKNOWN
 fi
 
-if [[ $db_dir != $active_db_path ]]; then
+if [[ $dbDir != $ACTIVE_DB_PATH ]]; then
     log "Error, database directory and active directory are different"
-    log " db_dir is: <$db_dir>"
-    log " active_db_path is: <$active_db_path>"
+    log " dbDir is: <$dbDir>"
+    log " ACTIVE_DB_PATH is: <$ACTIVE_DB_PATH>"
     exit $E_INVALID_PARAM
 fi
 
-# list_file maybe empty, this is not an error - we just have no work to do.
-if [[ ! -s $list_file ]]; then
-   log "List file: \"$list_file\" not found or empty."
+# listFile maybe empty, this is not an error - we just have no work to do.
+if [[ ! -s $listFile ]]; then
+   log "List file: \"$listFile\" not found or empty."
    log "No new change files to update with. Exiting"
-   log "+++++++++++++++++ No New Change Files Were Found +++++++++++++++++++++"
+   log "+++++++++ No New Change Files Were Found +++++++++++++"
+   echo "">>$logFile
+
    exit $EXIT_SUCCESS
 fi
 
@@ -456,9 +466,9 @@ do
 {
     newFilesArray+=($line)
 }
-done < "$list_file"
+done < "$listFile"
 
-checkList $osc_dir newFilesArray
+checkList $oscDir newFilesArray
 
 if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "Error failed checkList() function. Exiting"
@@ -481,9 +491,9 @@ if [[ ! -z `pgrep dispatcher` ]]; then
     restartDispatcher=1
 fi
 
-# Usage: update_from_osc_list <database_dir> <flush_size> <prefix_dir> <osc_array>"
+# Usage: update_from_osc_list <dbDir> <flush_size> <prefixDir> <oscArray>"
 
-update_from_osc_list $db_dir $FLUSH_SIZE $osc_dir newFilesArray
+update_from_osc_list $dbDir $FLUSH_SIZE $oscDir newFilesArray
 
 if [[ $? -ne $EXIT_SUCCESS ]]; then
     log "Error failed update_from_osc_list() function. Exiting"
@@ -492,7 +502,7 @@ if [[ $? -ne $EXIT_SUCCESS ]]; then
 fi
 
 # rename the list file so "getdiff" starts new file.
-mv $list_file $list_file.bak
+mv $listFile $listFile.bak
 
 # start dispatcher
 if (( restartDispatcher == 1 )); then
@@ -512,9 +522,9 @@ sleep 2
 log "Updating areas in database ..."
 
 if pgrep dispatcher; then
-    $exec_dir/osm3s_query --progress --rules <"$rules_dir/areas.osm3s"
+    $execDir/osm3s_query --progress --rules <"$rulesDir/areas.osm3s"
 else
-   $exec_dir/osm3s_query --db-dir="$db_dir" --progress  --rules <"$rules_dir/areas.osm3s"
+   $execDir/osm3s_query --db-dir="$dbDir" --progress  --rules <"$rulesDir/areas.osm3s"
 fi
 
 if [[ $? -ne $EXIT_SUCCESS ]]; then
@@ -525,8 +535,8 @@ fi
 
 log "Done updating areas."
 
-log "Database: <$db_dir> update complete."
+log "Database: <$dbDir> update complete."
 log "++++++++++++++++++++++++ Done ++++++++++++++++++++++++++"
-echo ""
+echo "">>$logFile
 
 exit $EXIT_SUCCESS
