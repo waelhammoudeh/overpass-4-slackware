@@ -14,7 +14,7 @@
 #   - "osmium" (from osmium-tool package)
 #   - "update_database" (from overpassAPI)
 #
-# Part of the installation guide for overpassAPI on Slackware:
+# This is part of the installation & guide for overpassAPI on Slackware:
 #   https://github.com/waelhammoudeh/overpass-4-slackware
 #
 

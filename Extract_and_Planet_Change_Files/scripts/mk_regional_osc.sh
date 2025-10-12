@@ -95,10 +95,6 @@ getdiffDir=$opDir/getdiff
 
 planetDir=$getdiffDir/planet/day
 
-# tmpDir=/tmp/mk_osc
-# Create temporary directory under /tmp with mk_osc prefix
-# tmpDir is checked for by chk_directories(). Checking the
-# return from mktemp is the correct way! lazy!
 tmpDir=$(mktemp -d /tmp/mk_oscXXXXXX)
 
 logDir=$opDir/logs
@@ -327,7 +323,7 @@ while [[ $length -gt $i ]]; do
     log "  output new change file: $newChangeFile"
     log""
 
-    $OSMIUM derive-changes  --overwrite \
+    $OSMIUM derive-changes  --overwrite --keep-details --update-timestamp \
                         $latestExtractFile $newExtract \
                         --output $newChangeFile
 

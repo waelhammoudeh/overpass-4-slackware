@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Script updates overpass database and area objects from a list of change
-# and their corresponding state.txt file, with specified directory for files
+# and their corresponding state.txt files, with specified directory for files
 # location in file system.
 #
 # Script usage:
 #  op_update_db.sh <listFile> <oscDir>
 #   listFile: file with list of new change files and their corresponding state.txt files
-#   oscDir: directory for differs and their state.txt files.
+#   oscDir: directory for change files and their state.txt files.
 #
 # overpasss database directory is set to "dbDir" with default value below:
 # dbDir="/var/lib/overpass/database"

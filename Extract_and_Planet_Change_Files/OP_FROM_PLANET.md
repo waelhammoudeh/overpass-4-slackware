@@ -2,7 +2,7 @@
 ### Overpass Database Update From Planet Server
 
 In this file I provide scripts and explain how to update an overpass database from
-open street map planet servers. This gives you another option to updating your
+open street map planet servers. This gives you another option to update your
 database other than Geofabrik servers.
 
 Few points to keep in mind before I expalin the process. Working with extract data
@@ -13,10 +13,8 @@ change files based on extract data file. We will be using the later in this proc
 
 #### Preparation:
 
-A lot of scripts and files have seen changes, I strongly advise of cloning the whole
-repository and perform a rebuild and upgrade your overpass Slackware package.
-If you choose to do that; do not forget that I strongly recommend stopping the
-dispatcher daemon before performing "upgradepkg", you can start it afterwords.
+We continue here from [README.md](README.md) file where we brought an extract data
+file in alignment with planet change files timing.
 
 Copy new scripts files from my "scripts" directory in this repository to your system
 "/usr/local/bin/" directory. Files to copy are:
@@ -49,10 +47,9 @@ Your overpass home directory should have this file system structure:
                        |target.name          <--- file with OSM data file name
 </pre>
 
-Copy your planet daily aligned OSM data file you made from "Migrate To Daily Planet
-Update" earlier [README.md](README.md) to the new
+Copy your planet aligned OSM data file you made from [README.md](README.md) to the new
 "region/extract" directory. The data file name was similar to "region-data_2025-09-09.osm.pbf"
-witha date. This is the file **we are not to use underscore character** in its name. The
+with a date. This is the file **we are not to use underscore character** in its name. The
 underscore is a separator between the name and the date parts.
 
 #### Initialize New Database:
@@ -62,9 +59,9 @@ guide [README.setup](https://github.com/waelhammoudeh/overpass-4-slackware/blob/
 to setup your overpass database using your region aligned OSM data file with planet daily update.
 Come back here to continue for updating your database.
 
-We initialize a new overpass database using your OSM data file mentioned above, to
-do that, stop running dispatcher, clear current "database" and "getdiff" directories
-from their contents - directories stay. This is done with:
+Initialize a new overpass database using your planet aligned OSM data file mentioned
+above, to do that, stop running dispatcher, clear current "database" and "getdiff"
+directories from their contents - directories stay. This is done with:
 
 ```
  $ op_ctl.sh stop
@@ -78,7 +75,7 @@ Now initialize the database using "op_initial.sh" script,  using 8 for optional
 flush_size (change if needed):
 
 ```
- $ nohup op_initial.sh region/extract/region-data_2025-09-09.osm.pbf database/ > nohup.out &
+ $ nohup op_initial.sh region/extract/arizona-internal_2025-09-09.osm.pbf database/ 8 > nohup.out &
 ```
 
 You may start the dispatcher and test your database.
@@ -90,23 +87,25 @@ Create a new "getdiff.conf" file under "getdiff" directory with the following se
 ```
 DIRECTORY = /var/lib/overpass
 
-SOURCE = https://planet.osm.org/replication/day/
+SOURCE = https://planet.osm.org/replication/day
 
-BEGIN = sequence-number
+BEGIN = sequence_number
 ```
 
-Lookup the sequence number value at: https://planet.osm.org/replication/day site.
-Your starting point will be your database version in file "osm_base_version" in your
-database directory; retrieve it with:
+The value for BEGIN is the sequence number for change file to start updating from,
+you retrieve that from the "state.txt" after locating the change file. To locate
+the change file use your extract data file timestamp which is also used as the
+version number for your just initialized database:
+
 ```
  $ cat database/osm_base_version
 ```
 
 the output should be something like: "2025-09-09T00:00:00Z"
 
-Use the date to locate daily change file from planet server site and retrieve the
-sequence number from the corresponding "state.txt" file, this will be your value
-for BEGIN in getdiff.conf file.
+Use the timestamp to locate daily change file from planet server site and retrieve
+the change file sequence number from the corresponding "state.txt" file, this will
+be your value for BEGIN in getdiff.conf file.
 
 Remember you need the file that has changes just after what is included in your
 database. The version number above, tells me that the database has data up to
@@ -147,11 +146,11 @@ OSM data file used to initialize overpass database. Those two need setup.
  initialize your database. From overpass home directory this can be done with:
 
  ```
-   $ echo "region-data_2025-09-09.osm.pbf" > region/target.name
+   $ echo "arizona-internal_2025-09-09.osm.pbf" > region/target.name
 ```
 
-The file "region-data_2025-09-09.osm.pbf" itself should be placed in the "region/extract"
-directory.
+The file "arizona-internal_2025-09-09.osm.pbf" itself should be placed in the
+"region/extract/" directory.
 
 Region change files and their corresponding state.txt files are written to replication
 directory under the region directory. Updated region OSM data files are written in
@@ -204,6 +203,4 @@ Find the new "op_logrotate" file in this repository under "/overpass.SlackBuild/
 
 Wael Hammoudeh
 
-September 16, 2025
-
-    -
+October 11/2025

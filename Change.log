@@ -82,4 +82,9 @@ Tue Sep 16/2025
   cron4op-planet.sh     error codes & messages are for our scripts only
   README.update         Doc clarifications
 
-
+Sat Oct 11/2025
+  migrate_to_planet_update/ renamed directory to "Extract_and_Planet_Change_Files/"
+  guide/README.update   renamed file to "guide/README.update.md"
+  Extract_and_Planet_Change_Files/README.md  rewrite with lots of details
+  OP_FROM_PLANET.md     minor edit
+  README.update.md      info correction

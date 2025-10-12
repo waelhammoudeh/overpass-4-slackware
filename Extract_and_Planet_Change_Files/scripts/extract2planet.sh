@@ -18,7 +18,7 @@
 # data in Geofabrik data file and midnight of the next day, the list is manually
 # constructed and downloaded using "getdiff" program range function.
 #
-# The script writes the new produced OSM data file to {regionDir}/extract/
+# The script writes the new produced OSM data file to {region}/extract/
 # (directory must exist) using input <data_file> name with appended date
 # separated by an underscore character: original-name_YYYY-MM-DD.osm.pbf
 # Please do not use underscore in data file name.):-
@@ -169,6 +169,9 @@ sequenceNum=$(grep sequenceNumber "$lastStateFile" | cut -d= -f2)
 # this URL is ASSUMED!!!
 URL="https://planet.osm.org/replication/hour"
 
+hostName=$(hostname)
+
+
 timestampLine=$(grep timestamp "$lastStateFile")
 timestamp=${timestampLine#timestamp=}
 timestamp=${timestamp//\\/}
@@ -199,7 +202,5 @@ log "Successfully made new extract OSM data file contains all OSM data up to: $t
 log "New OSM data file was written to: $newDataFile"
 log "$scriptName is done"
 log ""
-
-# TODO: write a state.txt file for this
 
 exit $EXIT_SUCCESS
