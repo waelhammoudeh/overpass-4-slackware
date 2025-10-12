@@ -631,7 +631,7 @@ To use the script set / change variable in the script (all on the top part):
 
   - change opDir value to your work directory
 ```
-  # opDir=/var/lib/overpass\
+  # opDir=/var/lib/overpass
   opDir=/home/wael/extract-wd
 ```
 
