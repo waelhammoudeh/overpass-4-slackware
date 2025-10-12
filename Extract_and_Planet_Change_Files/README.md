@@ -231,7 +231,7 @@ To update this data file using minutely change files from planet OSM server we s
 at minute sequence number **just after** 6756480.
 
 The same state.txt on planet minute server can be found using the timestamp value
-listed from osmium fileinfo using "Locate Change FILE By Timestamp" method described
+listed from osmium fileinfo using "Locate Change File By Timestamp" method described
 above.
 
 I have used this method to set my minute begin value for "Range List with getdiff" below.
@@ -411,7 +411,7 @@ file in its work directory: {WORK_DIR}/getdiff/rangeList.txt, do not remove.
 Now we do the second invocation to fetch the hourly range, we change the **source**
 and sequence numbers for begin & end values:
 
-  * - s https://planet.osm.org/replication/hour
+  * -s https://planet.osm.org/replication/hour
 
 the full command with arguments from {WORK_DIR} is below:
 
@@ -545,7 +545,7 @@ The date is for year, month and day from last change file in "rangeList.txt" fil
 
 To execute the script place your polygon file under "region/" directory and your
 extract data file under "region/extract/" directory and from work directory run
-the script. This is the command I used for example data file:
+the script. This is the command I used for my example data file:
 
 ```
  $ scripts/extract2planet.sh region/extract/arizona-internal.osm.pbf region/arizona.poly getdiff/rangeList.txt
@@ -629,9 +629,11 @@ To use the script set / change variable in the script (all on the top part):
   - set to your area or region name, use short name\
   regionName=Arizona
 
-  - change opDir value to your work directory\
+  - change opDir value to your work directory
+```
   # opDir=/var/lib/overpass\
   opDir=/home/wael/extract-wd
+```
 
 **Create target.name:**
 
@@ -680,7 +682,7 @@ From your work directory run the script with "newerFiles.txt" as an argument:
 ```
 
 For each planet daily change file in "newerFiles.txt" list, the script produces
-a new updated extract data file in "region/extract/" directives and a daily change
+a new updated extract data file in "region/extract/" directory and a daily change
 file with its corresponding state.txt file for the extract in "region/replication/"
 directory. The script writes its progress to standard output (terminal) and to its
 log file in "logs/mk_regional_osc.log", take a look in the log file. In addition,
