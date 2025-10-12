@@ -13,7 +13,7 @@ query up-to-date data for your chosen region.
 Setup and updates are explained in files:
 
   - [README.setup](overpass.SlackBuild/guide/README.setup)
-  - [README.update](overpass.SlackBuild/guide/README.update)
+  - [README.update](overpass.SlackBuild/guide/README.update.md)
 
 in the Guide directory.
 
