@@ -20,7 +20,9 @@ Also ensure the home directory exists with correct ownership:
 
 Installed Files
 
-The build script installs the following helper scripts and configuration files:
+This build script installs the following helper scripts and configuration files:
+All additional scripts and configuration files are in the build script "extra"
+directory.
 
 Installed to /usr/local/bin/:
 
@@ -72,4 +74,4 @@ The following filesystem structure is used:
 
 Wael Hammoudeh
 
-August 31/2025
+June 26/2026

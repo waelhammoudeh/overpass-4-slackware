@@ -1,3 +1,11 @@
+Sun Jun 28/2026
+    overpass.SlackBuild Upgraded to version 0.7.62.11
+    SlackBuild          Directory restructure, all my scripts moved to "extra"
+    httpd-overpass.conf Moved log files to "overpass" "logs" directory.
+    op_logrotate        Modified for new log files locations.
+    README.setup.md     Edited to be more clear and reflect changes made
+    README.update.md    Edited to be more clear and reflect changes made
+
 Wed Sep 3/2025
     op_update_db.sh     use full path for executables dispatcher and op_ctl.sh
 

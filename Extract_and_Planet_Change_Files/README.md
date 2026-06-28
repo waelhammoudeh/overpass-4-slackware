@@ -1,16 +1,19 @@
 
 ## Regional Extract And Daily Planet Change Files
 
+
 In this file, I explain how to use OSM planet daily change files to update a regional
-extract data file and then produce a daily change file for that regional extract.
+extract OSM data file from Geofabrik.de website and then produce a daily change file
+from the new and old regional extract OSM data files.
 
-In this process we first align an extract OSM data file with **planet timing** for
-daily change files production time which is at midnight UTC daily, the change files
-are calculated from two extract OSM data files. The change files produced can be
-used to update databases initialized from the aligned extract OSM data file.
+In this process we first align an extract OSM data file - from Geofabrik- with
+**planet timing** for daily change files production time which is at midnight UTC
+daily, the change file is calculated from two extract OSM data files. The change
+files produced can be used to update databases initialized from the aligned extract
+OSM data file.
 
-The method described here is used when we do not have access to planet data file
-or the resources to process the planet data file.
+The method described here is used when we do not have access to the planet OSM data
+file - it is huge - or the resources to process that file.
 
 ### Requirements:
 
@@ -74,27 +77,29 @@ different points in time. Merging the change file with the older data file resul
 newer data file.
 
 When a new change file is calculated; it is assigned a **timestamp** and a unique
-**replication sequence number** (sequence number for short) written to a
+**replication sequence number** (sequence number for short) both are written to a
 corresponding "state.txt" file. Given one variable, to retrieve the other variable
 we look in the "state.txt" file for that.
+
+Change files are usually named with numbers, corresponding state.txt file will start
+with the same numbers as change file. See below for naming scheme.
 
 Planet change files are calculated for three different time intervals (called Granularity),
 those are minutely, hourly and daily change files calculated at the top of each time period.
 
-**Timestamp and Change file:** We know that each element in OSM file has its own
-timestamp, the **file timestamp** indicates that it includes elements with
-**up to that timestamp.** Change files cover a defined period of time; has **start**
-and **end** time. The **file timestamp** is always the **end time**.
-The implied **start time** in **minutely** change file is **one minute before**
-its end time, for an **hourly** change file it is **one hour before** its end time,
-and for a daily change file the implied starting time is **one day before** its
-end time.
+**Timestamp and Change file:** We know that each element in OSM data file has its own
+timestamp, the **change file timestamp** indicates that it includes elements with
+**up to that specified timestamp.** Change files cover a defined period of time; defined
+means it has **start** and **end** time. The **change file timestamp** is always the
+**end time**. The implied **start time** in **minutely** change file is **one minute before**
+its end time, for an **hourly** change file its start time is **one hour before** its end time,
+and for a daily change file the implied start time is **one day before**  its end time.
 
 **Sequence Number and Change File:** Formally called "replication sequence number" is
 a unique number assigned to change file when calculated **by replication service provider.**
 For planet change files; sequence numbers are different for each Granularity, which
 must be given with each sequence number. Geofabrik sequence numbers are for daily
-change files from Geofabrik only. Sequence number is an integer 9 digits or less long.
+change files from Geofabrik only. Sequence number is an integer of 9 digits or less.
 
 Timestamps and sequence numbers can be used to locate change file on replication servers.
 
@@ -109,12 +114,14 @@ missed that directory closing time - we look in the next directory up to that wi
 closest "Latest Modified" time.
 
 **Locate Change File By Sequence Number:** Sequence numbers are used to store files
-on disks. The following scheme is used to store change files on disks by converging
+on disks. The following scheme is used to store change files on disks by converting
 sequence number to file system structure:
 
-sequence number is placed into a nine-digit long field padded with leading zeros,
-the string is then split into 3 fields 3 character each, three slashes are inserted
-starting from the left:
+sequence number is placed into a nine-digit long field padded with leading zeros -
+when needed, the string is then split into 3 fields 3 character long each, three
+slashes are inserted starting from the left:
+Note: column heading "# 0s" is for number of digits present in the sequence number,
+then the number of zeros required for padding.
 
  <pre>
     sequence #    # 0s  123456789      separate 3x3  insert slashes
@@ -140,6 +147,8 @@ file. We use **"osmium fileinfo"** to retrieve and view this information, using
 the --extended (-e) option with the command gives more information.
 Man osmium-fileinfo for its full usage.
 
+My SlackBuild for osmium tool is [here.](https://github.com/waelhammoudeh/osmium-tool_slackbuild)
+
 Using my extract data file, selected and important lines from "osmium fileinfo -e "
 are shown and explained below:
 
@@ -164,13 +173,22 @@ Data:
 
  - Name: file name given in the command line
 
- - base_url: the URL update page for the file
+ - osmosis_replication_base_url: this is the URL for update page for your OSM extract data file.
 
- - sequence_number: sequence number for **last included** change file, start update from
- **next** sequence number; more about this below.
+ Copy this URL and paste it into your browser address bar; take yourself into a tour, note the
+ listed "state.txt" file - for latest available change file - take a look inside this state.txt file.
+ Then click on links to see how change files and their state.txt files are organized. Take the same
+ tour after few days and see how often files are updated.
 
- - timestamp: **(Header)** extract calculation time; extract includes data
- **up to this timestamp** use this timestamp as starting point to bring your
+ Note that you need to login into your "openstreetmap.org" account to access Geofabrik.de INTERNAL
+ server. You may want to create an account if you do not have one!
+
+
+ - osmosis_replication_sequence_number: sequence number for **last included** change file,
+ start update from **next** sequence number; more about this below.
+
+ - osmosis_replication_timestamp: **(Header)** extract calculation time; extract includes
+ data **up to this timestamp** use this timestamp as starting point to bring your
  extract OSM data file in alignment with planet daily update.
 
  - Timestamps: In *Data* section lists included data timestamps for First and Last
@@ -698,6 +716,10 @@ files and you do not want to keep too many of them around.
 
 Hope somebody will find this useful.
 
+**TODO:**
+ - shorten this file ... it is just too long!
+ - simplify; most of it about `getdiff` range function ... move it out of here
+
 Wael Hammoudeh
 
-October 10/2025
+June 28/2026

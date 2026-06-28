@@ -1,60 +1,49 @@
 README.update - Overpass SlackBuild
 
 This file explains how to update an initialized Overpass database with the latest
-available OSM data using change files. It also describes how to automate this
-process on a Slackware64 system.
+available OSM data using daily change files from "Geofabrik.de" site. It also describes
+how to automate this process on a Slackware64 system (maybe applied to any Linux system).
 
 1. About Change files:
 
 Databases and OSM data files are updated with "change files". Change file is the
-difference between two data files from two different times, when adding change
+difference between two OSM data files from two different times, when adding change
 file to the oldest of the two data files we get the newest of the two.
 Each change file has a correponding "state.txt" with 2 important identification
 lines; the sequence number and a timestamp lines. Sequence number is incremented
 for each new change file and the timestamp is when that change file was calculated.
+See **Change Files:** section in [Extract_and_Planet_Change_Files](https://github.com/waelhammoudeh/overpass-4-slackware/tree/master/Extract_and_Planet_Change_Files)
+for more information about them.
 
 2. Update Database:
 
 This process is basically two steps; in the first we retrieve or fetch change
 files using my "getdiff" program and on the second step we apply change files
-to update the database using my "op_update_db.sh" script.
+to update the overpass database using my "op_update_db.sh" script.
 
 The "getdiff" program and "op_update_db.sh" script work in succession, "getdiff"
 fills a bucket then "op_update_db.sh" empties this bucket.
 
-The "getdiff" program appends new downloaded file names to list file called
+The "getdiff" program appends new downloaded filenames as list to file called
 "newerFiles.txt", this file is then read by "op_update_db.sh" script to update
 the database, the script renames the list file to "newerFiles.txt.bak" so getdiff
 starts a new "newerFiles.txt" next time around.
 
-2.1 Install and setup "getdiff"
+## 2.1 Install and setup "getdiff"
 
-You download "getdiff" using "git clone", build it using its "makefile" and then
-install the executable by copying it as root to your system "/usr/local/bin/"
-directory. This is accomplished by the following steps as your own mortal self
-from your own {HOME} directory:
+Installing "getdiff" program now has many options; you could clone the whole
+repository, you could just download the source tarball then untar it and use
+`make install` to compile and install the program. If you are on Slackware then
+use the SlackBuild script instead to build and install the package.
 
-```
- $ git clone https://github.com/waelhammoudeh/getdiff
- $ cd getdiff
- $ make
-```
+Either way the program installs to /usr/local/bin/ directory, program docs are
+installed to /usr/local/doc/ with different names depending on method used to
+install; `make install` writes docs in "getdiff" directory while SlackBuild moves
+that (renames it) to "getdiff-0.01.87" with the same contents in both cases.
 
-Note that this directory includes an example configure file which you will need
-to copy farther down.
-
-Now as the root user copy getdiff program:
-
-```
- $ su -
- (enter root password)
- # cp {HOME}/getdiff/getdiff /usr/local/bin/
-```
-
-Replace {HOME} with path to your real home directory.
-
-Now we setup "getdiff" as the "overpass" user and couple settings will be taken
-from the region OSM data file which you use "osmium fileinfo" to retrieve.
+Now we setup "getdiff" as the "overpass" user with a couple of settings taken
+from the region OSM data file for which you use "osmium fileinfo" to retrieve
+required information.
 
 Now from "root" user change to the "overpass" user and change directory to user
 "overpass" home directory:
@@ -62,16 +51,30 @@ Now from "root" user change to the "overpass" user and change directory to user
  # su overpass
  $ cd ~
 ```
-Create "getdiff" directory, and copy the example configure file mentioned above.
+now `pwd` should return "/var/lib/overpass".
+
+If you did not create "getdiff" directory yet, now is the time to create it - the
+program will create it for you on first use, but we need to place our configuration
+file in that directory now. Program will not complain it will use the existing
+directory.
+
+
+Create "getdiff" directory, and copy the example configure file to it.
 This will be "getdiff" program work directory where it will write "newerFiles.txt"
 file and where it will create "geofabrik" directory to save downloaded change files.
 
 ```
  $ mkdir getdiff
- $ cp {HOME}/getdiff/getdiff.conf.example getdiff/getdiff.conf
+ $ cp /usr/local/doc/getdiff-0.01.87/getdiff.conf.example getdiff/getdiff.conf
+```
+or
+```
+ $ cp /usr/local/doc/getdiff/getdiff.conf.example getdiff/getdiff.conf
 ```
 
-Now we edit the configure file, to illustrate I will use the following output:
+Note that I dropped the extension "example" from the destination file.
+
+Now we edit "getdiff.conf" file, to illustrate I will use the following output:
 
 <pre>
 overpass@regrets:~$ osmium fileinfo sources/california-latest-internal.osm.pbf
@@ -96,17 +99,30 @@ Header:
 overpass@regrets:~$
 </pre>
 
-We change the following settings: USER, DIRECTORY, SOURCE and BEGIN.
+We change the following settings in our "getdiff.conf" file:
+```
+USER
+DIRECTORY
+LOG_FILE
+SOURCE
+BEGIN
+```
 
-The USER name is required if you used Geofabrik **INTERNAL** server to download your
-region data file, in that case we will enter the password on invocation of getdiff:
+The USER name is required since we used Geofabrik **INTERNAL** server to download our
+region data file, we will enter the password on invocation of getdiff:
 
 USER = myemail@someserver.com
 
-The DIRECTORY setting is where "getdiff" work directory is; the one you just
-created in "overpass" home directory:
+The DIRECTORY setting is where "getdiff" work directory is created; this is really not
+required since this is the default location for the work directory. But I may foreget
+this fact in a month or few days from now! So I usually set this.
 
 DIRECTORY = /var/lib/overpass
+
+Program logs its progress to "getdiff.log" under its work directory by default,
+we change that to the overpass common logging directory "logs" with:
+
+LOG_FILE = /var/lib/overpass/logs/getdiff.log
 
 The SOURCE setting is the region update URL at geofabrik.de, that is listed on
 your data file header information as replication_base_url; from the illustration above:
@@ -119,17 +135,24 @@ LAST INCLUDED change file in the extract, we start from the one **JUST AFTER** t
 
 BEGIN = 4526
 
-Edit your "getdiff.conf" file with your own information and save it.
+Edit your "getdiff.conf" file with your own information and save it using your
+favourite text editor.
 
-To download change files, we start "getdiff" with the configuration file and if
-using the INTERNAL server the password:
+To download change files, we invoke `getdiff` passing to it our configuration file
+and our password for "openstreetmap.org" account:
+
 ```
   $ getdiff -c getdiff/getdiff.conf -p xxxxxx
 ```
 
-Program logs its progress to "getdiff.log" under its work directory.
+Program is more verbose in its log file when `verbose` option is set. This log
+file may recieve logs from curl-library and or my cookie handling code.
 
-2.2 Update with "op_update_db.sh" script:
+Assuming the region OSM data file is more than a day old, program should download
+change files and their correponding state.txt files into "geofabrik" directory.
+Check the log file, inspect `newerFiles.txt` and "previous.seq" files.
+
+## 2.2 Update with "op_update_db.sh" script:
 
 The script "op_update_db.sh" is used to update overpass database with change files
 downloaded by "getdiff". Script usage is:
@@ -141,8 +164,8 @@ downloaded by "getdiff". Script usage is:
 The list_file is "newerFiles.txt" produced by "getdiff", osc_dir is the directory
 where change files are in the file system, that is: getdiff/geofabrik.
 
-The script uses the same "update_database" program we used in initialing the
-database, what we said about the "FLUSH_SIZE" there applies here. You should
+The script uses the same overpass "update_database" program we used to initialize
+the database, what we said about the "FLUSH_SIZE" there applies here. You should
 adjust the default value "4" used in the script. See the script for suggested values.
 To adjust the value, edit that setting in the script - its on top of the script!
 
@@ -151,10 +174,10 @@ terminal, then run the script as a background process.
 
 Start the script with:
 
-<pre>
+```
   $ op_update_db.sh /var/lib/overpass/getdiff/newerFiles.txt \
                    /var/lib/overpass/getdiff/geofabrik
-</pre>
+```
 
 The script writes its progress to "logs/op_update_db.log" in overpass home directory.
 
@@ -193,44 +216,37 @@ You are done adding the required "crontab entry", to verify this, list your entr
 
 your output should be something like:
 
-<pre>
+```
 overpass@yafa:~$ crontab -l
 # cron entry to download change files AND update overpass database
 @daily ID=opUpdateDB /usr/local/bin/cron4op.sh
-</pre>
+```
 
-
-If you made a mistake, then corrects it by doing "crontab -e" again.
+If you made a mistake, then correct it by doing "crontab -e" again.
 
 4. Log Files and Rotation
 
-Different components write their logs in different directories:
+Logging got a make-over on June 26/2026 with ALL scripts and programs under our
+control writing their log files to one central log location directly, that location
+is overpass user "logs" directory at: "/var/lib/overpass/logs/". This involved
+changing the log setting in "httpd-overpass.conf" and modifying `getdiff` program
+to make its log file configurable by its user. The exception that remains is
+`overpass` - this is out of our control.
 
- *) Overpass API:
+ *) Overpass API has the two log files:
     - /var/lib/overpass/database/database.log
     - /var/lib/overpass/database/transactions.log
 
- *) getdiff:
-    - /var/lib/overpass/getdiff/getdiff.log
-
-  *) httpd-overpass:
-    - /var/log/httpd/op_httpd_access.log
-    - /var/log/httpd/op_httpd_error.log
-
-  *) Scripts (ours):
-    - /var/lib/overpass/logs/op_update_db.log
-    - /var/lib/overpass/logs/cron4op.log
-
-To simplify access, we create symlinks in the logs/ directory under the Overpass
-home directory (note periods at the end):
+We create sybolic links to those two files in overpass "logs" directory as the
+overpass user:
 ```
   $ cd /var/lib/overpass/logs
   $ ln -s /var/lib/overpass/database/database.log .
   $ ln -s /var/lib/overpass/database/transactions.log .
-  $ ln -s /var/lib/overpass/getdiff/getdiff.log .
-  $ ln -s /var/log/httpd/op_httpd_access.log .
-  $ ln -s /var/log/httpd/op_httpd_error.log .
 ```
+
+Now we can access any log file from that "logs" directory.
+
 
 Log Rotation
 
@@ -241,9 +257,6 @@ root’s crontab at 04:40 AM:
 
 This is fine for systems running 24/7. However, if the machine is powered off at
 that time, the daily jobs never run — and Overpass logs will not be rotated.
-
-Note that "op_logrotate" file was updated on Sep 12/2025. Use the new updated file
-if you are using the previous file.
 
 To handle this, we provide a separate logrotate config file:
 
@@ -261,12 +274,20 @@ Yes, you use "crontab -e" and the "Esc" dance to edit cron entry.
 This ensures Overpass logs are rotated once per day whenever the machine is on,
 independent of Slackware’s 04:40 AM daily slot.
 
-Changed settings are NOT preserved between upgrades:
+**Changed settings are NOT preserved on upgrades:**
 
 If you upgrade your overpass package, changed settings in scripts are NOT preserved
 between upgrades. This applies to "FLUSH_SIZE" in op_update_db.sh and "SECRET"
 in cron4op.sh scripts.
 
+
+**Where to Now:**
+
+After awhile of updating from geofabrik.de website, you may want to move to updating
+your database from change files from "planet.osm.org" servers. Check out my guide for
+doing that [here](https://github.com/waelhammoudeh/overpass-4-slackware/tree/master/Extract_and_Planet_Change_Files)
+and [here too.](https://github.com/waelhammoudeh/overpass-4-slackware/blob/master/Extract_and_Planet_Change_Files/OP_FROM_PLANET.md)
+
 Wael Hammoudeh
 
-September 12/2025
+June 28/2026

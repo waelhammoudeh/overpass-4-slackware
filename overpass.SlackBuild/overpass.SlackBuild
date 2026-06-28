@@ -37,12 +37,12 @@ TMP=${TMP:-/tmp/WH}
 
 PKGNAM=overpass
 SRC_OSM3S=osm-3s_v
-VERSION=0.7.62.8
+VERSION=0.7.62.11
 
 SRC=${SRC_OSM3S}${VERSION}
 
 BUILD=${BUILD:-1}
-TAG=_wh
+TAG=${TAG:-_wh}
 
 PKGDEST=$TMP/package-$PKGNAM
 MYPREFIX=/usr/local
@@ -159,36 +159,37 @@ cp $CWD/LICENSE $PKG_DOC/
 cp $CWD/$PKGNAM.SlackBuild $PKG_DOC/
 
 mkdir -p $PKG_DOC/guide
-cp $CWD/guide/README.setup $PKG_DOC/guide/
-cp $CWD/guide/README.update $PKG_DOC/guide/
+cp $CWD/guide/README.setup.md $PKG_DOC/guide/
+cp $CWD/guide/README.update.md $PKG_DOC/guide/
 cp $CWD/guide/test-first.op $PKG_DOC/guide/
 cp $CWD/guide/test-area.op $PKG_DOC/guide/
 
 
 # copy scripts to their destinations
-cp $CWD/op_initial_db.sh $PKG_BIN/
+cp $CWD/extra/op_initial_db.sh $PKG_BIN/
 chmod 755 $PKG_BIN/op_initial_db.sh
 
-cp $CWD/op_ctl.sh $PKG_BIN/
+cp $CWD/extra/op_ctl.sh $PKG_BIN/
 chmod 755 $PKG_BIN/op_ctl.sh
+ln -s $PKG_BIN/op_ctl.sh $PKG_BIN/op_ctl
 
-cp $CWD/guide/op_update_db.sh $PKG_BIN/
+cp $CWD/extra/op_update_db.sh $PKG_BIN/
 chmod 755 $PKG_BIN/op_update_db.sh
 
-cp $CWD/guide/cron4op.sh $PKG_BIN/
+cp $CWD/extra/cron4op.sh $PKG_BIN/
 chmod 755 $PKG_BIN/cron4op.sh
 
 # install rc.dispatcher start & stop script by root
 mkdir -p $PKGDEST/etc/rc.d
-install -m 644 "$CWD/rc.dispatcher" "$PKGDEST/etc/rc.d/rc.dispatcher.new"
+install -m 755 "$CWD/extra/rc.dispatcher" "$PKGDEST/etc/rc.d/rc.dispatcher.new"
 
 # copy httpd configure file
 mkdir -p $PKGDEST/etc/httpd/extra
-install -m 644 "$CWD/httpd-overpass.conf" "$PKGDEST/etc/httpd/extra/httpd-overpass.conf.new"
+install -m 644 "$CWD/extra/httpd-overpass.conf" "$PKGDEST/etc/httpd/extra/httpd-overpass.conf.new"
 
 # copy op_logrotate
 mkdir -p $PKGDEST/etc/logrotate.d/
-install -m 644 "$CWD/guide/op_logrotate" "$PKGDEST/etc/logrotate.d/op_logrotate.new"
+install -m 644 "$CWD/extra/op_logrotate" "$PKGDEST/etc/logrotate.d/op_logrotate.new"
 
 mkdir -p $PKGDEST/install
 cat $CWD/slack-desc > $PKGDEST/install/slack-desc

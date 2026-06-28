@@ -1,0 +1,16 @@
+README.extra: This is the extra directory README file.
+
+Directory is part of Guide to Installing and Setting Up an Overpass Server on
+Slackware64 15.0 repository.
+
+Directory contains scripts and configuration files not provided by overpass.
+Included total of 8 files listed here:
+
+op_initial.sh
+op_update_db.sh
+rc.dispatcher
+op_ctl.sh
+cron4op.sh
+httpd-overpass.conf
+op_logrotate
+README.extra

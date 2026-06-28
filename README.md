@@ -10,10 +10,10 @@ that such a database does **not support historical functionality** (attic data).
 However, by keeping your database updated with the latest OSM diffs, you can always
 query up-to-date data for your chosen region.
 
-Setup and updates are explained in files:
+To follow this Guide; read this page (README.md), install software listed below then see setup and updates as explained in files:
 
-  - [README.setup](overpass.SlackBuild/guide/README.setup)
-  - [README.update](overpass.SlackBuild/guide/README.update.md)
+  - [README.setup.md](overpass.SlackBuild/guide/README.setup.md)
+  - [README.update.md](overpass.SlackBuild/guide/README.update.md)
 
 in the Guide directory.
 

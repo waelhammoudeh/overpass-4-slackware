@@ -15,4 +15,9 @@ This can be done with the following commands:
 Feel free to use a different uid and gid if desired, but 367 is recommended to
 avoid conflicts with other stuff from SlackBuilds.org.
 
+No additional software is needed for Overpass on Slackware 15.0, however added
+scripts here require "osmium". A SlackBuild for "osmium" is available on my
+repository here: https://github.com/waelhammoudeh/osmium-tool_slackbuild.
+
+
 See also: README.SlackBuild

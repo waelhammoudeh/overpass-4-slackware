@@ -1,0 +1,36 @@
+# rotation for overpass log files
+
+# Global settings for Overpass logs
+compress
+nomail
+missingok
+notifempty
+
+# Overpass script logs in one place
+/var/lib/overpass/logs/*.log {
+
+    su overpass overpass
+
+    rotate 5
+    size 300K
+
+    # files are created by apache ... this is too extrem here!
+    sharedscripts
+    postrotate
+        /etc/rc.d/rc.httpd restart
+    endscript
+}
+
+# Overpass log file in database:
+
+/var/lib/overpass/database/transactions.log \
+/var/lib/overpass/database/database.log {
+
+    su overpass overpass
+
+    rotate 5
+    size 300K
+
+    # this is experimental
+    copytruncate
+}
