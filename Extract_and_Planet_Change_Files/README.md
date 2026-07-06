@@ -34,9 +34,12 @@ and is available in [changeFiles.md](changeFiles.md) file. This will be referred
 as "introduction".
 
 ---
+
 ## Introduction:
+
 Terms and definitions required for this reading are in [changeFiles.md](changeFiles.md)
 in this repository.
+
 ---
 
 ## Requirements:
