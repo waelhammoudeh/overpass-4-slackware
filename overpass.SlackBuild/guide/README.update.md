@@ -4,6 +4,9 @@ This file explains how to update an initialized Overpass database with the lates
 available OSM data using daily change files from "Geofabrik.de" site. It also describes
 how to automate this process on a Slackware64 system (maybe applied to any Linux system).
 
+Updating from planet OSM change files is also possible and explained futher down
+in this file.
+
 1. About Change files:
 
 Databases and OSM data files are updated with "change files". Change file is the
@@ -12,8 +15,7 @@ file to the oldest of the two data files we get the newest of the two.
 Each change file has a correponding "state.txt" with 2 important identification
 lines; the sequence number and a timestamp lines. Sequence number is incremented
 for each new change file and the timestamp is when that change file was calculated.
-See **Change Files:** section in [Extract_and_Planet_Change_Files](https://github.com/waelhammoudeh/overpass-4-slackware/tree/master/Extract_and_Planet_Change_Files)
-for more information about them.
+See [README.ChangeFiles.md](README.changeFiles.md) for more information.
 
 2. Update Database:
 
