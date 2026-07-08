@@ -129,12 +129,13 @@ case "$1" in
         "$DISPATCHER" --osm-base --terminate
         [[ -S "$dbDir/osm3s_areas" ]] && "$DISPATCHER" --areas --terminate
 
-        sleep 2
+        sleep 3
         if is_dispatcher_running; then
             err "Could not stop dispatcher."
             exit 2
         else
             echo "Dispatcher stopped."
+            exit 0
         fi
         ;;
 
@@ -158,6 +159,7 @@ case "$1" in
         else
             echo "Areas dispatcher: not running"
         fi
+        exit 0
         ;;
 
     *)

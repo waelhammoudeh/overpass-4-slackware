@@ -4,8 +4,12 @@ Directory is part of Guide to Installing and Setting Up an Overpass Server on
 Slackware64 15.0 repository.
 
 Directory contains scripts and configuration files not provided by overpass.
-Included total of 8 files listed here:
+Included total of 12 files listed here:
 
+common_functions.sh
+cron4op-planet.sh
+extract2planet.sh
+mk_regional_osc.sh
 op_initial.sh
 op_update_db.sh
 rc.dispatcher
@@ -14,3 +18,38 @@ cron4op.sh
 httpd-overpass.conf
 op_logrotate
 README.extra
+
+All script expect the following file system strcuture:
+
+/var/lib/overpass/
+      |--- database/
+      |--- getdiff/
+      |--- logs/
+      |--- sources/
+      |--- tmp
+      |--- region
+             |--- extract
+             |--- replication
+
+The script "mk_regional_osc.sh" requires further setup as follows:
+
+Before using "mk_regional_osc.sh" script; you need to set two varaibles in the
+script and create "target.name" file in the "region" directory.
+
+The variables to set are in the top of the script:
+
+  - polyFileName
+  - regionName
+
+The "polyFileName" is your area poly file from Geofabrik.de which was copied to
+the "region" directory in the previous step. Only file name is needed here.
+
+The "regionName" is your region (area) name; used in produced "state.txt" files -
+this should be a short name.
+
+The "target.name" file is a text file with lastest extract data filename. Initially
+this is the file made in the previous step with the "date" part in its name. The
+"target.name" file is created in the "region" directory with command like:
+
+
+wael@regrets:~/extract_planet$ echo "arizona_2026-07-02.osm.pbf" > region/target.name

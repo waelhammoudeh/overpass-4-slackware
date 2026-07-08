@@ -10,12 +10,22 @@ that such a database does **not support historical functionality** (attic data).
 However, by keeping your database updated with the latest OSM diffs, you can always
 query up-to-date data for your chosen region.
 
-To follow this Guide; read this page (README.md), install software listed below then see setup and updates as explained in files:
+Overpass by itself does not require any additional software on Slackware 15.0, you
+may install "overpass" and use developer supplied scripts and configure files. That
+said, the guide here is for using my configuration and scripts as replacements with
+overpass. My scripts use and require `osmium` and `getdiff`.
 
+The Guide contains several README files all placed in "guide/" directory under the
+"overpass.SlackBuild" directory in this repository. To follow this Guide I recommend
+the following order:
+
+  - [README.changeFiles.md](overpass.SlackBuild/guide/README.changeFiles.md)
   - [README.setup.md](overpass.SlackBuild/guide/README.setup.md)
   - [README.update.md](overpass.SlackBuild/guide/README.update.md)
 
-in the Guide directory.
+Some people will be interested in using planet change files to update their database,
+in that case prepare your region extract by first reading [README.extract-planet.md](overpass.SlackBuild/guide/README.extract-planet.md)
+before README.setup.md.
 
 ---
 
@@ -28,6 +38,10 @@ We assume you:
 
 We’ll use extracts from **[Geofabrik.de](https://www.geofabrik.de/data/download.html)**.
 Their site also explains the available data formats.
+
+The file [README.changeFiles.md](README.changeFiles.md) is the same file included with
+my `getdiff` program; it should make you more comfortable in using `getdiff` and can
+be considered as required reading.
 
 ---
 
@@ -91,18 +105,18 @@ region and this size will grow with updates. Allow extra space for the update fi
   - My own program written in "c" to download "differs" OSM change files to
   update database.
   - Get the program from my [repository](https://github.com/waelhammoudeh/getdiff).
+  - Ensure fundamental understanding of OSM change files, see [README.changeFiles.md](https://github.com/waelhammoudeh/getdiff/README.changeFiles.md)
 
 5. **Optional but recommended for OSM work**
    - **GDAL** library
    - **JOSM** editor
-   - **QGIS** desktop GIS
+   - **QGIS** desktop GIS. See my [guide for building on Slackware 15.0.](https://github.com/waelhammoudeh/Build-QGIS-4-Slackware-15.0)
 
 ## Planet Overpass
 
-Originally overpass server was initialed from planet file without historical data.
+Originally overpass server was initialized from planet file without historical data.
 Historical data was accumulated with minutely updates and still being added with
-the updates. Keeping this fact in mind one can use most of the scripts here to run
-his / her own instance of overpass server with full planet with meta plus attic data.
+the updates.
 
 ## File System Structure:
 
@@ -114,20 +128,23 @@ Scripts included here assume the following file system structure:
       |--- getdiff/
       |--- logs/
       |--- sources/
+      |--- tmp
       |--- region
+             |--- extract
+             |--- replication
 </pre>
 
 where:
 
 /var/lib/overpass: overpass user home directory
 
-/var/lib/overpass/database: where we initial overpass database
+/var/lib/overpass/database: where we initialize overpass database
 
 /var/lib/overpass/getdiff: getdiff work directory for updating overpass
 
 /var/lib/overpass/logs: overpass scripts log files
 
-/var/lib/overpass/sources: OSM data files used to initial databases
+/var/lib/overpass/sources: OSM data files used to initialize databases
 
 /var/lib/overpass/region: updated OSM data files (extracts) and region change files.
 

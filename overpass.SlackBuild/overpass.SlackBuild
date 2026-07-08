@@ -161,6 +161,7 @@ cp $CWD/$PKGNAM.SlackBuild $PKG_DOC/
 mkdir -p $PKG_DOC/guide
 cp $CWD/guide/README.setup.md $PKG_DOC/guide/
 cp $CWD/guide/README.update.md $PKG_DOC/guide/
+cp $CWD/guide/README.planet-update.md $PKG_DOC/guide/
 cp $CWD/guide/test-first.op $PKG_DOC/guide/
 cp $CWD/guide/test-area.op $PKG_DOC/guide/
 
@@ -178,6 +179,18 @@ chmod 755 $PKG_BIN/op_update_db.sh
 
 cp $CWD/extra/cron4op.sh $PKG_BIN/
 chmod 755 $PKG_BIN/cron4op.sh
+
+cp $CWD/extra/common_functions.sh $PKG_BIN/
+chmod 644 $PKG_BIN/common_functions.sh
+
+cp $CWD/extra/cron4op-planet.sh $PKG_BIN/
+chmod 755 $PKG_BIN/cron4op-planet.sh
+
+cp $CWD/extra/mk_regional_osc.sh $PKG_BIN/
+chmod 755 $PKG_BIN/mk_regional_osc.sh
+
+cp $CWD/extra/extract2planet.sh $PKG_BIN/
+chmod 755 $PKG_BIN/extract2planet.sh
 
 # install rc.dispatcher start & stop script by root
 mkdir -p $PKGDEST/etc/rc.d

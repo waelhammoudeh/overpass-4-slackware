@@ -1,3 +1,8 @@
+Wed July 8/2026
+    Completed documentation for planet change file update.
+    Restructure repository with all own configure and script in one directory
+    "extra" in SlackBuild script directory.
+
 Sun Jun 28/2026
     overpass.SlackBuild Upgraded to version 0.7.62.11
     SlackBuild          Directory restructure, all my scripts moved to "extra"

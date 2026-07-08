@@ -45,7 +45,7 @@ Your shell prompt should now show $ instead of #. Move to overpass home director
 Create the file system structure mentioned in the introduction:
 
 ```
-  ~$ mkdir database getdiff logs sources region
+  ~$ mkdir -p {database,getdiff,logs,sources,region/{extract,replication}}
 ```
 
 2. Initialize the database and build the area objects

@@ -24,10 +24,10 @@ to update the overpass database using my "op_update_db.sh" script.
 The "getdiff" program and "op_update_db.sh" script work in succession, "getdiff"
 fills a bucket then "op_update_db.sh" empties this bucket.
 
-The "getdiff" program appends new downloaded filenames as list to file called
-"newerFiles.txt", this file is then read by "op_update_db.sh" script to update
-the database, the script renames the list file to "newerFiles.txt.bak" so getdiff
-starts a new "newerFiles.txt" next time around.
+The "getdiff" program appends new downloaded filenames (making a list) to file
+called "newerFiles.txt", this file is then read by "op_update_db.sh" script to
+update the database, the script renames the list file to "newerFiles.txt.bak" so
+getdiff starts a new "newerFiles.txt" next time around.
 
 ## 2.1 Install and setup "getdiff"
 
@@ -162,7 +162,8 @@ downloaded by "getdiff". Script usage is:
 ```
 
 The list_file is "newerFiles.txt" produced by "getdiff", osc_dir is the directory
-where change files are in the file system, that is: getdiff/geofabrik.
+where change files are in the file system, that is "geofabrik" under "getdiff with
+full path: "/var/lib/overpass/getdiff/geofabrik".
 
 The script uses the same overpass "update_database" program we used to initialize
 the database, what we said about the "FLUSH_SIZE" there applies here. You should
@@ -281,13 +282,111 @@ between upgrades. This applies to "FLUSH_SIZE" in op_update_db.sh and "SECRET"
 in cron4op.sh scripts.
 
 
-**Where to Now:**
+## Update with Planet Change Files:
 
-After awhile of updating from geofabrik.de website, you may want to move to updating
-your database from change files from "planet.osm.org" servers. Check out my guide for
-doing that [here](https://github.com/waelhammoudeh/overpass-4-slackware/tree/master/Extract_and_Planet_Change_Files)
-and [here too.](https://github.com/waelhammoudeh/overpass-4-slackware/blob/master/Extract_and_Planet_Change_Files/OP_FROM_PLANET.md)
+To update "overpass" database from planet change files; the database must be
+initialized with an extract OSM data file that is aligned with planet change files
+issuance time.
+
+A method to bring an extract from Geofabrik.de site in alignmet with planet OSM
+change file issuance time is detailed in [README.extract-planet.md](README.extract-planet.md)
+file in this guide.
+
+If you have an instance of "overpass" running; start with a new database initialization,
+first stop "overpass" dispatcher with:
+
+```
+overpass@regrets:~$ op_ctl.sh stop
+```
+
+and backup your files (I copy my overpass "sources/" directory) before removing
+everything from overpass home directroy.
+
+Initialize a new database using your new alinged extract OSM data file, follow the
+same setup instructions in README.setup.md.
+
+This also involves an extra step in the update process; now we need to make a change
+file for our extract from the planet change file; the update process workflow now
+looks like this:
+
+  - fetch planet change file from planet OSM server.
+  - make the regional change file
+  - update "overpass" database
+
+**This requires the following changes:**
+
+1) Getdiff is still used to dwonload change files, we change the URL for "SOURCE"
+and set new sequence number value for "BEGIN" key in "getdiff.conf" file:
+
+  - SOURCE = https://planet.osm.org/replication/day
+  - BEGIN = *num*
+
+where *num* is sequence number for planet daily change file to start download from.
+
+**Remove "previous.seq" file** from "getdiff" work directory - if present.
+
+2) Setup **mk_regional_osc.sh** script as instructed in "README.extract-planet.md"
+with the following instructions:
+
+```
+**Before** using "mk_regional_osc.sh" script; you need to set two varaibles in the
+script and create "target.name" file in the "region" directory.
+
+The variables to set are in the top of the script:
+
+  - **polyFileName**
+  - **regionName**
+
+The "polyFileName" is your area poly file from Geofabrik.de which was copied to
+the "region" directory in the previous step. Only file name is needed here.
+
+The "regionName" is your region (area) name; used in produced "state.txt" files -
+this should be a short name.
+
+The "target.name" file is a text file with lastest extract data filename. Initially
+this is the file made in the previous step with the "date" part in its name. The
+"target.name" file is created in the "region" directory with command like:
+```
+
+The "target.name" file is created with:
+
+```
+overpass@regrets:~$ echo "arizona_2026-07-02.osm.pbf" > region/target.name
+```
+
+replace "arizona_2026-07-02.osm.pbf" with your region OSM file name.
+
+3) We still use "op_update_db.sh" script but with different parameters:
+
+
+```
+overpass@regrets:~$ op_update_db.sh region/oscList.txt region/replication
+```
+
+4) Use **cron4op-planet.sh** instead of "cron4op.sh" to automate the process in
+"overpass" crontab entry.
+
+Edit "overpass" crontab entry with:
+```
+overpass@regrets:~$ crontab -e
+```
+press 'i' key on your keyboard to enter "vi edit mode" and enter / adjust your
+entry to look as shown below:
+
+```
+# overpass cron job
+@daily ID=opUpdateDB /usr/local/bin/cron4op-planet.sh
+
+```
+
+**Changed settings are NOT preserved on upgrades:**
+
+If you upgrade your overpass package, changed settings in scripts are NOT preserved
+between upgrades. This applies to "FLUSH_SIZE" in op_update_db.sh, "SECRET" in
+"cron4op.sh" scripts and variable values for polyFileName and regionName in
+"mk_regional_osc.sh" script.
+
 
 Wael Hammoudeh
 
-June 28/2026
+July 8th, 2026
