@@ -381,6 +381,8 @@ entry to look as shown below:
 
 ```
 
+when done editing; press 'Esc' key and type ':wq' to save your changes.
+
 **Changed settings are NOT preserved on upgrades:**
 
 If you upgrade your overpass package, changed settings in scripts are NOT preserved
