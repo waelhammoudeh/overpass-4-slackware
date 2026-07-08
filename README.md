@@ -23,9 +23,9 @@ the following order:
   - [README.setup.md](overpass.SlackBuild/guide/README.setup.md)
   - [README.update.md](overpass.SlackBuild/guide/README.update.md)
 
-Some people will be interested in using planet change files to update their database,
-in that case prepare your region extract by first reading [README.extract-planet.md](overpass.SlackBuild/guide/README.extract-planet.md)
-before README.setup.md.
+Those ineretsted in using planet change files to update their database, should
+read [README.extract-planet.md](overpass.SlackBuild/guide/README.extract-planet.md)
+before "README.setup.md" file.
 
 ---
 
@@ -142,11 +142,11 @@ where:
 
 /var/lib/overpass/getdiff: getdiff work directory for updating overpass
 
-/var/lib/overpass/logs: overpass scripts log files
+/var/lib/overpass/logs: common overpass log files
 
 /var/lib/overpass/sources: OSM data files used to initialize databases
 
-/var/lib/overpass/region: updated OSM data files (extracts) and region change files.
+/var/lib/overpass/region: updated OSM extract data files and region change files.
 
 ### DISCLAIMER:
 I am NOT an expert on "overpassAPI". Information here may not be accurate, use
@@ -155,4 +155,4 @@ to abide by, read the rules and follow the law please. Be in the know.
 
 Wael Hammoudeh
 
-September 15/2025
+July 8th, 2026

@@ -385,10 +385,10 @@ when done editing; press 'Esc' key and type ':wq' to save your changes.
 
 **Changed settings are NOT preserved on upgrades:**
 
-If you upgrade your overpass package, changed settings in scripts are NOT preserved
-between upgrades. This applies to "FLUSH_SIZE" in op_update_db.sh, "SECRET" in
-"cron4op.sh" scripts and variable values for polyFileName and regionName in
-"mk_regional_osc.sh" script.
+We add adjusted variables from "mk_regional_osc.sh" to those not maintained between
+updates. This makes changed list apply to "FLUSH_SIZE" in op_update_db.sh, "SECRET"
+in "cron4op.sh" and variable values for polyFileName and regionName in script
+"mk_regional_osc.sh".
 
 
 Wael Hammoudeh
