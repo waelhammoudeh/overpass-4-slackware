@@ -19,7 +19,7 @@
 # values I have used;
 #   8 GB ram --> FLUSH_SIZE=8
 #   16 GB ram --> FLUSH_SIZE=16
-#   128 GB ram --> FLUSH_SIZE=512
+#   128 GB ram --> FLUSH_SIZE=128
 #
 
 FLUSH_SIZE=4
@@ -516,21 +516,23 @@ if (( restartDispatcher == 1 )); then
     log "Dispatcher started."
 fi
 
-sleep 2
+sleep 5
 
 # update area in database
 log "Updating areas in database ..."
 
 if pgrep dispatcher; then
     $execDir/osm3s_query --progress --rules <"$rulesDir/areas.osm3s"
+    rc=$?
 else
    $execDir/osm3s_query --db-dir="$dbDir" --progress  --rules <"$rulesDir/areas.osm3s"
+   rc=$?
 fi
 
-if [[ $? -ne $EXIT_SUCCESS ]]; then
+if [[ $rc -ne $EXIT_SUCCESS ]]; then
     log "Error failed to update area objects in database. Exiting"
     log "Terminated with ERROR   XXXXX"
-    exit $?
+    exit $rc
 fi
 
 log "Done updating areas."
