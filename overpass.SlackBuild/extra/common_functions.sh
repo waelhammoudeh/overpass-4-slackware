@@ -420,7 +420,7 @@ mergeListOSC() {
             # first file in first loop will be first file from the Array
             # argList="$argList $changeFile"
 
-argList+=("$changeFile")
+            argList+=("$changeFile")
 
             ((iBatch++))
 
@@ -592,6 +592,7 @@ update_from_osc_list() {
 } # END update_from_osc_list()
 
 # getMixedName <originalName> <stateFile>
+# filename gets whole timestamp without back slashes
 getMixedName(){
 
 if (( $# < 2 )); then
@@ -606,10 +607,8 @@ local stateFile=$2
 local timestampLine=$(grep timestamp "$stateFile")
 local timestamp=${timestampLine#timestamp=}
 
-# use date only shorter name! time is always at midnight (00:00:00)
-local lastDate=$(echo $timestamp | cut -d 'T' -f 1)
+local lastDate=$(echo $timestamp | sed 's/\\//g')
 
-# timestamp=${timestamp//\\/}
 local fileName=$(basename $originalName)
 local mixedFile=${fileName%%.*}-MIXED_$lastDate.osm.pbf
 
@@ -620,6 +619,7 @@ return $EXIT_SUCCESS
 } # END getMixedName()
 
 # getNewName <originalName> <stateFile>
+# new filename gets whole timestamp appended without back slashes
 getNewName() {
 
     if (( $# < 2 )); then
@@ -634,14 +634,12 @@ getNewName() {
     local timestampLine=$(grep timestamp "$stateFile")
     local timestamp=${timestampLine#timestamp=}
 
-    # use date only, time is always midnight
-    local lastDate=$(echo "$timestamp" | cut -d 'T' -f 1)
+    local lastDate=$(echo "$timestamp" | sed 's/\\//g')
 
     local fileName=$(basename "$originalName")
     local base=${fileName%%.*}
 
-    # if base ends with _YYYY-MM-DD, strip it
-    base=$(echo "$base" | sed -E 's/_[0-9]{4}-[0-9]{2}-[0-9]{2}$//')
+    base=$(echo "$base" | cut -d '_' -f 1)
 
     local newFile="${base}_${lastDate}.osm.pbf"
 
