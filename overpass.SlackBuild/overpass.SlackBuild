@@ -172,7 +172,9 @@ chmod 755 $PKG_BIN/op_initial_db.sh
 
 cp $CWD/extra/op_ctl.sh $PKG_BIN/
 chmod 755 $PKG_BIN/op_ctl.sh
-ln -s $PKG_BIN/op_ctl.sh $PKG_BIN/op_ctl
+pushd $PKG_BIN
+ln -s op_ctl.sh op_ctl
+popd
 
 cp $CWD/extra/op_update_db.sh $PKG_BIN/
 chmod 755 $PKG_BIN/op_update_db.sh
