@@ -16,8 +16,8 @@ httpd-overpass.conf
 ```
 
 At this stage, you should have installed required software mentioned in the introduction
-[README.md](overpass-4-slackware/README.md) file and obtained your region OSM data file
-from [Geofabrik.de](https://www.geofabrik.de/data/download.html)or somewhere else.
+[README.md](../../README.md) file and obtained your region OSM data file
+from [Geofabrik.de](https://www.geofabrik.de/data/download.html) or somewhere else.
 
 
 1. Create Overpass User Directories
@@ -45,7 +45,7 @@ Your shell prompt should now show $ instead of #. Move to overpass home director
 Create the file system structure mentioned in the introduction:
 
 ```
-  ~$ mkdir -p {database,getdiff,logs,sources,region/{extract,replication}}
+  ~$ mkdir -p {database,getdiff,logs,sources,tmp,region/{extract,replication}}
 ```
 
 2. Initialize the database and build the area objects
