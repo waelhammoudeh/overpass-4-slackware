@@ -81,7 +81,7 @@ Copy the three scripts files from the "scripts" directory in this repository to
 
 Note to "overpass" users; this is the same file system structure created in the
 "overpass" user home directory, without the "scripts" directory, scripts themslves
-are installed by to "/usr/local/bin/" by my overpass.SlackBuild.
+are installed to "/usr/local/bin/" by my overpass.SlackBuild build script.
 
 We will write "getdiff.conf" file and copy extract data file with new formated
 name below.

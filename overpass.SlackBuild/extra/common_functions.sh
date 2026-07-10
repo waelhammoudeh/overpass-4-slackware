@@ -442,10 +442,8 @@ mergeListOSC() {
         log "  combinedFile is: $combinedFile"
         log "  argList has $iBatch files:"
 
-        for (( k = 0; k < iBatch; k++ )); do
-            printf '                                        %s\n' ${argList[$k]} \
-            | tee -a "$logFile"
-        done;
+        printf '                                        %s\n' "${argList[@]}" | tee -a "$logFile"
+        log "   ---------------------------------------------------------"
 
         # call osmsium-merge-changes
         $OSMIUM merge-changes --fsync --no-progress --overwrite --output "$combinedFile" "${argList[@]}"
@@ -475,7 +473,7 @@ mergeListOSC() {
         sed -i "1s|.*|$newLine|" $combinedStateFile
 
         # start next batch "argList" with last merged file
-        argList="$combinedFile"
+        argList=("$combinedFile")
 
         iBatch=1
 
