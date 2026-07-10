@@ -3,10 +3,11 @@
 
 This guide describes how to install and configure an Overpass API server on a Linux
 machine running **Slackware64 15.0**. The focus here is on creating a
-**limited-area database initialized from an OSM extract** rather than the full planet.
+**limited-area database initialized from an OSM extract** rather than the huge full
+planet file.
 
 Using a regional extract greatly reduces disk space requirements. The trade-off is
-that such a database does **not support historical functionality** (attic data).
+that such a database **does not support historical functionality** (attic data).
 However, by keeping your database updated with the latest OSM diffs, you can always
 query up-to-date data for your chosen region.
 

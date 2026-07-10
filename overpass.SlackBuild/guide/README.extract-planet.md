@@ -60,7 +60,7 @@ extract_planet/
 │   ├── arizona.poly
 │   ├── replication
 │   └── extract
-│       └── arizona_2026-06-30.osm.pbf
+│       └── arizona_2026-06-30T20:21.26Z.osm.pbf
 ├── scripts
 │   ├── common_functions.sh
 │   ├── extract2planet.sh
@@ -81,7 +81,7 @@ Copy the three scripts files from the "scripts" directory in this repository to
 
 Note to "overpass" users; this is the same file system structure created in the
 "overpass" user home directory, without the "scripts" directory, scripts themslves
-are installed to "/usr/local/bin/" by my overpass.SlackBuild build script.
+are installed to "/usr/local/bin/" by my "overpass.SlackBuild" build script.
 
 We will write "getdiff.conf" file and copy extract data file with new formated
 name below.
@@ -182,7 +182,7 @@ digit string with leading zeros and insert slashes every 3 digits:
 4833 --> 000 004 833 --> 000/004/833.state.txt
 ```
 
-you can append that to the update page (in you browser address bar) as below:
+you can append that to the update page (in your browser address bar) as below:
 ```
 https://download.geofabrik.de/north-america/us/arizona-updates/000/004/833.state.txt
 ```
@@ -210,7 +210,7 @@ minutes    2026-06-30 20:21        7179409        7179446      2026-06-30 21:00
 hours      2026-06-30 21:00                                    2026-07-01 00:00
 ```
 
-For the hours sequence numbers, we move to the hour replication page on planet site:
+For the hours sequence numbers, we move to the hour replication page on planet OSM site:
 ```
 "https://planet.osm.org/replication/hour"
 ```
@@ -283,9 +283,9 @@ in "Requirements" section above "{HOME}/extract_planet" directory:
 download minutely change files with the following command (broken into lines for reading):
 ```
  wael@regrets:~/extract_planet$ getdiff
-                                -c getdiff/getdiff.conf                      \
+                                -c getdiff/getdiff.conf \
                                 -s https://planet.osm.org/replication/minute \
-                                -b 7179409                                   \
+                                -b 7179409 \
                                 -e 7179446
 ```
 
@@ -294,24 +294,25 @@ you may / should inspect "rangeList.txt" file and look into "getdiff.log" file.
 download hourly change files with:
 ```
  wael@regrets:~/extract_planet$ getdiff
-                               -c getdiff/getdiff.conf                    \
+                               -c getdiff/getdiff.conf \
                                -s https://planet.osm.org/replication/hour \
-                               -b 120951                                  \
+                               -b 120951 \
                                -e 120953
 ```
 
-newly downloaded filenames are appended to the same "rangeList.txt", check it out.
+newly downloaded filenames are **appended to the same "rangeList.txt" file,** check it out.
 
 download the one daily change file with:
 ```
  wael@regrets:~/extract_planet$ getdiff
-                                -c getdiff/getdiff.conf                   \
+                                -c getdiff/getdiff.conf \
                                 -s https://planet.osm.org/replication/day \
-                                -b 5041                                   \
+                                -b 5041 \
                                 -e 5041
 ```
 
-note that we used the same sequence number for "begin" and "end" options.
+note that we specified values for "begin" and "end" options; telling `getdiff` to
+use "rangeList.txt" file. We used the same values for both.
 
 My final "rangeList.txt" file had 84 lines; top and bottom parts are shown below:
 
@@ -356,30 +357,32 @@ poly file and the "list_file" is the "rangeList.txt" file produced by `getdiff` 
 the previous step.
 
 The script produces a new extract data file in "extract_planet/region/extract/"
-directory, the new filename is formated with the region name and a date separated
-by an underscore character as follows:
+directory, the new filename is formated with the region name and full timestamp
+(without back slashes) separated by an underscore character as follows:
 ```
- region_YYYY-MM-DD.osm.pbf
+ region_YYYY-MM-DDTHH:MM:SSZ.osm.pbf
 ```
 
-the "date" part is from the last merged change file timestamp. To be consistent
-with this, we rename our orginal extract data file with its date and copy it to
+the "timestamp" part is from the last merged change file timestamp. To be consistent
+with this, we rename our orginal extract data file with its timestamp and copy it to
 "extract_planet/region/extract/" directory before we call the script.
 
 For my example arizona data file, I copied it as follows:
 ```
 wael@regrets:~/extract_planet$ cp /var/lib/overpass/sources/arizona-260630-internal.osm.pbf \
-                                  region/extract/arizona_2026-06-30.osm.pbf
+                                  region/extract/arizona_2026-06-30T20:21:26Z.osm.pbf
 ```
 
 We execute "extract2planet.sh" script as follows:
 
 ```
 wael@regrets:~/extract_planet$ scripts/extract2planet.sh \
-                                     region/extract/arizona_2026-06-30.osm.pbf \
+                                     region/extract/arizona_2026-06-30T20\:21\:26Z.osm.pbf \
                                      region/arizona.poly \
                                      getdiff/rangeList.txt
 ```
+
+Bash completion function adds (inserts) back slashes!
 
 Script produces intermediate file in "extract_planet/tmp" directory - those should
 be removed - you may inspect those files.
@@ -392,13 +395,13 @@ of the script output as mine below:
 
 ```
  [extract2planet] Successfully made new extract OSM data file contains all OSM data up to: 2026-07-02T00:00:00Z
- [extract2planet] New OSM data file was written to: /home/wael/extract_planet/region/extract/arizona_2026-07-02.osm.pbf
+ [extract2planet] New OSM data file was written to: /home/wael/extract_planet/region/extract/arizona_2026-07-02T00:00:00Z.osm.pbf
  [extract2planet] extract2planet is done
 ```
 
 We then run `osmium fileinfo` on this new file:
 ```
-wael@regrets:~/extract_planet$ osmium fileinfo region/extract/arizona_2026-07-02.osm.pbf
+wael@regrets:~/extract_planet$ osmium fileinfo region/extract/arizona_2026-07-02T00:00:00Z.osm.pbf
 File:
   Name: region/extract/arizona_2026-07-02.osm.pbf
   Format: PBF
@@ -458,9 +461,10 @@ Now we can merge only one daily planet change file with the aligned extract and
 the timestamp difference will be exactly one day between the aligned extract file
 from the previous step and the newer extract data file we produce.
 
-We will use our "mk_regional_osc.sh" script in this step; which take a list of change
-files and produce a new extract data file and an extract change file. The list will
-produced by our `getdiff` program.
+We will use our "mk_regional_osc.sh" script in this step; which takes a list of
+planet change files and produces a new extract data file and an extract change
+file for each planet change file in the list. The list will produced by our `getdiff`
+program for planet change files downloaded from planet OSM daily replication server.
 
 We setup `getdiff` to download daily change files from planet OSM server. We edit
 our `getdiff.conf` file adding 2 new keys and values as follows:
@@ -477,14 +481,14 @@ SOURCE=https://planet.osm.org/replication/day
 BEGIN=5042
 ```
 
-We added SOURCE and BEGIN keys with above values, the SOURCE is set to planet OSM
-daily replication and the BEGIN value is the sequence number for change file to
+We added SOURCE and BEGIN keys with above values, the "SOURCE" is set to planet OSM
+daily replication and the "BEGIN" value is the sequence number for change file to
 start the download from.
 
-We get the value for BEGIN by locating change file on SOURCE website using either
+We get the value for "BEGIN" by locating change file on "SOURCE" website using either
 the timestamp or sequence number from `osmium fileinfo` output for our extract
 data file to update; in this case the one we just made in the previous setp with
-output above for my extract for "arizona_2026-07-02.osm.pbf" file.
+output above for my extract for "arizona_2026-07-02T00:00:00Z.osm.pbf" file.
 
 We execute `getdiff` now with one option that is `-c getdiff/getdiff.conf` telling
 it to use our newely edited configuration file (not its default configure file):
@@ -534,11 +538,11 @@ The "regionName" is your region (area) name; used in produced "state.txt" files 
 this should be a short name.
 
 The "target.name" file is a text file with lastest extract data filename. Initially
-this is the file made in the previous step with the "date" part in its name. The
+this is the file made in the previous step with the "timestamp" part in its name. The
 "target.name" file is created in the "region" directory with command like:
 
 ```
-wael@regrets:~/extract_planet$ echo "arizona_2026-07-02.osm.pbf" > region/target.name
+wael@regrets:~/extract_planet$ echo "arizona_2026-07-02T00:00:00Z.osm.pbf" > region/target.name
 ```
 
 Script produces a new extract data file for each planet change file and updates the
@@ -591,4 +595,4 @@ in "logs" directory.
 
 Wael Hammoudeh
 
-July 6/2026
+July 10/2026
