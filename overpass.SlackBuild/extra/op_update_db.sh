@@ -468,6 +468,9 @@ do
 }
 done < "$listFile"
 
+length=${#newFilesArray[@]}
+numChangeFiles=$(($length / 2))
+
 checkList $oscDir newFilesArray
 
 if [[ $? -ne $EXIT_SUCCESS ]]; then
@@ -516,22 +519,32 @@ if (( restartDispatcher == 1 )); then
     log "Dispatcher started."
 fi
 
-sleep 5
+# area update operation fails on system boot -
+# usually NOT when machine has been running for sometime
+sleepSec=5
+
+MINUTE=60
+if [[ $numChangeFiles -gt 1 ]]; then
+    sleepSec=$((3 * $MINUTE))
+fi
+
+sleep $sleepSec
 
 # update area in database
+log "Sleeping for <$sleepSec> seconds BEFORE updating area objrcts"
 log "Updating areas in database ..."
 
 if pgrep dispatcher; then
     $execDir/osm3s_query --progress --rules <"$rulesDir/areas.osm3s"
-    rc=$?
 else
    $execDir/osm3s_query --db-dir="$dbDir" --progress  --rules <"$rulesDir/areas.osm3s"
-   rc=$?
 fi
+rc=$?
 
 if [[ $rc -ne $EXIT_SUCCESS ]]; then
     log "Error failed to update area objects in database. Exiting"
-    log "Terminated with ERROR   XXXXX"
+    log "Terminated with ERROR   XXXXX: \"osm3s_query\" exit code was: < $rc >"
+
     exit $rc
 fi
 

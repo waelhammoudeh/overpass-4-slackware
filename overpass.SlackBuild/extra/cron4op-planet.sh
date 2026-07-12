@@ -43,7 +43,7 @@ getErrorString() {
             echo "E_INVALID_PARAM (2): invalid parameter provided"
             ;;
         $E_FAILED_TEST)
-            echo "E_FAILED_TEST (3): check failed (file/dir/executable/test)"
+            echo "E_FAILED_TEST (3): Operation failed on checking"
             ;;
         $E_UNKNOWN|*)
             echo "E_UNKNOWN (4): unknown or unexpected error"

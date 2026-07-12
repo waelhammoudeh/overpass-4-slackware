@@ -381,7 +381,7 @@ entry to look as shown below:
 
 ```
 
-when done editing; press 'Esc' key and type ':wq' to save your changes.
+when done editing; press 'Esc' key and type ':wq' enter to save your changes.
 
 **Changed settings are NOT preserved on upgrades:**
 

@@ -104,7 +104,8 @@ planetDir=$getdiffDir/planet/day
 tmpDir=$(mktemp -d /tmp/mk_oscXXXXXX)
 
 # TMP is required to be defined by common_functions.sh script
-TMP=$opDir/tmp
+# TMP=$opDir/tmp
+TMP=$tmpDir
 
 logDir=$opDir/logs
 
