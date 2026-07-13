@@ -49,7 +49,10 @@ execDir="/usr/local/bin"
 OSMIUM=$execDir/osmium # not used here!
 OP_CTL=$execDir/op_ctl.sh
 DISPATCHER=$execDir/dispatcher
-TMP=/tmp
+
+UPDATER=$execDir/update_database
+
+TMP=$opDir/tmp
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
@@ -176,6 +179,48 @@ if [[ $? -ne $EXIT_SUCCESS ]]; then
     exit $E_FAILED_TEST
 fi
 
+META=--meta
+COMPRESSION=gz
+
+# combine change files - if we have more than one
+# Usage: mergeListOSC OUT_FILE DIR_PREFIX OSC_ARRAY
+
+changeFile=$oscDir/${newFilesArray[0]}
+stateFile=$oscDir/${newFilesArray[-1]}
+
+
+if [[ $numChangeFiles -gt 1 ]]; then
+
+    log "Merging <$numChangeFiles> change files ..."
+
+    # make OUT_FILE filename: firstSeqNum-lastSeqNum
+    firstStateFile=$oscDir/${newFilesArray[1]} # second element (second line)
+    lastStateFile=$oscDir/${newFilesArray[-1]} # last element
+
+    firstSeqNum=$(grep sequenceNumber "$firstStateFile" | cut -d= -f2)
+    lastSeqNum=$(grep sequenceNumber "$lastStateFile" | cut -d= -f2)
+
+
+    combinedOSC=$TMP/combined-$firstSeqNum-$lastSeqNum.osc.gz
+
+    mergeListOSC $combinedOSC $oscDir newFilesArray
+    rc=$?
+    if [[ $rc -ne $EXIT_SUCCESS ]]; then
+        log "Error failed mergeListOSC() function!"
+        exit $rc
+    fi
+
+    # use combined change file
+    changeFile=$combinedOSC
+
+fi
+
+timestampLine=$(grep timestamp "$stateFile")
+full_version=${timestampLine#timestamp=}
+full_version=${full_version//\\/}
+
+sequence_number=$(grep sequenceNumber "$stateFile" | cut -d= -f2)
+
 restartDispatcher=0
 
 # dispatcher can not be running when using update_database
@@ -191,15 +236,29 @@ if [[ ! -z `pgrep dispatcher` ]]; then
     restartDispatcher=1
 fi
 
-# Usage: update_from_osc_list <dbDir> <flush_size> <prefixDir> <oscArray>"
+PRE_UPDATE_VERSION=$(<"$dbDir/osm_base_version")
+log "   PRE_UPDATE_VERSION number is: $PRE_UPDATE_VERSION"
+log "   Applying update from:"
+log "     Change File: <$changeFile>"
+log "     Dated: <$full_version>"
 
-update_from_osc_list $dbDir $FLUSH_SIZE $oscDir newFilesArray
-
-if [[ $? -ne $EXIT_SUCCESS ]]; then
-    log "Error failed update_from_osc_list() function. Exiting"
-    log "Terminated with ERROR   XXXXX"
-    exit $?
+if ! gunzip <"$changeFile" | "$UPDATER" \
+     --db-dir="$dbDir" \
+     --version="$full_version" \
+     $META \
+     --flush-size="$FLUSH_SIZE" \
+     --compression-method="$COMPRESSION" \
+     --map-compression-method="$COMPRESSION" >/dev/null 2>&1; then
+     log "ERROR XXXXX: Failed to update from file $changeFile"
+     return $E_UNKNOWN
 fi
+
+echo "$sequence_number" >"$dbDir/replicate_id"
+
+POST_UPDATE_VERSION=$(<"$dbDir/osm_base_version")
+log "   POST_UPDATE_VERSION number is: $POST_UPDATE_VERSION"
+log "   Done updating from change file: $changeFile"
+log ""
 
 # rename the list file so "getdiff" starts new file.
 mv $listFile $listFile.bak
@@ -220,21 +279,23 @@ fi
 # area update operation fails on system boot; 8 or 9 chanage files
 # usually NOT when machine has been running for sometime; single change file
 
-# 3 minutes sleep time seems to work okay
+# 3 minutes sleep time seems to work okay with 6 change files - failed with 8 change files
 # Possible other solutions:
 #   1) combine changes and apply once
 #   2) use update_from_directory and do not shutdown dispatcher
-sleepSec=5
+sleepTime=5
 
-MINUTE=60
+SECOND=60
+MINUTE=3
+
 if [[ $numChangeFiles -gt 1 ]]; then
-    sleepSec=$((3 * $MINUTE))
+    sleepTime=$(($MINUTE * $SECOND))
 fi
 
-sleep $sleepSec
+sleep $sleepTime
 
 # update area in database
-log "Sleeping for <$sleepSec> seconds BEFORE updating area objects"
+log "Sleeping for <$sleepTime> seconds BEFORE updating area objects"
 log "Updating areas in database ..."
 
 if pgrep dispatcher; then
