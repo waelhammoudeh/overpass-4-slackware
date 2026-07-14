@@ -192,6 +192,8 @@ stateFile=$oscDir/${newFilesArray[-1]}
 if [[ $numChangeFiles -gt 1 ]]; then
 
     log "Merging <$numChangeFiles> change files ..."
+    log "====================================================================="
+    echo "" | tee -a "logFile"
 
     # make OUT_FILE filename: firstSeqNum-lastSeqNum
     firstStateFile=$oscDir/${newFilesArray[1]} # second element (second line)
@@ -212,6 +214,9 @@ if [[ $numChangeFiles -gt 1 ]]; then
 
     # use combined change file
     changeFile=$combinedOSC
+    log "Updating from combined file: $changeFile"
+    log "====================================================================="
+    echo "" | tee -a "logFile"
 
 fi
 
@@ -283,10 +288,13 @@ fi
 # Possible other solutions:
 #   1) combine changes and apply once
 #   2) use update_from_directory and do not shutdown dispatcher
+
+# area update failed again with combined one change file (from 17 hourly) with sleepTime 3 minutes
+# trying 5 minutes wait plus two tries 7/13/2026 W.H.
 sleepTime=5
 
 SECOND=60
-MINUTE=3
+MINUTE=5
 
 if [[ $numChangeFiles -gt 1 ]]; then
     sleepTime=$(($MINUTE * $SECOND))
@@ -306,16 +314,31 @@ fi
 rc=$?
 
 if [[ $rc -ne $EXIT_SUCCESS ]]; then
-    log "Error failed to update area objects in database. Exiting"
-    log "Terminated with ERROR   XXXXX: \"osm3s_query\" exit code was: < $rc >"
+    log "Error failed to update area objects in database on FIRST TRY ..."
+    log "FIRST TRY terminated with ERROR   XXXXX: \"osm3s_query\" exit code was: < $rc >"
+    log "Trying again in <$sleepTime> seconds ..."
 
-    exit $rc
+    sleep $sleepTime
+    # dispatcher should be running!
+    $execDir/osm3s_query --progress --rules <"$rulesDir/areas.osm3s"
+    rc=$?
+    if [[ $rc -ne $EXIT_SUCCESS ]]; then
+        log "Error failed to update area objects in database. 2nd try!"
+        log "SECOND TRY ALSO FAILED with ERROR   XXXXX: \"osm3s_query\" exit code was: < $rc >"
+        log "xxxxxxxxxxxxxxxxxx FAILED AREA UPDATE xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    fi
+
+#    exit $rc
 fi
+
 
 log "Done updating areas."
 
 log "Database: <$dbDir> update complete."
 log "++++++++++++++++++++++++ Done ++++++++++++++++++++++++++"
 echo "">>$logFile
+
+# remove files in tmp directory
+# rm -f $TMP/*
 
 exit $EXIT_SUCCESS
