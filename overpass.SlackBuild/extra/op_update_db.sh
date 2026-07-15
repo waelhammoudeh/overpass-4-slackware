@@ -289,7 +289,7 @@ fi
 #   1) combine changes and apply once
 #   2) use update_from_directory and do not shutdown dispatcher
 
-# area update failed again with combined one change file (from 17 hourly) with sleepTime 3 minutes
+# area update failed again with combined one change file (from 17 hours) with sleepTime 3 minutes
 # trying 5 minutes wait plus two tries 7/13/2026 W.H.
 sleepTime=5
 
@@ -300,10 +300,11 @@ if [[ $numChangeFiles -gt 1 ]]; then
     sleepTime=$(($MINUTE * $SECOND))
 fi
 
-sleep $sleepTime
-
 # update area in database
 log "Sleeping for <$sleepTime> seconds BEFORE updating area objects"
+
+sleep $sleepTime
+
 log "Updating areas in database ..."
 
 if pgrep dispatcher; then
