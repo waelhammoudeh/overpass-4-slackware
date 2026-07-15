@@ -305,7 +305,7 @@ log "Sleeping for <$sleepTime> seconds BEFORE updating area objects"
 
 sleep $sleepTime
 
-log "Updating areas in database ..."
+log "Updating areas in database ... first try .."
 
 if pgrep dispatcher; then
     $execDir/osm3s_query --progress --rules <"$rulesDir/areas.osm3s"
@@ -320,7 +320,10 @@ if [[ $rc -ne $EXIT_SUCCESS ]]; then
     log "Trying again in <$sleepTime> seconds ..."
 
     sleep $sleepTime
+
     # dispatcher should be running!
+    log "Updating areas in database ... for SECOND TRY ....."
+
     $execDir/osm3s_query --progress --rules <"$rulesDir/areas.osm3s"
     rc=$?
     if [[ $rc -ne $EXIT_SUCCESS ]]; then
