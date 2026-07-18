@@ -98,6 +98,17 @@ The following filesystem structure is used:
            |--- replication
 
 
+Package upgrade and "/etc/overpass.conf" file:
+
+The file is treated as a Slackware package configure file; as such files are
+maintained with `slackpkg new-config` command and function.
+On upgrade the file will not be over-written, instead you get "/etc/overpass.conf.new"
+file; you should check the new file for any new variables not included in the old
+file. If there are none you can remove the new file and keep your old setup file.
+Otherwise you may want to set the new variables in the new file and replace your
+old file. If any new variables are added, they will be announced on the repository.
+
+
 Wael Hammoudeh
 
 July 17/2026

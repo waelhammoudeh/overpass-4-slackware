@@ -141,7 +141,13 @@ planetDir=/var/lib/overpass/getdiff/planet/day
 
 ```
 
-The "planetDir" value needs to match that used in your "getdiff.conf" file.
+The "planetDir" value should match that used in your "getdiff.conf" file.
+
+Edited version of this "/etc/overpass.conf" file is not over written on upgrade,
+instead it is treated as Slackware package configure file. On upgrade you get a
+file "/etc/overpass.conf.new", check it for new varaibles that I may add in the
+future and remove it if there are no new varaibles, this way you get to keep your
+old setup "/etc/overpass.conf" file.
 
 Ensure you create the "target.name" file for "mk_regional_osc.sh" script in the
 "region" directory as described in [README.extract-planet.md](README.extract-planet.md)
