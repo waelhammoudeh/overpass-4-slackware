@@ -20,9 +20,10 @@ Also ensure the home directory exists with correct ownership:
 
 Installed Files
 
-This build script installs the following helper scripts and configuration files:
 All additional scripts and configuration files are in the build script "extra"
 directory.
+This build script installs the following helper scripts and configuration files
+to specified directories:
 
 Installed to /usr/local/bin/:
 
@@ -30,6 +31,11 @@ Installed to /usr/local/bin/:
     *) op_ctl.sh
     *) op_update_db.sh
     *) cron4op.sh
+
+    *) common_functions.sh
+    *) extract2planet.sh
+    *) mk_regional_osc.sh
+    *) cron4op-planet.sh
 
 Installed to /etc/rc.d/:
 
@@ -43,7 +49,7 @@ Installed to /etc/logrotate.d/:
 
     *) op_logrotate
 
-Installed to /ect/:
+Installed to /etc/:
 
     *) overpass.conf
 
@@ -53,11 +59,22 @@ Additionally my guide is included in the package documentation directory:
 
 /usr/local/doc/overpass-{VERSION}/ with the following files:
 
-    *) README.setup:
+    *) README.changeFiles.md:
+    Short condensed introduction to must know info about OpenStreetMap change files.
+
+    *) README.setup.md:
     Explains database initialization, dispatcher setup, and Apache (httpd) configuration.
 
-    *) README.update
+    *) README.update.md
     Explains how to update the database with change files and automate server maintenance.
+
+    *) README.extract-planet.md:
+    Explains the relation between OSM extract data files and planet change files,
+    it also provides a recipe (with scripts) to align an extract data file with
+    planet change files issuance time.
+
+    *) README.planet-update.md:
+    Explains how to automate overpass update from planet change files.
 
 Requirements:
 
@@ -79,6 +96,7 @@ The following filesystem structure is used:
     |--- region
            |--- extract
            |--- replication
+
 
 Wael Hammoudeh
 

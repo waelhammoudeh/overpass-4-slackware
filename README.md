@@ -28,6 +28,9 @@ Those interested in using planet change files to update their database, should
 read [README.extract-planet.md](overpass.SlackBuild/guide/README.extract-planet.md)
 before "README.setup.md" file.
 
+The file [README.planet-update.md](overpass.SlackBuild/guide/README.planet-update.md)
+explains how to setup overpass database for auto update from planet change files.
+
 ---
 
 ## Prerequisites

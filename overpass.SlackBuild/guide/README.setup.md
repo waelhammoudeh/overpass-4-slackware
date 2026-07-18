@@ -1,6 +1,6 @@
 README.setup — Overpass SlackBuild
 
-This file explains how to set up the Overpass API database and supporting scripts.
+This file explains how to setup the Overpass API database and supporting scripts.
 The following included helper scripts are discussed and explained:
 
 ```
