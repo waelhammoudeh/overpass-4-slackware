@@ -156,4 +156,4 @@ to abide by, read the rules and follow the law please. Be in the know.
 
 Wael Hammoudeh
 
-July 8th, 2026
+July 17, 2026

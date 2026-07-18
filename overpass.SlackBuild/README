@@ -17,7 +17,9 @@ avoid conflicts with other stuff from SlackBuilds.org.
 
 No additional software is needed for Overpass on Slackware 15.0, however added
 scripts here require "osmium". A SlackBuild for "osmium" is available on my
-repository here: https://github.com/waelhammoudeh/osmium-tool_slackbuild.
+repository here: "https://github.com/waelhammoudeh/osmium-tool_slackbuild".
+Program `getdiff` to download change files is used; get SlackBuild script here:
+"https://github.com/waelhammoudeh/getdiff"
 
 
 See also: README.SlackBuild

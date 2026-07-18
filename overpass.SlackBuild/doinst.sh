@@ -21,6 +21,4 @@ preserve_perms() {
   config $NEW
 }
 
-preserve_perms etc/rc.d/rc.dispatcher.new
-config etc/httpd/extra/httpd-overpass.conf.new
-config etc/logrotate.d/op_logrotate.new
+config etc/overpass.conf.new

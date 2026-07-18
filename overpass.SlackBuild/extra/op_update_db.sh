@@ -24,6 +24,10 @@
 
 FLUSH_SIZE=4
 
+if [[ -s "/etc/overpass.conf" ]]; then
+    source /etc/overpass.conf
+fi
+
 # script name no path & no extension
 scriptName=$(basename "$0" .sh)
 
@@ -101,6 +105,8 @@ touch $logFile
 
 log "======================== Starting ========================"
 log "$scriptName has started ..."
+
+log " FLUSH_SIZE in use is: $FLUSH_SIZE"
 
 check_database_directory $dbDir
 
@@ -286,8 +292,9 @@ fi
 
 # 3 minutes sleep time seems to work okay with 6 change files - failed with 8 change files
 # Possible other solutions:
-#   1) combine changes and apply once
+#   1) combine changes and apply once --> 3 minutes wait works for 6 files or less.
 #   2) use update_from_directory and do not shutdown dispatcher
+#   3) do NOT update area when we combine change files; wait and it will get done next hour.
 
 # area update failed again with combined one change file (from 17 hours) with sleepTime 3 minutes
 # trying 5 minutes wait plus two tries 7/13/2026 W.H.
@@ -308,9 +315,9 @@ sleep $sleepTime
 log "Updating areas in database ... first try .."
 
 if pgrep dispatcher; then
-    $execDir/osm3s_query --progress --rules <"$rulesDir/areas.osm3s"
+    $execDir/osm3s_query --progress --rules < "$rulesDir/areas.osm3s"
 else
-   $execDir/osm3s_query --db-dir="$dbDir" --progress  --rules <"$rulesDir/areas.osm3s"
+   $execDir/osm3s_query --db-dir="$dbDir" --progress  --rules < "$rulesDir/areas.osm3s"
 fi
 rc=$?
 
@@ -321,11 +328,15 @@ if [[ $rc -ne $EXIT_SUCCESS ]]; then
 
     sleep $sleepTime
 
-    # dispatcher should be running!
     log "Updating areas in database ... for SECOND TRY ....."
 
-    $execDir/osm3s_query --progress --rules <"$rulesDir/areas.osm3s"
+    if pgrep dispatcher; then
+        $execDir/osm3s_query --progress --rules < "$rulesDir/areas.osm3s"
+    else
+        $execDir/osm3s_query --db-dir="$dbDir" --progress  --rules < "$rulesDir/areas.osm3s"
+    fi
     rc=$?
+
     if [[ $rc -ne $EXIT_SUCCESS ]]; then
         log "Error failed to update area objects in database. 2nd try!"
         log "SECOND TRY ALSO FAILED with ERROR   XXXXX: \"osm3s_query\" exit code was: < $rc >"
@@ -338,11 +349,17 @@ fi
 
 log "Done updating areas."
 
+POST_UPDATE_BASE_VERSION=$(<"$dbDir/osm_base_version")
+POST_UPDATE_AREA_VERSION=$(<"$dbDir/area_version")
+
+log " post update BASE version is: ** $POST_UPDATE_BASE_VERSION **"
+log " post update AREA version is: ** $POST_UPDATE_AREA_VERSION **"
+
 log "Database: <$dbDir> update complete."
 log "++++++++++++++++++++++++ Done ++++++++++++++++++++++++++"
 echo "">>$logFile
 
 # remove files in tmp directory
-# rm -f $TMP/*
+rm -f $TMP/*
 
 exit $EXIT_SUCCESS

@@ -43,6 +43,10 @@ Installed to /etc/logrotate.d/:
 
     *) op_logrotate
 
+Installed to /ect/:
+
+    *) overpass.conf
+
 Documentation:
 
 Additionally my guide is included in the package documentation directory:
@@ -71,7 +75,11 @@ The following filesystem structure is used:
     |--- getdiff
     |--- sources   (optional)
     |--- logs
+    |--- tmp
+    |--- region
+           |--- extract
+           |--- replication
 
 Wael Hammoudeh
 
-June 26/2026
+July 17/2026

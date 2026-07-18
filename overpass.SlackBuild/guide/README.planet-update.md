@@ -1,4 +1,4 @@
-README.setup — Overpass SlackBuild
+README.planet-update.md — Overpass SlackBuild
 
 This file explains how to update "overpass" database from planet OSM change files.
 
@@ -12,9 +12,13 @@ Weather you already have setup "overpass" database or are seting up a new "overp
 database, this README will guide you with the process of using planet OSM change
 files to update your "overpass" database.
 
+**Daily** and **hourly** updates are supported by the provided scripts.
+
+
 The process involves a new database initialization, and can be summarized by first
-creating a new region OSM extract data file that is aligned with planet daily change
-file insuance time; second initial a new "overpass" with the new extract data file
+creating a new region OSM extract data file that is aligned with planet change
+file insuance time; **daily alinged** for daily update and **hourly aligned** for
+hourly update. Second initial a new "overpass" with the new extract data file
 and third use a provided script to make your region change files and finally use a
 replacement script for cron jobs.
 
@@ -26,8 +30,9 @@ The detailed steps are as follows:
 ## 1) Create Aligned Extract Data File:
 
 Follow the instruction in my [osm_extract_planet](https://github.com/waelhammoudeh/osm_extract_planet)
-to create OSM extract data file for your area that is aligned with planet OSM time
-for daily change files.
+to create your region OSM extract data file that is aligned with the desired planet OSM
+change file issuance time **(daily or hourly).**
+
 
 ## 2) Initial "Overpass" database:
 
@@ -45,68 +50,139 @@ overpass@regrets:~$ mkdir database
 ```
 
 Copy your new OSM extract data file made in step 1 to overpass "sources/" directory
-and use that to initialize a new database as described in README.setup.md file.
+and use that to initialize a new database as described in [README.setup.md](README.setup.md)
+file.
 
-## 3) Use new "cron4op-planet.sh" and "mk_regional_osc.sh" scripts:
+With your setup complete including starting and stopping "dispatcher" on startup
+and shutdown. Understand the new update process is different from that from geofabrik.
+
+The update process from planet change files is different from that described in
+[README.update.md](README.update.md) file first by change file source now is from
+"planet.osm.org/replication" server not "download.geofabrik.de" server and second
+there is an extra step of making our own regional change file to update database
+with. Those changes required a new cron job script `cron4op-planet.sh`.
+
+The update process now works as follows:
+
+  - download planet change files using `getdiff`.
+  - make regional change file from planet change file using `mk_regional_osc.sh` script.
+  - update overpass database using region change file using `op_update_db.sh` script.
+  - `cron4op-planet.sh` is called by `crond` to perform above steps in addition to
+  perform old files removal (cleanup).
+
+
+## 3) Configure `getdiff`:
+
+If you have been updating from "geofabrik" server, you must at least **remove**
+"previous.seq" file from "getdiff" directory. Removing everything in "getdiff"
+directory is recommended.
+
+Create "getdiff.conf" file in "getdiff" directory with the following keys and values:
+```
+# getdiff.conf file for planet update:
+
+DIRECTORY = /var/lib/overpass
+
+LOG_FILE = /var/lib/overpass/logs/getdiff.log
+
+# To turn verbose on use: TRUE, ON or 1. Case ignored for TRUE and ON.
+VERBOSE = True
+
+# use for daily update
+SOURCE = https://planet.osm.org/replication/day
+
+# use for hourly update
+# SOURCE = https://planet.osm.org/replication/hour
+
+# BEGIN: This is the sequence number to start download from.
+BEGIN = {sequence_number}
+
+```
+
+set the "SOURCE" value for the desired update granularity (daily or hourly) and
+specify the {sequence_number} to start download from; this is for the change file
+just after the last included in your extract from step 1.
+
+## 4) Configure "/etc/overpass.conf" file:
+
+The file has four variables you set once only; varaibles are used by "mk_regional_osc.sh"
+and "op_update_db.sh" scripts. Edit the file as root.
+
+```
+# this is overpass.conf file;;;
+
+# variables for "op_update_db.sh" script:
+
+FLUSH_SIZE=4
+
+# varaibles for "mk_regional_osc.sh" script:
+
+# set to your region poly file name ONLY, place file in your region directory
+
+polyFileName=arizona.poly
+
+# set to your area or region name; used in generated state.txt files
+# use short name!
+
+regionName=Arizona
+
+# this is the directory where "getdiff" downloads planet change files
+# which depends on its '--source / -s' option or 'SOURCE' key value:
+
+# for daily files: SOURCE = https://planet.osm.org/replication/day
+# planetDir=/var/lib/overpass/planet/day
+
+# for hourly files: SOURCE = https://planet.osm.org/replication/hour
+# planetDir=/var/lib/overpass/getdiff/planet/hour
+
+# scripts may need adjusments for minute updates.
+
+planetDir=/var/lib/overpass/getdiff/planet/day
+
+```
+
+The "planetDir" value needs to match that used in your "getdiff.conf" file.
+
+Ensure you create the "target.name" file for "mk_regional_osc.sh" script in the
+"region" directory as described in [README.extract-planet.md](README.extract-planet.md)
+file. The file name inside this "target.name" is the file created in step 1 above
+and used to initialize your database. Copy the file with timestamp formated name to
+"region/extract/" directory.
+
+
+## 5) Use new "cron4op-planet.sh" script:
 
 The new "cron4op-planet.sh" is a replacement for "cron4op.sh" script called from
-`crontab` entry, all you need here is to edit "overpass" user `crontab` to use the
-new script; as the "overpass" user modify that entry with:
+`crontab` entry.
+
+If you are changing from "geofabrik" update then all you need here is to edit the
+"overpass" user existing `crontab` entry to use the new script. For new setup you
+create a new crontab entry; the process is very similar (as the "overpass" user)
+and as follows:
+
 
 ```
 overpass@regrets:~$ crontab -e
 ```
 
 you then press the `i` key on your keyboard to enter "edit" mode and change old
-entry by adding "-planet" to it; from:
-
-```
-@daily ID=opUpdateDB /usr/local/bin/cron4op.sh
-```
-
-to:
+entry by adding "-planet" to it or type the whole entry line; your new entry line
+should be one of two below (depending on your update daily or hourly):
 
 ```
 @daily ID=opUpdateDB /usr/local/bin/cron4op-planet.sh
 ```
 
-you save the new "crontab" entry by pressing "Esc" then enter ":wq".
-
-Ensure you create the "target.name" file and change and set the two variables in
-script "mk_regional_osc.sh" as instructed, script is called from new "cron4op-planet.sh".
-Those instruction were as follows:
-
-
-**Before** using "mk_regional_osc.sh" script; you need to set two varaibles in the
-script and create "target.name" file in the "region" directory.
-
-The variables to set are in the top of the script:
-
-  - **polyFileName**
-  - **regionName**
-
-The "polyFileName" is your area poly file from Geofabrik.de which was copied to
-the "region" directory in the previous step. Only file name is needed here.
-
-The "regionName" is your region (area) name; used in produced "state.txt" files -
-this should be a short name.
-
-The "target.name" file is a text file with lastest extract data filename. Initially
-this is the file made in the previous step with the "date" part in its name. The
-"target.name" file is created in the "region" directory with command like:
-
 ```
-overpass@regrets:~$ echo "arizona_2026-07-02.osm.pbf" > region/target.name
+@hourly ID=opUpdateDB /usr/local/bin/cron4op-planet.sh
 ```
 
-## 4) Adjust configure and clean "getdiff" directory:
+you save the new "crontab" entry by pressing "Esc" then type ':wq' then enter.
 
-Edit your "getdiff.conf" file to set new values for "SOURCE" and "BEGIN" keys.
+This should take care of your setup for auto update overpass database. Check your
+log files; they are all under "logs/" directory.
 
-Change and set value for the "SOURCE" key to "https://planet.osm.org/replication/day"
-and set a new value for "BEGIN" key; this will be the sequence number for planet
-daily change file to start updating from. The one just after the last added to your
-new extract data file you made in step 1.
 
-**Remove** "previous.seq" file from "getdiff" directory.
+Wael Hammoudeh
 
+July 17/2026

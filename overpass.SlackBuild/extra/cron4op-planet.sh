@@ -122,7 +122,8 @@ replicationDir=$regionDir/replication
 
 getdiffDir=$opDir/getdiff
 
-planetDir=$getdiffDir/planet/day
+# planetDir here is for removing old files
+planetDir=$getdiffDir/planet
 
 execDir=/usr/local/bin
 

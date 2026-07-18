@@ -111,6 +111,11 @@ logDir=$opDir/logs
 
 execDir=/usr/local/bin
 
+
+if [[ -s "/etc/overpass.conf" ]]; then
+    source /etc/overpass.conf
+fi
+
 # files:
 
 polyFile=$regionDir/$polyFileName
@@ -166,6 +171,11 @@ log " Output settings in use:"
 log "  extract directory: $extractDir"
 log "  change and state files (region): $replicationDir"
 log "  oscList.txt file directory: $regionDir"
+log ""
+
+log " polyFileName in use is: $polyFileName"
+log " regionName in use is: $regionName"
+log " planetDir is use is: $planetDir"
 log ""
 
 chk_directories $opDir $regionDir $extractDir $replicationDir \
@@ -358,8 +368,26 @@ while [[ $length -gt $i ]]; do
     # write state.txt file
     cp $currentStateFile $newStateFile
 
+    dir=$(basename $planetDir)
+
+    case "$dir" in
+    "day")
+        granularity="daily"
+        ;;
+    "hour")
+        granularity="hourly"
+        ;;
+    "minute")
+        granularity="minutely"
+        ;;
+    *)
+        granularity="" # "default_fallback"
+        ;;
+    esac
+
+
     # replace first line in new state.txt file (header)
-    myHeader="# $(date -u), $regionName region OSC. Original planet daily OSC sequence number $sequenceNum"
+    myHeader="# $(date -u), $regionName region OSC. Original planet $granularity sequence number $sequenceNum"
 
     # Replace first line with new header
     sed -i "1s|.*|$myHeader|" "$newStateFile"

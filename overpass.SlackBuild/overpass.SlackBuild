@@ -196,15 +196,18 @@ chmod 755 $PKG_BIN/extract2planet.sh
 
 # install rc.dispatcher start & stop script by root
 mkdir -p $PKGDEST/etc/rc.d
-install -m 755 "$CWD/extra/rc.dispatcher" "$PKGDEST/etc/rc.d/rc.dispatcher.new"
+install -m 755 "$CWD/extra/rc.dispatcher" "$PKGDEST/etc/rc.d/rc.dispatcher"
 
 # copy httpd configure file
 mkdir -p $PKGDEST/etc/httpd/extra
-install -m 644 "$CWD/extra/httpd-overpass.conf" "$PKGDEST/etc/httpd/extra/httpd-overpass.conf.new"
+install -m 644 "$CWD/extra/httpd-overpass.conf" "$PKGDEST/etc/httpd/extra/httpd-overpass.conf"
 
 # copy op_logrotate
 mkdir -p $PKGDEST/etc/logrotate.d/
-install -m 644 "$CWD/extra/op_logrotate" "$PKGDEST/etc/logrotate.d/op_logrotate.new"
+install -m 644 "$CWD/extra/op_logrotate" "$PKGDEST/etc/logrotate.d/op_logrotate"
+
+# copy overpass.conf
+install -m 644 "$CWD/extra/overpass.conf" "$PKGDEST/etc/overpass.conf.new"
 
 mkdir -p $PKGDEST/install
 cat $CWD/slack-desc > $PKGDEST/install/slack-desc
