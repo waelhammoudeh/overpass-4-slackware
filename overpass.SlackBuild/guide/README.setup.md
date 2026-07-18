@@ -172,7 +172,7 @@ fi
 The "rc.dispatcher" is a wraper script to "op_ctl.sh" which is used by "overpass"
 user to start, stop or get status of the dispatcher daemon.
 
-6. Apache Configuration (Optional)
+6. Apache Configuration
 
 With the dispatcher running, you can expose Overpass through Apache HTTPD.
 
@@ -205,7 +205,7 @@ Note again use your own static IP above
 
 2nd) Enable CGI execution:
 
-uncomment commented lines in the block listed below:
+uncomment commented-out lines in the block listed below:
 ```
 <IfModule !mpm_prefork_module>
     LoadModule cgid_module lib64/httpd/modules/mod_cgid.so
@@ -222,16 +222,10 @@ At the bottom of the file, include the Overpass configuration:
 Include /etc/httpd/extra/httpd-overpass.conf
 ```
 
-We want ALL `overpass` log files managed by `overpass`, to prevent Apache from
-creating our log files, "overpass" user creates those files, 'logs/' directory
-was created above:
-```
-  ~$ touch /var/lib/overpass/logs/op_httpd_error.log
-  ~$ touch /var/lib/overpass/logs/op_httpd_access.log
-```
+Logging setting in provided "httpd-overpass.conf" file sets logging for two files
+in overpass to "logs/" directory, you may check those log files, and like all overpass
+logging files they are rotated by the provided "op_logrotate" file.
 
-Log files will be recreated on *logrotation* with the appropriate ownership.
-See managing log files in README.update.md file.
 
 Start or restart Apache:
 ```
@@ -241,6 +235,8 @@ Or:
 
   ~# apachectl restart
 ```
+
+In some cases you may have to reboot your machine!
 
 7. Test via HTTP
 
@@ -271,6 +267,8 @@ or:
   http://myoverpass/api/timestamp
 ```
 
+Again if this does not work try to reboot your machine.
+
 8. Logging is written to two files in database directory; `database.log` and
 `transactions.log`, the later is more insightful for you.
 
@@ -279,4 +277,4 @@ file in the guide.
 
 Wael Hammoudeh
 
-June 10/2026
+July 18/2026
